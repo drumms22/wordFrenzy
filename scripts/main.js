@@ -155,7 +155,7 @@ const showLetter = (e) => {
 
   if (e.inputType === "deleteContentBackward") return;
 
-  handleJoke(e, document.getElementById(e.target.id).value);
+  //handleJoke(e, document.getElementById(e.target.id).value);
 
   let strArray = e.target.id.split("");
 
