@@ -368,7 +368,13 @@ const play = () => {
 
   let spc = document.getElementById("SPCInput").value;
 
-  if (spc > 0) player.currentCPS = spc;
+  if (spc > 0 && spc < 51) {
+    player.currentCPS = spc;
+  } else if (spc < 0) {
+    player.currentCPS = 20;
+  } else if (spc > 50) {
+    player.currentCPS = 50;
+  }
 
   displayGame()
 
