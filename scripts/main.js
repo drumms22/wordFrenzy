@@ -123,29 +123,29 @@ const handleJoke = (e, guess) => {
 
   if (jokeCounter === 10) {
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
+    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, letters.length - 1)];
     alert("Having Fun Yet!")
   } else if (jokeCounter === 15) {
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
+    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, letters.length - 1)];
     alert("Why you still doing this!")
-  } else if (jokeCounter === 25) {
+  } else if (jokeCounter === letters.length - 1) {
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
+    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, letters.length - 1)];
     alert("Just Stop Bro!");
   } else if (jokeCounter === 30) {
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
+    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, letters.length - 1)];
     alert("Ok the jokes over!");
   } else if (jokeCounter > 30 && modNum === 0 || modNum2 === 0) {
 
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
+    document.getElementById(e.target.id).value = letters[generateRandomNumer(0, letters.length - 1)];
   } else if (jokeCounter > 30) {
     jokeCounter++;
   } else {
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
+    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, letters.length - 1)];
   }
 }
 
