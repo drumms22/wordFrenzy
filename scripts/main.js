@@ -119,7 +119,7 @@ const handleJoke = (e, guess) => {
 
   let modNum = jokeCounter % 5;
   let modNum2 = jokeCounter % 3;
-  console.log(jokeCounter);
+
 
   if (jokeCounter === 10) {
     jokeCounter++;
@@ -138,7 +138,7 @@ const handleJoke = (e, guess) => {
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
     alert("Ok the jokes over!");
   } else if (jokeCounter > 30 && modNum === 0 || modNum2 === 0) {
-    console.log("random joke");
+
     jokeCounter++;
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, 25)];
   } else if (jokeCounter > 30) {
@@ -152,7 +152,7 @@ const handleJoke = (e, guess) => {
 const showLetter = (e) => {
 
   document.getElementById(e.target.id).style.backgroundColor = "#f0f8ff";
-  //console.log(e);
+
   if (e.inputType === "deleteContentBackward") return;
 
   handleJoke(e, document.getElementById(e.target.id).value);
@@ -212,7 +212,7 @@ const handlePlayerAttempt = () => {
   if (guess.length != player.currentWord.length) return;
 
 
-  //console.log(guess);
+
 
   let correctMess = "";
   let inCorrectMess = "";
