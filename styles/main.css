@@ -1,0 +1,181 @@
+body {
+  width: 100%;
+  background-color: rgb(0, 98, 46);
+  color: aliceblue;
+  text-shadow: 0 0 3px black;
+  padding: 0;
+  margin: 0;
+}
+ul {
+  list-style: none;
+}
+h5 {
+  text-decoration: underline;
+}
+input {
+  font-size: 40px;
+  text-align: center;
+}
+p {
+  font-size: 16px;
+  font-weight: 800;
+}
+button {
+  width: 30%;
+  background-color: rgb(242, 242, 242);
+  border-radius: 5px 5px 5px 5px;
+  border-color: black;
+  color: black;
+  box-shadow: 0 0 5px black;
+  transition: 0.25s;
+}
+button:hover {
+  background-color: black;
+  color: white;
+  cursor: pointer;
+}
+#container {
+  width: 100%;
+}
+#titleWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(0, 15, 10);
+}
+#title {
+  font-size: 45px;
+}
+#header {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  border-bottom: 1px solid Black;
+}
+.scoreTimeBox {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#messageWrapper {
+  margin: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid Black;
+  background-color: rgb(23, 23, 23);
+}
+#message {
+  font-size: 25px;
+}
+#wordsWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  height: 250px;
+  justify-content: center;
+  border-bottom: 1px solid Black;
+}
+#words {
+  display: flex;
+}
+#startMenu {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+#howToPlayContent {
+  margin-top: 2%;
+  border-bottom: 2px solid black;
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: rgb(255, 255, 255);
+  color: black;
+  text-shadow: none;
+}
+#HTPTitle {
+  text-decoration: underline;
+}
+#gameContent {
+  position: relative;
+  display: none;
+  width: 50%;
+  margin-left: 25%;
+  flex-direction: column;
+  align-items: center;
+  border: 2px solid black;
+  padding: 10px;
+  background-color: rgb(0, 64, 41);
+}
+#guessContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 5%;
+  height: 100px;
+}
+#guess {
+  margin-top: 2%;
+  width: 10%;
+  height: 50px;
+  display: none;
+}
+#startGame {
+  width: 7%;
+  margin-top: 1%;
+  height: 50px;
+}
+
+.letterBox {
+  height: 50px;
+  width: 40px;
+  background-color: #f0f8ff;
+  color: black;
+  border: 1px solid black;
+}
+
+#guessHistory {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#correctWordsWrapper {
+  width: 10%;
+  position: absolute;
+  top: 25%;
+  left: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999;
+}
+#correctWords {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#startGameBtnWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 3%;
+}
+#SPCInput {
+  width: 5%;
+  height: 20px;
+  font-size: 16px;
+}
+#SPCTitle {
+  margin: 0;
+  text-decoration: underline;
+}
