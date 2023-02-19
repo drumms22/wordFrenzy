@@ -122,15 +122,15 @@ const handleJoke = (e, guess) => {
   let modNum2 = jokeCounter % 3;
 
 
-  if (jokeCounter === 10) {
+  if (jokeCounter === 15) {
     jokeCounter++;
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
     alert("Having Fun Yet!")
-  } else if (jokeCounter === 15) {
+  } else if (jokeCounter === 20) {
     jokeCounter++;
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
     alert("Why you still doing this!")
-  } else if (jokeCounter === 20) {
+  } else if (jokeCounter === 25) {
     jokeCounter++;
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
     alert("Just Stop Bro!");
@@ -156,7 +156,7 @@ const showLetter = (e) => {
 
   if (e.inputType === "deleteContentBackward") return;
 
-  //handleJoke(e, document.getElementById(e.target.id).value);
+  handleJoke(e, document.getElementById(e.target.id).value);
 
   let strArray = e.target.id.split("");
 
@@ -165,6 +165,8 @@ const showLetter = (e) => {
   let incr = endChar + 1;
 
   if (endChar === player.currentWord.length) return;
+
+  if (endChar < player.currentWord.length - 1 && player.placeHolder[endChar] != "") incr++;
 
   document.getElementById("letter" + incr).focus();
 
@@ -296,7 +298,12 @@ const handlePlayerAttempt = () => {
     displayMessage(newMessage);
 
     clearInputs();
-    document.getElementById("letter1").focus();
+    let num = player.placeHolder.findIndex((x) => x === "");
+
+    if (num === -1) {
+      num = 0;
+    }
+    document.getElementById("letter" + (num + 1)).focus();
   }
   //document.getElementById("message").innerHTML = message;
 
@@ -351,7 +358,7 @@ const intermission = () => {
 const playChallenge = () => {
   //clearInterval(timer);
 
-  player.currentWord = player.currentChallenge.words[player.currentChallenge.challengeI]
+  player.currentWord = "woods"//player.currentChallenge.words[player.currentChallenge.challengeI]
   player.currentTime = player.currentChallenge.type === "challenge" ? player.currentWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
