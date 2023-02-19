@@ -70,6 +70,7 @@ const startTimer = () => timer = setInterval(() => {
 const timesUp = () => {
   clearInterval(timer);
   timer = null;
+  document.getElementById("message2div").innerHTML = "<h3>The word was: " + player.currentWord + "</h3>";
   gameOver("Times up! You have failed!!!");
 }
 
