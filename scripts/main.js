@@ -156,7 +156,7 @@ const showLetter = (e) => {
 
   if (e.inputType === "deleteContentBackward") return;
 
-  handleJoke(e, document.getElementById(e.target.id).value);
+  //handleJoke(e, document.getElementById(e.target.id).value);
 
   let strArray = e.target.id.split("");
 
@@ -358,7 +358,7 @@ const intermission = () => {
 const playChallenge = () => {
   //clearInterval(timer);
 
-  player.currentWord = "woods"//player.currentChallenge.words[player.currentChallenge.challengeI]
+  player.currentWord = player.currentChallenge.words[player.currentChallenge.challengeI];
   player.currentTime = player.currentChallenge.type === "challenge" ? player.currentWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
