@@ -543,6 +543,8 @@ const intermission = () => {
 
   }, 1000);
 
+  document.getElementById("time").innerHTML = "";
+
   timerFunc(() => {
     nextLevel()
     player.currentChallenge.challengeI++;
