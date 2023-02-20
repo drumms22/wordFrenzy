@@ -256,14 +256,15 @@ const handleRamNum = (word) => {
 
 }
 
-
+//======================================================================================================================================
+//======================================================================================================================================
 const showLetter = (e) => {
 
   document.getElementById(e.target.id).style.backgroundColor = "#f0f8ff";
 
   if (e.inputType === "deleteContentBackward") return;
 
-  //handleJoke(e, document.getElementById(e.target.id).value);
+  handleJoke(e, document.getElementById(e.target.id).value);
 
   let strArray = e.target.id.split("");
 
