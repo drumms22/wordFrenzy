@@ -5,7 +5,8 @@ let playerModel = {
     wordsI: 0,
     challengeI: 0,
     wordCompleted: false,
-    totalPoints: 0
+    totalPoints: 0,
+    totalWords: 3
   },
   challengesCompleted: [],
   currentCPS: 20,
@@ -13,7 +14,8 @@ let playerModel = {
   currentTime: 0,
   guesses: [],
   currentWord: "",
-  placeHolder: []
+  placeHolder: [],
+  wordLen: 0,
 }
 
 let jokeCounter = 1;
@@ -67,10 +69,15 @@ const startTimer = () => timer = setInterval(() => {
 
 }, 1000);
 
+
 const timesUp = () => {
+
   clearInterval(timer);
+
+  let w = handleWordRan(player.currentWord);
+
   timer = null;
-  document.getElementById("message2div").innerHTML = "<h3>The word was: " + player.currentWord + "</h3>";
+  document.getElementById("message2div").innerHTML = "<h3>The word was: " + w + "</h3>";
   gameOver("Times up! You have failed!!!");
 }
 
@@ -95,23 +102,30 @@ const updateWordDisplay = (index, letter) => {
 }
 
 const createPH = () => {
+  let w = handleWordRan(player.currentWord);
   document.getElementById("words").innerHTML = "";
-  for (let i = 0; i < player.currentWord.length; i++) {
+  for (let i = 0; i < w.length; i++) {
     player.placeHolder.push("");
   }
 
-  for (let i = 0; i < player.currentWord.length; i++) {
+  for (let i = 0; i < w.length; i++) {
     const input = document.createElement("input");
     //input.innerHTML = "";
     input.id = "letter" + (i + 1);
     input.className = "letterBox";
     input.oninput = showLetter;
+    input.onfocus = focusedInput;
     input.maxLength = 1;
     input.autocomplete = "off";
     // input.disabled = i === 0 ? false : true;
     document.getElementById("words").appendChild(input);
   }
 
+}
+
+const focusedInput = (e) => {
+  let num = parseInt(e.target.id.charAt(e.target.id.length - 1));
+  player.currentChallenge.wordsI = num;
 }
 
 const generateRandomNumber = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
@@ -122,33 +136,126 @@ const handleJoke = (e, guess) => {
   let modNum2 = jokeCounter % 3;
 
 
-  if (jokeCounter === 15) {
+  if (modNum2 === 0) {
     jokeCounter++;
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
-    alert("Having Fun Yet!")
-  } else if (jokeCounter === 20) {
+  } else if (modNum === 0) {
     jokeCounter++;
     document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
-    alert("Why you still doing this!")
-  } else if (jokeCounter === 25) {
-    jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
-    alert("Just Stop Bro!");
-  } else if (jokeCounter === 30) {
-    jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
-    alert("Ok the jokes over!");
-  } else if (jokeCounter > 30 && modNum === 0 || modNum2 === 0) {
-
-    jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumer(0, (letters.length - 1))];
-  } else if (jokeCounter > 30) {
-    jokeCounter++;
   } else {
     jokeCounter++;
-    document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
   }
+  // else
+  // if (jokeCounter === 25) {
+  //   jokeCounter++;
+  //   document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
+  //   alert("Just Stop Bro!");
+  // } else 
+  // if (jokeCounter === 30) {
+  //   jokeCounter++;
+  //   document.getElementById(e.target.id).value = letters[generateRandomNumber(0, (letters.length - 1))];
+  //   alert("Ok the jokes over!");
+  // } else if (jokeCounter > 30 && modNum === 0 || modNum2 === 0) {
+
+  //   jokeCounter++;
+  //   document.getElementById(e.target.id).value = letters[generateRandomNumer(0, (letters.length - 1))];
+  // } else
+  // if (jokeCounter > 30) {
+  //   jokeCounter++;
+  // } else {
+  //   jokeCounter++;
+  // }
 }
+
+
+const handleWordRan = (word) => {
+
+  let str = "";
+
+  let num = 5 + player.currentChallenge.challengeI;
+
+  switch (num) {
+    case 5:
+      str = word.charAt(4) + "" + word.charAt(9) + "" + word.charAt(13) + "" + word.charAt(17) + "" + word.charAt(22)
+      break;
+    case 6:
+      str = word.charAt(3) + "" + word.charAt(7) + "" + word.charAt(11) + "" + word.charAt(16) + "" + word.charAt(21) + "" + word.charAt(23)
+      break;
+    case 7:
+      str = word.charAt(3) + "" + word.charAt(6) + "" + word.charAt(10) + "" + word.charAt(15) + "" + word.charAt(18) + "" + word.charAt(22) + "" + word.charAt(24)
+      break;
+  }
+
+  return str;
+
+}
+
+const handleRamNum = (word) => {
+  let str = "";
+  let num = 5 + player.currentChallenge.challengeI;
+  for (let j = letters.length - 1; j > 0; j--) {
+    let rand = [Math.floor(Math.random() * letters.length)];
+    [letters[j], letters[rand]] = [letters[rand], letters[j]];
+  }
+
+  for (let i = 0; i < letters.length; i++) {
+
+    if (num === 5) {
+      if (i === 4) {
+        letters[i] = word.charAt(0);
+      } else if (i === 9) {
+        letters[i] = word.charAt(1);
+      } else if (i === 13) {
+        letters[i] = word.charAt(2);
+      } else if (i === 17) {
+        letters[i] = word.charAt(3);
+      } else if (i === 22) {
+        letters[i] = word.charAt(4);
+      }
+
+    } else if (num === 6) {
+      if (i === 3) {
+        letters[i] = word.charAt(0);
+      } else if (i === 7) {
+        letters[i] = word.charAt(1);
+      } else if (i === 11) {
+        letters[i] = word.charAt(2);
+      } else if (i === 16) {
+        letters[i] = word.charAt(3);
+      } else if (i === 21) {
+        letters[i] = word.charAt(4);
+      } else if (i === 23) {
+        letters[i] = word.charAt(5);
+      }
+    } else if (num === 7) {
+      if (i === 3) {
+        letters[i] = word.charAt(0);
+      } else if (i === 6) {
+        letters[i] = word.charAt(1);
+      } else if (i === 10) {
+        letters[i] = word.charAt(2);
+      } else if (i === 15) {
+        letters[i] = word.charAt(3);
+      } else if (i === 18) {
+        letters[i] = word.charAt(4);
+      } else if (i === 22) {
+        letters[i] = word.charAt(5);
+      } else if (i === 24) {
+        letters[i] = word.charAt(6);
+      }
+    }
+
+
+  }
+
+  letters.map((x) => {
+    str += x;
+  })
+
+  return str;
+
+}
+
 
 const showLetter = (e) => {
 
@@ -162,13 +269,59 @@ const showLetter = (e) => {
 
   let endChar = parseInt(strArray[strArray.length - 1])
 
-  let incr = endChar + 1;
+  if (endChar === player.wordLen) return;
+  let inputs = document.getElementsByClassName("letterBox");
 
-  if (endChar === player.currentWord.length) return;
+  let num = getWithinRange(player.currentChallenge.wordsI + 1, inputs.length);
 
-  if (endChar < player.currentWord.length - 1 && player.placeHolder[endChar] != "") incr++;
+  if (num > 0) {
+    player.currentChallenge.wordsI = num;
+    handleInputFocus(num);
+  }
 
-  document.getElementById("letter" + incr).focus();
+
+  // if (endChar < player.wordLen - 1 && player.placeHolder[endChar] != "") incr++;
+
+  // document.getElementById("letter" + incr).focus();
+
+}
+
+const getWithinRange = (start, end, type = "incr") => {
+  let num = 0;
+
+  switch (type) {
+    case "decr":
+      for (let i = start - 1; i > -1; i--) {
+        let input = document.getElementById("letter" + (i + 1))
+
+        if (player.placeHolder[i - 1] === "") {
+          num = i;
+          break;
+        }
+      }
+      break;
+    default:
+      for (let i = start - 1; i < end; i++) {
+        let input = document.getElementById("letter" + (i + 1))
+        if (input.value === "" || player.placeHolder[i] === "") {
+          num = i + 1;
+          break;
+        } else { continue }
+      }
+  }
+
+  return num;
+}
+
+const handleInputFocus = (currentPos) => {
+
+  // for (let i = currentPos; i < player.wordLen; i++) {
+  //if (player.placeHolder[i] === "") {
+  document.getElementById("letter" + currentPos).focus();
+  //document.getElementById("letter" + (i + 1)).setSelectionRange(0, 0)
+  //break;
+  //}
+  // }
 
 }
 
@@ -186,7 +339,7 @@ const strToArr = (str) => {
 
 const getInputs = () => {
   let str = "";
-  for (let i = 0; i < player.currentWord.length; i++) {
+  for (let i = 0; i < player.wordLen; i++) {
     str += document.getElementById("letter" + (i + 1)).value;
   }
 
@@ -204,7 +357,7 @@ const clearInputs = () => {
 }
 
 const handlePoints = () => {
-  player.currentChallenge.totalPoints += player.currentWord.length;
+  player.currentChallenge.totalPoints += player.wordLen;
   document.getElementById("score").innerHTML = "" + player.currentChallenge.totalPoints;
 }
 
@@ -212,11 +365,13 @@ const handlePlayerAttempt = () => {
 
   let guess = getInputs();
 
-  if (guess.length != player.currentWord.length) return;
+
+  if (guess.length != player.wordLen) return;
 
 
 
 
+  let w = handleWordRan(player.currentWord);
   let correctMess = "";
   let inCorrectMess = "";
   let outCorrectMess = "";
@@ -225,13 +380,13 @@ const handlePlayerAttempt = () => {
     guess[i].toLowerCase();
 
     let guessedCorrect = player.placeHolder.filter((x) => x === guess[i]);
-    let letterAmount = strToArr(player.currentWord).filter((x) => x === guess[i]);
+    let letterAmount = strToArr(w).filter((x) => x === guess[i]);
     let guessOutOfPlace = document.getElementById("guessOutOfPlace").textContent;
     let guessedIncorrectSpot = strToArr(guessOutOfPlace).filter((x) => x === guess[i]);
     // let leftOver = letterAmount.length - (guessedCorrect.length + guessedIncorrectSpot.length);
 
     if (letterAmount.length > 0) {
-      if (guess[i] === player.currentWord[i]) {
+      if (guess[i] === w[i]) {
         updateWordDisplay(i, guess[i]);
         // document.getElementById("letter" + (i + 1)).innerHTML = guess[i];
         document.getElementById("letter" + (i + 1)).style.backgroundColor = "blue";
@@ -247,7 +402,7 @@ const handlePlayerAttempt = () => {
     } else {
       let guessesIncorrect = document.getElementById("guessIncorrect").textContent;
       inCorrectMess += inCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
-      if (guessesIncorrect.search(guess[i]) <= 0) {
+      if (guessesIncorrect.search(guess[i]) < 0) {
         let str = guessesIncorrect.length === 0 ? guess[i] : " | " + guess[i];
         document.getElementById("guessIncorrect").innerHTML += str;
       }
@@ -273,7 +428,7 @@ const handlePlayerAttempt = () => {
     newMessage += "You got none out of place";
   }
 
-  if (guess === player.currentWord) {
+  if (guess === w) {
     clearInterval(timer);
     displayMessage("Success! You guessed the word");
     handlePoints();
@@ -281,7 +436,7 @@ const handlePlayerAttempt = () => {
     document.getElementById("guessOutOfPlace").innerHTML = "";
     player.currentChallenge.wordCompleted = true;
     addCorrectWord();
-    if (player.currentChallenge.challengeI === player.currentChallenge.words.length - 1) {
+    if (player.currentChallenge.challengeI === player.currentChallenge.totalWords - 1) {
       gameOver("You have completed the challenge!!!")
     } else {
       document.getElementById("guess").style.display = "none";
@@ -293,13 +448,13 @@ const handlePlayerAttempt = () => {
         }, 1000)
       }, 2000)
     }
-    // if (player.currentChallenge.i < player.currentWord.length)
+
   } else {
     displayMessage(newMessage);
 
     clearInputs();
     let num = player.placeHolder.findIndex((x) => x === "");
-
+    player.currentChallenge.wordsI = num;
     if (num === -1) {
       num = 0;
     }
@@ -309,9 +464,18 @@ const handlePlayerAttempt = () => {
 
 }
 
+const updatePH = () => {
+  let w = handleWordRan(player.currentWord);
+
+  for (let i = 0; i < w.length; i++) {
+    player.placeHolder.push("");
+  }
+}
+
 const addCorrectWord = () => {
+  let w = handleWordRan(player.currentWord);
   const li = document.createElement("li");
-  li.innerHTML = player.currentWord;
+  li.innerHTML = w;
   document.getElementById("correctWords").appendChild(li);
 }
 
@@ -323,6 +487,7 @@ const gameOver = (message) => {
   challenges.push(player.currentChallenge);
   player = playerModel
   player.challengesCompleted = challenges;
+  player.challengeStarted = false;
   document.getElementById("words").innerHTML = "<li><p>Please Refresh the browser to play another challenge</p></li>";
   displayMessage(message)
   document.getElementById("guess").style.display = "none";
@@ -357,15 +522,18 @@ const intermission = () => {
 
 const playChallenge = () => {
   //clearInterval(timer);
-
-  player.currentWord = player.currentChallenge.words[player.currentChallenge.challengeI];
-  player.currentTime = player.currentChallenge.type === "challenge" ? player.currentWord.length * player.currentCPS : 0;
+  let num = 5 + player.currentChallenge.challengeI;
+  let newWord = getWord(num, num);
+  let h = handleRamNum(newWord);
+  player.wordLen = newWord.length;
+  player.currentWord = h;
+  player.currentChallenge.wordsI = 0;
+  player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
   createPH();
   timerFunc(() => {
-    let idNum = player.currentChallenge.wordsI < player.currentWord.length ? player.currentChallenge.wordsI + 1 : player.currentWord.length;
-    document.getElementById("letter" + idNum).focus();
+    document.getElementById("letter1").focus();
     startTimer();
     displayMessage("Time has started!");
     document.getElementById("guess").style.display = "block";
@@ -384,18 +552,52 @@ const play = () => {
     player.currentCPS = 50;
   }
 
-  displayGame()
-
-  if (player.challengesCompleted.length === 100) {
-    constructChallenge("word");
-  } else {
-    constructChallenge("challenge");
-  }
-
+  document.getElementById("flipGameInner").classList.add("flip-game");
+  // if (player.challengesCompleted.length === 100) {
+  //   constructChallenge("word");
+  // } else {
+  //   constructChallenge("challenge");
+  // }
+  timerFunc(() => {
+    displayMessage("Get Ready!!!");
+  }, 2000)
   timerFunc(() => {
     playChallenge();
-  }, 2000)
+  }, 3000)
 
-  displayMessage("Get Ready!!!");
 
 }
+
+window.addEventListener("keydown", (e) => {
+
+  if (player.challengeStarted) {
+    let inputs = document.getElementsByClassName("letterBox");
+    switch (e.key) {
+      case "Enter":
+        handlePlayerAttempt();
+        break;
+      case "ArrowLeft":
+        if (player.currentChallenge.wordsI > 0) {
+          player.currentChallenge.wordsI--
+          handleInputFocus(player.currentChallenge.wordsI);
+        }
+        break;
+      case "ArrowRight":
+        if (player.currentChallenge.wordsI < player.wordLen - 1) {
+          player.currentChallenge.wordsI++
+          handleInputFocus(player.currentChallenge.wordsI);
+        }
+        break;
+      case "Backspace":
+
+        let num = getWithinRange(player.currentChallenge.wordsI, 0, "decr");
+
+        if (num <= player.wordLen && num > 0 && document.getElementById("letter" + player.currentChallenge.wordsI).value === "") {
+          player.currentChallenge.wordsI--
+          handleInputFocus(num);
+        }
+        break;
+    }
+  }
+
+})

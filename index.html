@@ -10,55 +10,88 @@
   </head>
   <body>
     <div id="container">
-      <div id="gameContent">
-        <div id="correctWordsWrapper">
-          <h5>Correct Words</h5>
-          <ul id="correctWords"></ul>
-        </div>
-        <div id="header">
-          <div class="scoreTimeBox">
-            <p>Score: <span id="score"></span></p>
+      <div id="flipGame" class="flip-card">
+        <div id="flipGameInner" class="flip-card-inner">
+          <div class="flip-card-front">
+            <div id="startMenu">
+              <div id="titleWrapper">
+                <h1 id="title">SpeedWords Test</h1>
+              </div>
+              <div id="howToPlayContent">
+                <h1 id="HTPTitle">How to play</h1>
+                <p>
+                  You get 3 words starting from 5 characters to 7 characters in
+                  length
+                </p>
+                <p>
+                  Time is based off of "seconds per character (spc)": sweeps is
+                  20spc * 5char = 100 seconds
+                </p>
+                <p>
+                  Time will start counting down, in which you will have
+                  unlimited guesses
+                </p>
+                <p>
+                  You will progress through the words in ascending order
+                  shortest to longest
+                </p>
+                <p>
+                  You need to guess each word correctly, if the time gets to 0,
+                  you will fail
+                </p>
+
+                <p
+                  style="
+                    font-weight: 900;
+                    color: rgb(164, 0, 0);
+                    font-size: 20px;
+                  "
+                >
+                  **Please remember, this is for TESTING, not what will be in
+                  the final product!
+                </p>
+              </div>
+              <div id="startGameBtnWrapper">
+                <h3 id="SPCTitle">Seconds Per Character (SPC)</h3>
+                <p>*Default is 20spc | Max is 50spc</p>
+                <input type="number" id="SPCInput" placeholder="20" />
+                <button onclick="play()" id="startGame">Start Game</button>
+              </div>
+            </div>
           </div>
-          <div class="scoreTimeBox">
-            <p>Time: <span id="time"></span></p>
+          <div class="flip-card-back">
+            <div id="gameContent">
+              <div id="correctWordsWrapper">
+                <h5>Correct Words</h5>
+                <ul id="correctWords"></ul>
+              </div>
+              <div id="header">
+                <div class="scoreTimeBox">
+                  <p>Score: <span id="score"></span></p>
+                </div>
+                <div class="scoreTimeBox">
+                  <p>Time: <span id="time"></span></p>
+                </div>
+              </div>
+              <div id="messageWrapper">
+                <p id="message"></p>
+                <div id="message2div"></div>
+              </div>
+              <div id="wordsWrapper">
+                <ul id="words"></ul>
+              </div>
+              <div id="guessContainer">
+                <button id="guess" onclick="handlePlayerAttempt()">
+                  Guess
+                </button>
+              </div>
+              <div id="guessHistory">
+                <p>Incorrect: <span id="guessIncorrect"></span></p>
+                <p>OutOfPlace: <span id="guessOutOfPlace"></span></p>
+              </div>
+            </div>
           </div>
         </div>
-        <div id="messageWrapper">
-          <p id="message"></p>
-          <div id="message2div"></div>
-        </div>
-        <div id="wordsWrapper">
-          <ul id="words"></ul>
-        </div>
-        <div id="guessContainer">          
-          <button id="guess" onclick="handlePlayerAttempt()">Guess</button>
-        </div>
-        <div id="guessHistory">
-          <p>Incorrect: <span id="guessIncorrect"></span></p>
-          <p>OutOfPlace: <span id="guessOutOfPlace"></span></p>
-      </div>
-      </div>
-      </div>
-    </div>
-    <div id="startMenu">
-      <div id="titleWrapper">
-        <h1 id="title">SpeedWords Test</h1>
-      </div>
-      <div id="howToPlayContent">
-        <h1 id="HTPTitle">How to play</h1>
-        <p>You get 3 words starting from 5 characters to 7 characters in length</p>
-        <p>Time is based off of "seconds per character (spc)": sweeps is 20spc * 5char = 100 seconds</p>
-        <p>Time will start counting down, in which you will have unlimited guesses</p>
-        <p>You will progress through the words in ascending order shortest to longest</p>
-        <p>You need to guess each word correctly, if the time gets to 0, you will fail</p>
-        
-        <p style="font-weight:900;color:rgb(164, 0, 0);font-size: 20px;">**Please remember, this is for TESTING, not what will be in the final product!</p>
-      </div>
-      <div id="startGameBtnWrapper">
-        <h3 id="SPCTitle">Seconds Per Character (SPC)</h3>
-        <p>*Default is 20spc | Max is 50spc</p>
-        <input type="number" id="SPCInput" placeholder="20">
-        <button onclick="play()" id="startGame">Start Game</button>
       </div>
     </div>
   </body>
