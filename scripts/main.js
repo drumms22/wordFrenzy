@@ -460,7 +460,38 @@ const handlePlayerAttempt = () => {
     }
     document.getElementById("letter" + (num + 1)).focus();
   }
+  let OOP = document.getElementById("guessOutOfPlace").textContent;
+  if (OOP.length > 0) handleOutOfPLace()
   //document.getElementById("message").innerHTML = message;
+
+}
+
+const handleOutOfPLace = () => {
+  let w = handleWordRan(player.currentWord);
+  let OOP = document.getElementById("guessOutOfPlace").textContent;
+  let splitOOP = OOP.split(" | ");
+  let splitW = w.split("");
+
+  if (splitOOP.length > 0) {
+    for (let i = 0; i < splitOOP.length; i++) {
+      let countW = splitW.filter((x) => x === splitOOP[i]);
+      let countCorrect = player.placeHolder.filter((x) => x === splitOOP[i]);
+
+      if (countCorrect.length === countW.length) {
+        splitOOP.splice(i, 1);
+      }
+
+    }
+
+    let str = "";
+
+    for (let j = 0; j < splitOOP.length; j++) {
+      let spacer = j < splitOOP.length - 1 ? " | " : "";
+      str += splitOOP[j] + spacer;
+    }
+
+    document.getElementById("guessOutOfPlace").innerHTML = str;
+  }
 
 }
 
