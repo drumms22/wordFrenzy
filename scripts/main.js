@@ -27,7 +27,7 @@ let timer = null;
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 
-const getWord = (min = 5, max = 5) => RiTa.randomWord({ minLength: min, maxLength: max });
+const getWord = (min = 4, max = 4) => RiTa.randomWord({ minLength: min, maxLength: max });
 
 const constructChallenge = (type) => {
 
@@ -38,7 +38,7 @@ const constructChallenge = (type) => {
       break;
     case "challenge":
       for (let i = 0; i < 3; i++) {
-        let num = 5 + i;
+        let num = 4 + i;
         player.currentChallenge.words.push(getWord(num, num));
       }
       player.currentChallenge.type = "challenge";
@@ -172,17 +172,17 @@ const handleWordRan = (word) => {
 
   let str = "";
 
-  let num = 5 + player.currentChallenge.challengeI;
+  let num = 4 + player.currentChallenge.challengeI;
 
   switch (num) {
+    case 4:
+      str = word.charAt(4) + "" + word.charAt(9) + "" + word.charAt(13) + "" + word.charAt(17)
+      break;
     case 5:
-      str = word.charAt(4) + "" + word.charAt(9) + "" + word.charAt(13) + "" + word.charAt(17) + "" + word.charAt(22)
+      str = word.charAt(3) + "" + word.charAt(7) + "" + word.charAt(11) + "" + word.charAt(16) + "" + word.charAt(21)
       break;
     case 6:
-      str = word.charAt(3) + "" + word.charAt(7) + "" + word.charAt(11) + "" + word.charAt(16) + "" + word.charAt(21) + "" + word.charAt(23)
-      break;
-    case 7:
-      str = word.charAt(3) + "" + word.charAt(6) + "" + word.charAt(10) + "" + word.charAt(15) + "" + word.charAt(18) + "" + word.charAt(22) + "" + word.charAt(24)
+      str = word.charAt(3) + "" + word.charAt(6) + "" + word.charAt(10) + "" + word.charAt(14) + "" + word.charAt(18) + "" + word.charAt(22)
       break;
   }
 
@@ -192,7 +192,7 @@ const handleWordRan = (word) => {
 
 const handleRamNum = (word) => {
   let str = "";
-  let num = 5 + player.currentChallenge.challengeI;
+  let num = 4 + player.currentChallenge.challengeI;
   for (let j = letters.length - 1; j > 0; j--) {
     let rand = [Math.floor(Math.random() * letters.length)];
     [letters[j], letters[rand]] = [letters[rand], letters[j]];
@@ -200,7 +200,7 @@ const handleRamNum = (word) => {
 
   for (let i = 0; i < letters.length; i++) {
 
-    if (num === 5) {
+    if (num === 4) {
       if (i === 4) {
         letters[i] = word.charAt(0);
       } else if (i === 9) {
@@ -209,11 +209,9 @@ const handleRamNum = (word) => {
         letters[i] = word.charAt(2);
       } else if (i === 17) {
         letters[i] = word.charAt(3);
-      } else if (i === 22) {
-        letters[i] = word.charAt(4);
       }
 
-    } else if (num === 6) {
+    } else if (num === 5) {
       if (i === 3) {
         letters[i] = word.charAt(0);
       } else if (i === 7) {
@@ -224,10 +222,8 @@ const handleRamNum = (word) => {
         letters[i] = word.charAt(3);
       } else if (i === 21) {
         letters[i] = word.charAt(4);
-      } else if (i === 23) {
-        letters[i] = word.charAt(5);
       }
-    } else if (num === 7) {
+    } else if (num === 6) {
       if (i === 3) {
         letters[i] = word.charAt(0);
       } else if (i === 6) {
@@ -240,8 +236,6 @@ const handleRamNum = (word) => {
         letters[i] = word.charAt(4);
       } else if (i === 22) {
         letters[i] = word.charAt(5);
-      } else if (i === 24) {
-        letters[i] = word.charAt(6);
       }
     }
 
@@ -370,9 +364,16 @@ const handlePlayerAttempt = () => {
 
 
   if (guess.length != player.wordLen) return;
-
-  if (!isWord(guess)) {
-    displayMessage(guess + " is not a word!")
+  let check = isWord(guess);
+  console.log(RiTa.evaluate(guess));
+  console.log(RiTa.isStopWord(guess))
+  if (!check) {
+    let str = "";
+    for (let i = 0; i < guess.length; i++) {
+      let del = i > 0 && i < guess.length ? ", " : "";
+      str += del + guess[i];
+    }
+    displayMessage("You got none correct | You got " + str + " incorrect | You got none out of place")
     clearInputs();
     let num = player.placeHolder.findIndex((x) => x === "");
     player.currentChallenge.wordsI = num;
@@ -555,8 +556,6 @@ const intermission = () => {
 
   }, 1000);
 
-  document.getElementById("time").innerHTML = "";
-
   timerFunc(() => {
     nextLevel()
     player.currentChallenge.challengeI++;
@@ -567,13 +566,13 @@ const intermission = () => {
 
 const playChallenge = () => {
   //clearInterval(timer);
-  let num = 5 + player.currentChallenge.challengeI;
+  let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
   player.currentChallenge.wordsI = 0;
-  player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
+  player.currentTime += newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
   createPH();
@@ -621,18 +620,18 @@ window.addEventListener("keydown", (e) => {
       case "Enter":
         handlePlayerAttempt();
         break;
-      case "ArrowLeft":
-        if (player.currentChallenge.wordsI > 0) {
-          player.currentChallenge.wordsI--
-          handleInputFocus(player.currentChallenge.wordsI);
-        }
-        break;
-      case "ArrowRight":
-        if (player.currentChallenge.wordsI < player.wordLen - 1) {
-          player.currentChallenge.wordsI++
-          handleInputFocus(player.currentChallenge.wordsI);
-        }
-        break;
+      // case "ArrowLeft":
+      //   if (player.currentChallenge.wordsI > 0) {
+      //     player.currentChallenge.wordsI--
+      //     handleInputFocus(player.currentChallenge.wordsI);
+      //   }
+      //   break;
+      // case "ArrowRight":
+      //   if (player.currentChallenge.wordsI < player.wordLen - 1) {
+      //     player.currentChallenge.wordsI++
+      //     handleInputFocus(player.currentChallenge.wordsI);
+      //   }
+      //   break;
       case "Backspace":
 
         let num = getWithinRange(player.currentChallenge.wordsI, 0, "decr");
