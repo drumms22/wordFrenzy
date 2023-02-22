@@ -362,9 +362,23 @@ const handlePoints = () => {
   document.getElementById("score").innerHTML = "" + player.currentChallenge.totalPoints;
 }
 
+const isWord = (guess) => RiTa.hasWord(guess);
+
 const handlePlayerAttempt = () => {
 
   let guess = getInputs();
+
+  if (!isWord(guess)) {
+    displayMessage(guess + " is not a word!")
+    clearInputs();
+    let num = player.placeHolder.findIndex((x) => x === "");
+    player.currentChallenge.wordsI = num;
+    if (num === -1) {
+      num = 0;
+    }
+    document.getElementById("letter" + (num + 1)).focus();
+    return;
+  }
 
 
   if (guess.length != player.wordLen) return;
