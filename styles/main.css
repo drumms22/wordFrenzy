@@ -85,7 +85,11 @@ button:hover {
   border-bottom: 1px solid Black;
 }
 #words {
+  width: 50%;
   display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-right: 3%;
 }
 #startMenu {
   width: 100%;
