@@ -368,6 +368,9 @@ const handlePlayerAttempt = () => {
 
   let guess = getInputs();
 
+
+  if (guess.length != player.wordLen) return;
+
   if (!isWord(guess)) {
     displayMessage(guess + " is not a word!")
     clearInputs();
@@ -379,12 +382,6 @@ const handlePlayerAttempt = () => {
     document.getElementById("letter" + (num + 1)).focus();
     return;
   }
-
-
-  if (guess.length != player.wordLen) return;
-
-
-
 
   let w = handleWordRan(player.currentWord);
   let correctMess = "";
