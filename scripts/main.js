@@ -98,14 +98,18 @@ const handleHint = () => {
         player.hintUsed = true;
       }).catch((error) => console.log(error))
 
-  } else if (player.currentTime === player.hintThreshold - 2) {
-    document.getElementById("message2").innerHTML = "Heres the meaning";
   } else if (player.currentTime === player.hintThreshold) {
+    document.getElementById("message2").innerHTML = "Heres the meaning";
+  } else if (player.currentTime === player.hintThreshold + 3) {
     document.getElementById("message2").innerHTML = "Looks like you need help";
   }
 }
 
-const calcHintThreshhold = () => { player.hintThreshold = Math.round((player.currentTime / 2) + 1) };
+const calcHintThreshhold = () => {
+  let w = handleWordRan(player.currentWord);
+  let total = (w.length * player.currentCPS) / 2;
+  player.hintThreshold = Math.round(total);
+};
 
 const timesUp = () => {
 
