@@ -80,6 +80,7 @@ const startTimer = () => timer = setInterval(() => {
 const handleHint = () => {
   if (player.currentTime === player.hintThreshold - 2) {
     let w = handleWordRan(player.currentWord);
+    console.log(w);
     fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + w, {
       method: 'GET', // or 'PUT' // data can be `string` or {object}!
       headers: {
@@ -87,15 +88,18 @@ const handleHint = () => {
       }
     }).then(res => res.json())
       .then(response => {
-        let meaning = response[0].meanings[0].definitions[0].definition;
-        let fs = "16px";
+        console.log(response);
+        if (!response.resolution) {
+          let meaning = response[0].meanings[0].definitions[0].definition;
+          let fs = "16px";
 
-        if (meaning.length > 35) {
-          fs = "13px";
+          if (meaning.length > 35) {
+            fs = "13px";
+          }
+
+          document.getElementById("message2").innerHTML = "<span style='font-size: " + fs + "'>" + meaning + "</span>";
+          player.hintUsed = true;
         }
-
-        document.getElementById("message2").innerHTML = "<span style='font-size: " + fs + "'>" + meaning + "</span>";
-        player.hintUsed = true;
       }).catch((error) => console.log(error))
 
   } else if (player.currentTime === player.hintThreshold) {
@@ -106,8 +110,19 @@ const handleHint = () => {
 }
 
 const calcHintThreshhold = () => {
+
   let w = handleWordRan(player.currentWord);
-  let total = (w.length * player.currentCPS) / 2;
+
+  let total = 0;
+  if (player.currentCPS < 21) {
+    total = (w.length * player.currentCPS) / 2.2;
+  } else if (player.currentCPS > 20 && player.currentCPS < 31) {
+    total = (w.length * player.currentCPS) / 2.5;
+  } else if (player.currentCPS > 30 && player.currentCPS < 41) {
+    total = (w.length * player.currentCPS) / 3;
+  } else if (player.currentCPS > 40) {
+    total = (w.length * player.currentCPS) / 3.5;
+  }
   player.hintThreshold = Math.round(total);
 };
 
@@ -223,7 +238,7 @@ const handleWordRan = (word) => {
       str = word.charAt(3) + "" + word.charAt(7) + "" + word.charAt(11) + "" + word.charAt(16) + "" + word.charAt(21)
       break;
     case 6:
-      str = word.charAt(3) + "" + word.charAt(6) + "" + word.charAt(10) + "" + word.charAt(14) + "" + word.charAt(18) + "" + word.charAt(22)
+      str = word.charAt(3) + "" + word.charAt(6) + "" + word.charAt(10) + "" + word.charAt(15) + "" + word.charAt(18) + "" + word.charAt(22)
       break;
   }
 
@@ -625,15 +640,17 @@ const intermission = () => {
 }
 
 const playChallenge = () => {
+
   //clearInterval(timer);
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
+  console.log(newWord);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
   player.currentChallenge.wordsI = 0;
   player.hintUsed = false;
-  player.currentTime += newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
+  player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
   document.getElementById("message2").innerHTML = "";
