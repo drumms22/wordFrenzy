@@ -115,13 +115,13 @@ const calcHintThreshhold = () => {
 
   let total = 0;
   if (player.currentCPS < 21) {
-    total = (w.length * player.currentCPS) / 2.2;
+    total = (w.length * player.currentCPS) / 2;
   } else if (player.currentCPS > 20 && player.currentCPS < 31) {
-    total = (w.length * player.currentCPS) / 2.5;
+    total = (w.length * player.currentCPS) / 2.2;
   } else if (player.currentCPS > 30 && player.currentCPS < 41) {
-    total = (w.length * player.currentCPS) / 3;
+    total = (w.length * player.currentCPS) / 2.4;
   } else if (player.currentCPS > 40) {
-    total = (w.length * player.currentCPS) / 3.5;
+    total = (w.length * player.currentCPS) / 2.6;
   }
   player.hintThreshold = Math.round(total);
 };
@@ -459,6 +459,7 @@ const handlePlayerAttempt = async () => {
             updateWordDisplay(i, guess[i]);
             // document.getElementById("letter" + (i + 1)).innerHTML = guess[i];
             document.getElementById("letter" + (i + 1)).style.backgroundColor = "blue";
+            document.getElementById("letter" + (i + 1)).disabled = true;
             player.placeHolder[i] = guess[i];
             correctMess += correctMess.length === 0 ? guess[i] : ", " + guess[i];
             // player.currentChallenge.wordCompleted = true;
