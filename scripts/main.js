@@ -16,6 +16,8 @@ let playerModel = {
   currentWord: "",
   placeHolder: [],
   wordLen: 0,
+  hintUsed: false,
+  hintThreshold: 0
 }
 
 let jokeCounter = 1;
@@ -62,6 +64,12 @@ const startTimer = () => timer = setInterval(() => {
     let extraZero = player.currentTime < 10 ? "0" : "";
     updateTimerDsiplay("" + extraZero + player.currentTime);
     player.currentTime--;
+
+    if (!player.hintUsed) {
+      if (player.hintThreshold === 0) calcHintThreshhold();
+      handleHint();
+    }
+
   } else {
     updateTimerDsiplay("00");
     timesUp();
@@ -69,6 +77,35 @@ const startTimer = () => timer = setInterval(() => {
 
 }, 1000);
 
+const handleHint = () => {
+  if (player.currentTime === player.hintThreshold - 2) {
+    let w = handleWordRan(player.currentWord);
+    fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + w, {
+      method: 'GET', // or 'PUT' // data can be `string` or {object}!
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    }).then(res => res.json())
+      .then(response => {
+        let meaning = response[0].meanings[0].definitions[0].definition;
+        let fs = "16px";
+
+        if (meaning.length > 35) {
+          fs = "13px";
+        }
+
+        document.getElementById("message2").innerHTML = "<span style='font-size: " + fs + "'>" + meaning + "</span>";
+        player.hintUsed = true;
+      }).catch((error) => console.log(error))
+
+  } else if (player.currentTime === player.hintThreshold - 2) {
+    document.getElementById("message2").innerHTML = "Heres the meaning";
+  } else if (player.currentTime === player.hintThreshold) {
+    document.getElementById("message2").innerHTML = "Looks like you need help";
+  }
+}
+
+const calcHintThreshhold = () => { player.hintThreshold = Math.round((player.currentTime / 2) + 1) };
 
 const timesUp = () => {
 
@@ -77,7 +114,7 @@ const timesUp = () => {
   let w = handleWordRan(player.currentWord);
 
   timer = null;
-  document.getElementById("message2div").innerHTML = "<h3>The word was: " + w + "</h3>";
+  document.getElementById("message2").innerHTML = "The word was: " + w + "";
   gameOver("Times up! You have failed!!!");
 }
 
@@ -358,123 +395,142 @@ const handlePoints = () => {
 
 const isWord = (guess) => RiTa.hasWord(guess);
 
-const handlePlayerAttempt = () => {
+const handlePlayerAttempt = async () => {
 
   let guess = getInputs();
 
 
   if (guess.length != player.wordLen) return;
-  let check = isWord(guess);
-  console.log(RiTa.evaluate(guess));
-  console.log(RiTa.isStopWord(guess))
-  if (!check) {
-    let str = "";
-    for (let i = 0; i < guess.length; i++) {
-      let del = i > 0 && i < guess.length ? ", " : "";
-      str += del + guess[i];
+
+  fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + guess, {
+    method: 'GET', // or 'PUT' // data can be `string` or {object}!
+    headers: {
+      'Content-Type': 'application/json'
     }
-    displayMessage("You got none correct | You got " + str + " incorrect | You got none out of place")
-    clearInputs();
-    let num = player.placeHolder.findIndex((x) => x === "");
-    player.currentChallenge.wordsI = num;
-    if (num === -1) {
-      num = 0;
-    }
-    document.getElementById("letter" + (num + 1)).focus();
-    return;
-  }
-
-  let w = handleWordRan(player.currentWord);
-  let correctMess = "";
-  let inCorrectMess = "";
-  let outCorrectMess = "";
-  for (let i = 0; i < guess.length; i++) {
-
-    guess[i].toLowerCase();
-
-    let guessedCorrect = player.placeHolder.filter((x) => x === guess[i]);
-    let letterAmount = strToArr(w).filter((x) => x === guess[i]);
-    let guessOutOfPlace = document.getElementById("guessOutOfPlace").textContent;
-    let guessedIncorrectSpot = strToArr(guessOutOfPlace).filter((x) => x === guess[i]);
-    // let leftOver = letterAmount.length - (guessedCorrect.length + guessedIncorrectSpot.length);
-
-    if (letterAmount.length > 0) {
-      if (guess[i] === w[i]) {
-        updateWordDisplay(i, guess[i]);
-        // document.getElementById("letter" + (i + 1)).innerHTML = guess[i];
-        document.getElementById("letter" + (i + 1)).style.backgroundColor = "blue";
-        player.placeHolder[i] = guess[i];
-        correctMess += correctMess.length === 0 ? guess[i] : ", " + guess[i];
-        // player.currentChallenge.wordCompleted = true;
-
-      } else if ((letterAmount.length - guessedCorrect.length) > 0 && guessedIncorrectSpot.length < (letterAmount.length - guessedCorrect.length)) {
-        let str = guessOutOfPlace.length === 0 ? guess[i] : " | " + guess[i];
-        document.getElementById("guessOutOfPlace").innerHTML += str;
-        outCorrectMess += outCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
+  }).then(res => res.json())
+    .then(response => {
+      if (response.hasOwnProperty("resolution")) {
+        displayMessage(guess + " is not a word!!!");
+        clearInputs();
+        let num = player.placeHolder.findIndex((x) => x === "");
+        player.currentChallenge.wordsI = num;
+        if (num === -1) {
+          num = 0;
+        }
+        document.getElementById("letter" + (num + 1)).focus();
+        return;
       }
-    } else {
-      let guessesIncorrect = document.getElementById("guessIncorrect").textContent;
-      inCorrectMess += inCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
-      if (guessesIncorrect.search(guess[i]) < 0) {
-        let str = guessesIncorrect.length === 0 ? guess[i] : " | " + guess[i];
-        document.getElementById("guessIncorrect").innerHTML += str;
+
+      let w = handleWordRan(player.currentWord);
+      let correctMess = "";
+      let inCorrectMess = "";
+      let outCorrectMess = "";
+      for (let i = 0; i < guess.length; i++) {
+
+        guess[i].toLowerCase();
+
+        let guessedCorrect = player.placeHolder.filter((x) => x === guess[i]);
+        let letterAmount = strToArr(w).filter((x) => x === guess[i]);
+        let guessOutOfPlace = document.getElementById("guessOutOfPlace").textContent;
+        let guessedIncorrectSpot = strToArr(guessOutOfPlace).filter((x) => x === guess[i]);
+        // let leftOver = letterAmount.length - (guessedCorrect.length + guessedIncorrectSpot.length);
+
+        if (letterAmount.length > 0) {
+          if (guess[i] === w[i]) {
+            updateWordDisplay(i, guess[i]);
+            // document.getElementById("letter" + (i + 1)).innerHTML = guess[i];
+            document.getElementById("letter" + (i + 1)).style.backgroundColor = "blue";
+            player.placeHolder[i] = guess[i];
+            correctMess += correctMess.length === 0 ? guess[i] : ", " + guess[i];
+            // player.currentChallenge.wordCompleted = true;
+
+          } else if ((letterAmount.length - guessedCorrect.length) > 0 && guessedIncorrectSpot.length < (letterAmount.length - guessedCorrect.length)) {
+            let str = guessOutOfPlace.length === 0 ? guess[i] : " | " + guess[i];
+            document.getElementById("guessOutOfPlace").innerHTML += str;
+            outCorrectMess += outCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
+          }
+        } else {
+          let guessesIncorrect = document.getElementById("guessIncorrect").textContent;
+          inCorrectMess += inCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
+          if (guessesIncorrect.search(guess[i]) < 0) {
+            let str = guessesIncorrect.length === 0 ? guess[i] : " | " + guess[i];
+            document.getElementById("guessIncorrect").innerHTML += str;
+          }
+        }
+
       }
-    }
 
-  }
+      let newMessage = "";
 
-  let newMessage = "";
+      if (correctMess != "") {
+        newMessage += "You got " + correctMess + " correct | ";
+      } else {
+        newMessage += "You got none correct | ";
+      }
+      if (inCorrectMess != "") {
+        newMessage += "You got " + inCorrectMess + " incorrect | ";
+      } else {
+        newMessage += "You got none incorrect | ";
+      }
+      if (outCorrectMess != "") {
+        newMessage += "You got " + outCorrectMess + " out of place";
+      } else {
+        newMessage += "You got none out of place";
+      }
 
-  if (correctMess != "") {
-    newMessage += "You got " + correctMess + " correct | ";
-  } else {
-    newMessage += "You got none correct | ";
-  }
-  if (inCorrectMess != "") {
-    newMessage += "You got " + inCorrectMess + " incorrect | ";
-  } else {
-    newMessage += "You got none incorrect | ";
-  }
-  if (outCorrectMess != "") {
-    newMessage += "You got " + outCorrectMess + " out of place";
-  } else {
-    newMessage += "You got none out of place";
-  }
+      if (guess === w) {
+        clearInterval(timer);
+        displayMessage("Success! You guessed the word");
+        handlePoints();
+        document.getElementById("guessIncorrect").innerHTML = "";
+        document.getElementById("guessOutOfPlace").innerHTML = "";
+        player.currentChallenge.wordCompleted = true;
+        addCorrectWord();
+        if (player.currentChallenge.challengeI === player.currentChallenge.totalWords - 1) {
+          gameOver("You have completed the challenge!!!")
+        } else {
+          document.getElementById("guess").style.display = "none";
+          timerFunc(() => {
+            displayMessage("Next word incomming!");
+            document.getElementById("words").innerHTML = "";
+            timerFunc(() => {
+              intermission();
+            }, 1000)
+          }, 2000)
+        }
 
-  if (guess === w) {
-    clearInterval(timer);
-    displayMessage("Success! You guessed the word");
-    handlePoints();
-    document.getElementById("guessIncorrect").innerHTML = "";
-    document.getElementById("guessOutOfPlace").innerHTML = "";
-    player.currentChallenge.wordCompleted = true;
-    addCorrectWord();
-    if (player.currentChallenge.challengeI === player.currentChallenge.totalWords - 1) {
-      gameOver("You have completed the challenge!!!")
-    } else {
-      document.getElementById("guess").style.display = "none";
-      timerFunc(() => {
-        displayMessage("Next word incomming!");
-        document.getElementById("words").innerHTML = "";
-        timerFunc(() => {
-          intermission();
-        }, 1000)
-      }, 2000)
-    }
+      } else {
+        displayMessage(newMessage);
 
-  } else {
-    displayMessage(newMessage);
+        clearInputs();
+        let num = player.placeHolder.findIndex((x) => x === "");
+        player.currentChallenge.wordsI = num;
+        if (num === -1) {
+          num = 0;
+        }
+        document.getElementById("letter" + (num + 1)).focus();
+      }
+      let OOP = document.getElementById("guessOutOfPlace").textContent;
+      if (OOP.length > 0) handleOutOfPLace()
+    })
+    .catch(error => console.error('Error:', error));
 
-    clearInputs();
-    let num = player.placeHolder.findIndex((x) => x === "");
-    player.currentChallenge.wordsI = num;
-    if (num === -1) {
-      num = 0;
-    }
-    document.getElementById("letter" + (num + 1)).focus();
-  }
-  let OOP = document.getElementById("guessOutOfPlace").textContent;
-  if (OOP.length > 0) handleOutOfPLace()
+
+  //isWord(guess);
+
+  // if (!check) {
+
+  //   displayMessage(guess + " is not a word!!!")
+  //   clearInputs();
+  //   let num = player.placeHolder.findIndex((x) => x === "");
+  //   player.currentChallenge.wordsI = num;
+  //   if (num === -1) {
+  //     num = 0;
+  //   }
+  //   document.getElementById("letter" + (num + 1)).focus();
+  //   return;
+  // }
+
   //document.getElementById("message").innerHTML = message;
 
 }
@@ -572,9 +628,11 @@ const playChallenge = () => {
   player.wordLen = newWord.length;
   player.currentWord = h;
   player.currentChallenge.wordsI = 0;
+  player.hintUsed = false;
   player.currentTime += newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
+  document.getElementById("message2").innerHTML = "";
   createPH();
   timerFunc(() => {
     document.getElementById("letter1").focus();
@@ -645,3 +703,21 @@ window.addEventListener("keydown", (e) => {
   }
 
 })
+
+
+const getData = (guess, success, failed) => {
+  let xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function () {
+    if (this.readyState == 4 && this.status == 200) {
+      let data = JSON.parse(this.responseText);
+      console.log(data);
+
+      success(data);
+      // displayMessage(data[0].meanings[0].definitions[0].definition);
+    } else {
+      failed();
+    }
+  }
+  xhttp.open("GET", "https://api.dictionaryapi.dev/api/v2/entries/en/" + guess, false);
+  xhttp.send();
+}
