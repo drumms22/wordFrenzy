@@ -1,10 +1,10 @@
 let playerModel = {
   currentChallenge: {
-    words: [],
     type: "",
     wordsI: 0,
     challengeI: 0,
     wordCompleted: false,
+    challengeCompleted: false,
     totalPoints: 0,
     totalWords: 3
   },
@@ -15,14 +15,18 @@ let playerModel = {
   guesses: [],
   currentWord: "",
   placeHolder: [],
+  wordsCompleted: [],
   wordLen: 0,
   hintUsed: false,
-  hintThreshold: 0
+  hintThreshold: 0,
+  totalPoints: 0,
 }
+
 
 let jokeCounter = 1;
 
 let player = playerModel;
+
 
 let timer = null;
 
@@ -80,7 +84,7 @@ const startTimer = () => timer = setInterval(() => {
 const handleHint = () => {
   if (player.currentTime === player.hintThreshold - 2) {
     let w = handleWordRan(player.currentWord);
-    console.log(w);
+
     fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + w, {
       method: 'GET', // or 'PUT' // data can be `string` or {object}!
       headers: {
@@ -88,7 +92,6 @@ const handleHint = () => {
       }
     }).then(res => res.json())
       .then(response => {
-        console.log(response);
         if (!response.resolution) {
           let meaning = response[0].meanings[0].definitions[0].definition;
           let fs = "16px";
@@ -408,8 +411,8 @@ const clearInputs = () => {
 }
 
 const handlePoints = () => {
-  player.currentChallenge.totalPoints += player.wordLen;
-  document.getElementById("score").innerHTML = "" + player.currentChallenge.totalPoints;
+  player.totalPoints += player.wordLen;
+  document.getElementById("score").innerHTML = "" + player.totalPoints;
 }
 
 const isWord = (guess) => RiTa.hasWord(guess);
@@ -505,8 +508,10 @@ const handlePlayerAttempt = async () => {
         document.getElementById("guessIncorrect").innerHTML = "";
         document.getElementById("guessOutOfPlace").innerHTML = "";
         player.currentChallenge.wordCompleted = true;
-        addCorrectWord();
+        addCorrectWord(w);
+        player.wordsCompleted.push(w);
         if (player.currentChallenge.challengeI === player.currentChallenge.totalWords - 1) {
+          player.currentChallenge.challengeCompleted = true;
           gameOver("You have completed the challenge!!!")
         } else {
           document.getElementById("guess").style.display = "none";
@@ -592,25 +597,59 @@ const updatePH = () => {
   }
 }
 
-const addCorrectWord = () => {
-  let w = handleWordRan(player.currentWord);
+const addCorrectWord = (word) => {
   const li = document.createElement("li");
-  li.innerHTML = w;
+  li.innerHTML = word;
   document.getElementById("correctWords").appendChild(li);
 }
 
+// {
+//   currentChallenge: {
+//     type: "",
+//     wordsI: 0,
+//     challengeI: 0,
+//     wordCompleted: false,
+//     challengeCompleted: false,
+//     totalPoints: 0,
+//     totalWords: 3
+//   },
+//   challengesCompleted: [],
+//   currentCPS: 20,
+//   challengeStarted: false,
+//   wordsCompleted: [],
+//   currentTime: 0,
+//   guesses: [],
+//   currentWord: "",
+//   placeHolder: [],
+//   wordLen: 0,
+//   hintUsed: false,
+//   hintThreshold: 0,
+//   totalPoints: 0,
+// }
+
+const resetPlayer = () => {
+  let newPlayer = {
+    challengesCompleted: player.challengesCompleted,
+    currentCPS: player.currentCPS,
+    challengeStarted: player.challengeStarted,
+    wordsCompleted: player.wordsCompleted,
+  }
+
+  player = {
+    ...playerModel,
+    ...newPlayer,
+  };
+
+}
+
+
 const gameOver = (message) => {
-  player.guesses = [];
-  player.placeHolder = [];
   clearInputs();
-  let challenges = player.challengesCompleted;
-  challenges.push(player.currentChallenge);
-  player = playerModel
-  player.challengesCompleted = challenges;
-  player.challengeStarted = false;
+  resetPlayer();
   document.getElementById("words").innerHTML = "<li><p>Please Refresh the browser to play another challenge</p></li>";
   displayMessage(message)
   document.getElementById("guess").style.display = "none";
+  // document.getElementById("continueGame").style.display = "block";
 }
 
 const nextLevel = () => {
@@ -635,17 +674,17 @@ const intermission = () => {
   timerFunc(() => {
     nextLevel()
     player.currentChallenge.challengeI++;
-    playChallenge();
+    playRound();
   }, 6000);
 
 }
 
-const playChallenge = () => {
+const playRound = () => {
 
   //clearInterval(timer);
+  document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
-  console.log(newWord);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
@@ -664,8 +703,7 @@ const playChallenge = () => {
   }, 10);
 }
 
-const play = () => {
-
+const determineSPC = () => {
   let spc = document.getElementById("SPCInput").value;
 
   if (spc > 0 && spc < 51) {
@@ -675,6 +713,24 @@ const play = () => {
   } else if (spc > 50) {
     player.currentCPS = 50;
   }
+}
+
+const startChallenge = () => {
+  timerFunc(() => {
+    displayMessage("Get Ready!!!");
+  }, 2000)
+  timerFunc(() => {
+    playRound();
+  }, 3000)
+}
+
+const continueGame = () => {
+  startChallenge()
+}
+
+const play = () => {
+
+  determineSPC();
 
   document.getElementById("flipGameInner").classList.add("flip-game");
   // if (player.challengesCompleted.length === 100) {
@@ -686,7 +742,7 @@ const play = () => {
     displayMessage("Get Ready!!!");
   }, 2000)
   timerFunc(() => {
-    playChallenge();
+    startChallenge();
   }, 3000)
 
 
@@ -732,7 +788,6 @@ const getData = (guess, success, failed) => {
   xhttp.onreadystatechange = function () {
     if (this.readyState == 4 && this.status == 200) {
       let data = JSON.parse(this.responseText);
-      console.log(data);
 
       success(data);
       // displayMessage(data[0].meanings[0].definitions[0].definition);
