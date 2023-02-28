@@ -5,6 +5,7 @@ body {
   text-shadow: 0 0 1px rgb(255, 255, 255);
   padding: 0;
   margin: 0;
+  padding-bottom: 150px;
 }
 ul {
   list-style: none;
