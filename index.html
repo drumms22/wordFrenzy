@@ -21,7 +21,7 @@
                 <h1 id="HTPTitle">How to play Challenge</h1>
                 <p>You will be attempting a challenge NOT a daily word</p>
                 <p>
-                  You get 3 words starting from 5 characters to 7 characters in
+                  You get 3 words starting from 4 characters to 6 characters in
                   length
                 </p>
                 <p>
@@ -68,10 +68,10 @@
               </div>
               <div id="header">
                 <div class="scoreTimeBox">
-                  <p>Score: <span id="score"></span></p>
+                  <p>Score: <span id="score">0</span></p>
                 </div>
                 <div class="scoreTimeBox">
-                  <p>Time: <span id="time"></span></p>
+                  <p>Time: <span id="time">00</span></p>
                 </div>
               </div>
               <div id="messageWrapper">
@@ -94,8 +94,14 @@
                 </button>
               </div>
               <div id="guessHistory">
-                <p>Incorrect: <span id="guessIncorrect"></span></p>
-                <p>OutOfPlace: <span id="guessOutOfPlace"></span></p>
+                <div class="guessHistoryContentBox">
+                  <h4>Incorrect</h4>
+                  <p id="guessIncorrect"></p>
+                </div>
+                <div class="guessHistoryContentBox">
+                  <h4>OutOfPlace</h4>
+                  <p id="guessOutOfPlace"></p>
+                </div>
               </div>
             </div>
           </div>

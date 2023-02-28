@@ -68,10 +68,11 @@ const startTimer = () => timer = setInterval(() => {
     let extraZero = player.currentTime < 10 ? "0" : "";
     updateTimerDsiplay("" + extraZero + player.currentTime);
     player.currentTime--;
-
+    calcSecondHint()
     if (!player.hintUsed) {
       if (player.hintThreshold === 0) calcHintThreshhold();
       handleHint();
+      calcSecondHint()
     }
 
   } else {
@@ -103,15 +104,43 @@ const handleHint = () => {
           document.getElementById("message2").innerHTML = "<span style='font-size: " + fs + "'>" + meaning + "</span>";
           player.hintUsed = true;
         }
-      }).catch((error) => console.log(error))
+      }).catch((error) => {
+        console.log(error);
+
+      })
 
   } else if (player.currentTime === player.hintThreshold) {
-    document.getElementById("message2").innerHTML = "Heres the meaning";
+    document.getElementById("message2").innerHTML = "Heres the definition";
   } else if (player.currentTime === player.hintThreshold + 3) {
     document.getElementById("message2").innerHTML = "Looks like you need help";
   }
 }
 
+
+const calcSecondHint = () => {
+  let w = handleWordRan(player.currentWord);
+  if (w.length > 4 && player.currentCPS > 10) {
+    if (player.currentTime === 14) {
+      document.getElementById("message2").innerHTML = "Still need help?";
+    } else if (player.currentTime === 12) {
+      document.getElementById("message2").innerHTML = "Heres it in a sentence?";
+    } else if (player.currentTime === 10) {
+
+      let index = player.placeHolder.findIndex((v) => v === "");
+
+      let hint = w.charAt(index);
+
+      let fs = "16px";
+      let numberText = (index + 1) + "";
+      if (index === 0) numberText += "st";
+      if (index === 1) numberText += "nd";
+      if (index === 2) numberText += "rd";
+      if (index > 2) numberText += "th";
+      document.getElementById("message2").innerHTML = "<span style='font-size: " + fs + "'>" + "The " + numberText + " letter is: " + hint + "</span>";
+
+    }
+  }
+}
 const calcHintThreshhold = () => {
 
   let w = handleWordRan(player.currentWord);
@@ -333,11 +362,6 @@ const showLetter = (e) => {
     handleInputFocus(num);
   }
 
-
-  // if (endChar < player.wordLen - 1 && player.placeHolder[endChar] != "") incr++;
-
-  // document.getElementById("letter" + incr).focus();
-
 }
 
 const getWithinRange = (start, end, type = "incr") => {
@@ -368,15 +392,7 @@ const getWithinRange = (start, end, type = "incr") => {
 }
 
 const handleInputFocus = (currentPos) => {
-
-  // for (let i = currentPos; i < player.wordLen; i++) {
-  //if (player.placeHolder[i] === "") {
   document.getElementById("letter" + currentPos).focus();
-  //document.getElementById("letter" + (i + 1)).setSelectionRange(0, 0)
-  //break;
-  //}
-  // }
-
 }
 
 const strToArr = (str) => {
@@ -419,6 +435,9 @@ const isWord = (guess) => RiTa.hasWord(guess);
 
 const handlePlayerAttempt = async () => {
 
+  if (player.currentChallenge.wordCompleted) return;
+
+
   let guess = getInputs();
 
 
@@ -447,6 +466,8 @@ const handlePlayerAttempt = async () => {
       let correctMess = "";
       let inCorrectMess = "";
       let outCorrectMess = "";
+      let incorrectLetters = "";
+      let outOfPlaceLetters = "";
       for (let i = 0; i < guess.length; i++) {
 
         guess[i].toLowerCase();
@@ -465,40 +486,44 @@ const handlePlayerAttempt = async () => {
             document.getElementById("letter" + (i + 1)).disabled = true;
             player.placeHolder[i] = guess[i];
             correctMess += correctMess.length === 0 ? guess[i] : ", " + guess[i];
-            // player.currentChallenge.wordCompleted = true;
+            if (guessedCorrect.length + 1 < letterAmount.length) {
+              outCorrectMess += outCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
+            }
+          } else {
+            // if (guessedCorrect.length > 0 && guessedCorrect.length < letterAmount.length) {
+            //   console.log("theres 1 correct but one more");
+            // }else{
 
-          } else if ((letterAmount.length - guessedCorrect.length) > 0 && guessedIncorrectSpot.length < (letterAmount.length - guessedCorrect.length)) {
-            let str = guessOutOfPlace.length === 0 ? guess[i] : " | " + guess[i];
-            document.getElementById("guessOutOfPlace").innerHTML += str;
+            // }
+            outOfPlaceLetters += guess[i];
             outCorrectMess += outCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
           }
+
         } else {
           let guessesIncorrect = document.getElementById("guessIncorrect").textContent;
           inCorrectMess += inCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
           if (guessesIncorrect.search(guess[i]) < 0) {
-            let str = guessesIncorrect.length === 0 ? guess[i] : " | " + guess[i];
-            document.getElementById("guessIncorrect").innerHTML += str;
+            incorrectLetters += guess[i];
           }
         }
 
       }
 
+      handleIncorrectWordDisplay(incorrectLetters);
+      handleOOPWordDisplay(outOfPlaceLetters);
       let newMessage = "";
 
-      if (correctMess != "") {
-        newMessage += "You got " + correctMess + " correct | ";
-      } else {
-        newMessage += "You got none correct | ";
-      }
       if (inCorrectMess != "") {
-        newMessage += "You got " + inCorrectMess + " incorrect | ";
+        let s = incorrectLetters.length > 1 ? "are" : "is";
+        newMessage += inCorrectMess + " " + s + " incorrect | ";
       } else {
-        newMessage += "You got none incorrect | ";
+        newMessage += "None incorrect | ";
       }
       if (outCorrectMess != "") {
-        newMessage += "You got " + outCorrectMess + " out of place";
+        let s = outOfPlaceLetters.length > 1 ? "are" : "is";
+        newMessage += outCorrectMess + " " + s + " out of place";
       } else {
-        newMessage += "You got none out of place";
+        newMessage += "None out of place";
       }
 
       if (guess === w) {
@@ -514,6 +539,7 @@ const handlePlayerAttempt = async () => {
           player.currentChallenge.challengeCompleted = true;
           gameOver("You have completed the challenge!!!")
         } else {
+          document.getElementById("message2").innerHTML = "";
           document.getElementById("guess").style.display = "none";
           timerFunc(() => {
             displayMessage("Next word incomming!");
@@ -535,8 +561,8 @@ const handlePlayerAttempt = async () => {
         }
         document.getElementById("letter" + (num + 1)).focus();
       }
-      let OOP = document.getElementById("guessOutOfPlace").textContent;
-      if (OOP.length > 0) handleOutOfPLace()
+      // let OOP = document.getElementById("guessOutOfPlace").textContent;
+      // if (OOP.length > 0) handleOutOfPLace()
     })
     .catch(error => console.error('Error:', error));
 
@@ -560,33 +586,72 @@ const handlePlayerAttempt = async () => {
 
 }
 
-const handleOutOfPLace = () => {
-  let w = handleWordRan(player.currentWord);
-  let OOP = document.getElementById("guessOutOfPlace").textContent;
-  let splitOOP = OOP.split(" | ");
-  let splitW = w.split("");
+const handleIncorrectWordDisplay = (letters) => {
+  let guessesIncorrect = document.getElementById("guessIncorrect");
 
-  if (splitOOP.length > 0) {
-    for (let i = 0; i < splitOOP.length; i++) {
-      let countW = splitW.filter((x) => x === splitOOP[i]);
-      let countCorrect = player.placeHolder.filter((x) => x === splitOOP[i]);
+  let str = "";
 
-      if (countCorrect.length === countW.length) {
-        splitOOP.splice(i, 1);
-      }
-
-    }
-
-    let str = "";
-
-    for (let j = 0; j < splitOOP.length; j++) {
-      let spacer = j < splitOOP.length - 1 ? " | " : "";
-      str += splitOOP[j] + spacer;
-    }
-
-    document.getElementById("guessOutOfPlace").innerHTML = str;
+  for (let i = 0; i < letters.length; i++) {
+    if (guessesIncorrect.textContent.length > 0 || i > 0) str += " | ";
+    str += letters[i];
   }
 
+  let newStr = "<span style='background-color: #7d0000; padding: 5px;'>" + guessesIncorrect.textContent + str + "</span>";
+
+  if (guessesIncorrect.textContent.length > 0 || letters.length > 0) {
+    guessesIncorrect.innerHTML = newStr;
+  }
+}
+
+
+const handleOOPWordDisplay = (letters) => {
+
+  let w = handleWordRan(player.currentWord);
+  let splitW = w.split("");
+  let OOP = document.getElementById("guessOutOfPlace").textContent;
+  let splitOOP = OOP.split("");
+  let lettersArr = letters.split("");
+  if (letters.length > 0) {
+    for (let i = 0; i < lettersArr.length; i++) {
+      //is in out of place
+      let isInOOP = splitOOP.findIndex((x) => x === lettersArr[i]);
+
+      //if the letter is not already in out of place
+      if (isInOOP === -1) {
+        //then add it
+        splitOOP.push(lettersArr[i]);
+      } else {
+        let countCorrect = player.placeHolder.filter((x) => x === lettersArr[i]);
+        let countOOP = splitOOP.filter((x) => x === lettersArr[i])
+
+        if (countOOP.length < countCorrect.length) {
+          splitOOP.push(lettersArr[i]);
+        }
+      }
+    }
+  }
+
+  let str = "";
+
+  for (let i = 0; i < splitOOP.length; i++) {
+
+    if (splitOOP[i] === "") continue;
+
+    let countW = splitW.filter((x) => x === splitOOP[i]);
+    let countCorrect = player.placeHolder.filter((x) => x === splitOOP[i]);
+    //if the letter is not already in out of place
+    if (countCorrect.length < countW.length) {
+      let space = str.length === 0 ? "" : " | ";
+      str += space + splitOOP[i]
+    }
+  }
+
+  if (str.length > 0) {
+    let newStr = "<span style='background-color: #926b00; padding: 5px;'>" + str + "</span>";
+    document.getElementById("guessOutOfPlace").innerHTML = newStr;
+  } else {
+    document.getElementById("guessOutOfPlace").innerHTML = "";
+  }
 }
 
 const updatePH = () => {
@@ -771,6 +836,8 @@ window.addEventListener("keydown", (e) => {
       case "Backspace":
 
         let num = getWithinRange(player.currentChallenge.wordsI, 0, "decr");
+
+        if (player.currentChallenge.wordCompleted) return;
 
         if (num <= player.wordLen && num > 0 && document.getElementById("letter" + player.currentChallenge.wordsI).value === "") {
           player.currentChallenge.wordsI--

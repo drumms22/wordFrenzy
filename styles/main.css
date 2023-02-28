@@ -146,6 +146,12 @@ button:hover {
   height: 50px;
   display: none;
 }
+#guessIncorrect {
+  height: 50px;
+}
+#guessOutOfPlace {
+  height: 50px;
+}
 #startGame {
   width: 7%;
   margin-top: 1%;
@@ -163,8 +169,18 @@ button:hover {
 #guessHistory {
   width: 100%;
   display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  height: 200px;
+}
+.guessHistoryContentBox {
+  width: 50%;
+  align-items: center;
+
+  display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  height: 100px;
 }
 #correctWordsWrapper {
   width: 10%;
