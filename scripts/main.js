@@ -760,7 +760,6 @@ const resetPlayer = () => {
 
 
 const gameOver = (message) => {
-  handleInputBG();
   resetPlayer();
   document.getElementById("words").innerHTML = "<li><p>Please Refresh the browser to play another challenge</p></li>";
   displayMessage(message)
@@ -802,6 +801,7 @@ const playRound = () => {
   document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
+  console.log(newWord);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
