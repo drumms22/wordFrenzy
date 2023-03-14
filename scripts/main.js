@@ -52,6 +52,8 @@ const loadData = () => {
     document.getElementById("totalWords").innerHTML = user.totalWordsCompleted;
     document.getElementById("totalChallenges").innerHTML = user.totalChallenegesCompleted;
     let currentCPS = (parseInt(user.totalTimeSpent) / parseInt(user.totalCharCount));
+    if (user.totalCharCount < 1) currentCPS = 1;
+    if (user.totalCharCount === 0) currentCPS = 0;
     document.getElementById("currentCPS").innerHTML = currentCPS.toFixed(0);
   } else {
     document.getElementById("totalPoints").innerHTML = "0";
@@ -903,6 +905,7 @@ const playRound = () => {
   document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
+
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
