@@ -45,11 +45,35 @@ button:hover {
   width: 100%;
 }
 #titleWrapper {
+  position: relative;
   width: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+#stats {
+  position: absolute;
+  left: 0;
+  top: 5;
+  width: 30%;
+  display: flex;
+  flex-direction: row;
+  border: 1px solid #e51300;
+}
+#stats h4 {
+  margin-left: 5px;
+}
+.statsBox {
+  background-color: #fff;
+  color: #000000;
+  padding-left: 5px;
+  padding-right: 5px;
+  border-right: 1px solid #000000;
+  width: 250px;
+}
+.statsBox:first-child {
+  border-left: 1px solid black;
 }
 #title {
   font-size: 45px;

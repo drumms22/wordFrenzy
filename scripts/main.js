@@ -23,8 +23,13 @@ let playerModel = {
   secondHintUsed: false,
   hintThreshold: 0,
   totalPoints: 0,
+  totalWordsCompleted: 0,
+  totalChallenegesCompleted: 0,
+  totalTimeSpent: 0,
+  totalCharCount: 0
 }
 
+let dataLoaded = false;
 
 let jokeCounter = 1;
 
@@ -37,6 +42,30 @@ const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm'
 
 
 const getWord = (min = 4, max = 4) => RiTa.randomWord({ minLength: min, maxLength: max });
+
+const loadData = () => {
+  let data = getCookie("player");
+  if (data != "") {
+    let user = JSON.parse(data);
+    document.getElementById("totalPoints").innerHTML = user.totalPoints;
+    document.getElementById("totalTime").innerHTML = user.totalTimeSpent;
+    document.getElementById("totalWords").innerHTML = user.totalWordsCompleted;
+    document.getElementById("totalChallenges").innerHTML = user.totalChallenegesCompleted;
+    let currentCPS = (parseInt(user.totalTimeSpent) / parseInt(user.totalCharCount));
+    document.getElementById("currentCPS").innerHTML = currentCPS.toFixed(0);
+  } else {
+    document.getElementById("totalPoints").innerHTML = "0";
+    document.getElementById("totalTime").innerHTML = "00";
+    document.getElementById("totalWords").innerHTML = "0";
+    document.getElementById("totalChallenges").innerHTML = "0";
+    document.getElementById("currentCPS").innerHTML = "0";
+  }
+}
+
+if (!dataLoaded) {
+  loadData();
+  dataLoaded = true;
+}
 
 const constructChallenge = (type) => {
 
@@ -74,7 +103,7 @@ const startTimer = () => timer = setInterval(() => {
     if (!player.hintUsed) {
       if (player.hintThreshold === 0) calcHintThreshhold();
       handleHint();
-    } else if (player.hintUsed && !player.secondHintUsed && player.currentTime < 16) {
+    } else if (player.hintUsed && !player.secondHintUsed && player.currentTime < 20) {
       handleSecondHint();
     }
 
@@ -124,16 +153,16 @@ const handleSecondHint = () => {
   let w = handleWordRan(player.currentWord);
   let phLen = player.placeHolder.filter((x) => x === "");
 
-  if (phLen.length < 3) return;
+  if (phLen.length < 2) return;
 
   if (player.currentCPS > 10) {
-    if (player.currentTime === 14) {
+    if (player.currentTime === 19) {
       document.getElementById("message2").innerHTML = "Still need help?";
-    } else if (player.currentTime === 12) {
+    } else if (player.currentTime === 17) {
       document.getElementById("message2").innerHTML = "Heres another hint!";
-    } else if (player.currentTime === 10) {
+    } else if (player.currentTime === 15) {
 
-      let index = player.placeHolder.findIndex((v) => v === "");
+      let index = calcSecondHint();
 
       let hint = w.charAt(index);
 
@@ -148,6 +177,22 @@ const handleSecondHint = () => {
 
     }
   }
+}
+
+const calcSecondHint = () => {
+
+  let indexArr = [];
+
+  player.placeHolder.map((x, index) => {
+    if (x === "") {
+      indexArr.push(index);
+    }
+  })
+
+  let r = generateRandomNumber(0, indexArr.length - 1);
+
+  return indexArr[r];
+
 }
 const calcHintThreshhold = () => {
 
@@ -582,6 +627,9 @@ const handlePlayerAttempt = async () => {
       }
 
       if (guess === w) {
+        player.totalWordsCompleted++;
+        player.totalTimeSpent += ((w.length * player.currentCPS) - player.currentTime);
+        player.totalCharCount += w.length;
         clearInterval(timer);
         displayMessage("Success! You guessed the word");
         handlePoints();
@@ -590,8 +638,11 @@ const handlePlayerAttempt = async () => {
         player.currentChallenge.wordCompleted = true;
         addCorrectWord(w);
         player.wordsCompleted.push(w);
+        updatePlayer();
         if (player.currentChallenge.challengeI === player.currentChallenge.totalWords - 1) {
           player.currentChallenge.challengeCompleted = true;
+          player.totalChallenegesCompleted++;
+          updatePlayer();
           gameOver("You have completed the challenge!!!")
         } else {
           document.getElementById("message2").innerHTML = "";
@@ -799,12 +850,58 @@ const intermission = () => {
 
 }
 
+const setNewPlayer = () => {
+  let obj = {
+    totalPoints: 0,
+    totalTimeSpent: 0,
+    totalChallenegesCompleted: 0,
+    totalWordsCompleted: 0,
+    totalCharCount: 0
+  };
+
+  setCookie("player", JSON.stringify(obj), 100);
+}
+
+const updatePlayer = () => {
+
+  let data = getCookie("player");
+
+  if (data != "") {
+    let obj = {
+      totalPoints: player.totalPoints,
+      totalTimeSpent: player.totalTimeSpent,
+      totalChallenegesCompleted: player.totalChallenegesCompleted,
+      totalWordsCompleted: player.totalWordsCompleted,
+      totalCharCount: player.totalCharCount
+    }
+    setCookie("player", JSON.stringify(obj), 100);
+  }
+
+}
+
+const checkPlayer = () => {
+  let data = getCookie("player");
+
+  if (data != "") {
+    let user = JSON.parse(data);
+    player.totalPoints = parseInt(user.totalPoints);
+    player.totalTimeSpent = parseInt(user.totalTimeSpent);
+    player.totalChallenegesCompleted = parseInt(user.totalChallenegesCompleted);
+    player.totalWordsCompleted = parseInt(user.totalWordsCompleted);
+    player.totalCharCount = parseInt(user.totalCharCount);
+  } else {
+    setNewPlayer();
+  }
+
+}
+
 const playRound = () => {
 
   //clearInterval(timer);
   document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
+  console.log(newWord);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
@@ -854,8 +951,9 @@ const continueGame = () => {
 const play = () => {
 
   determineSPC();
-
+  checkPlayer();
   document.getElementById("flipGameInner").classList.add("flip-game");
+  document.getElementById("score").innerHTML = "" + player.totalPoints;
   // if (player.challengesCompleted.length === 100) {
   //   constructChallenge("word");
   // } else {
