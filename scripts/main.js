@@ -125,7 +125,7 @@ const calcSecondHint = () => {
     if (player.currentTime === 14) {
       document.getElementById("message2").innerHTML = "Still need help?";
     } else if (player.currentTime === 12) {
-      document.getElementById("message2").innerHTML = "Heres it in a sentence?";
+      document.getElementById("message2").innerHTML = "Heres another hint!";
     } else if (player.currentTime === 10) {
 
       let index = player.placeHolder.findIndex((v) => v === "");
