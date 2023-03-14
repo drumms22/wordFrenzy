@@ -901,7 +901,6 @@ const playRound = () => {
   document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
-  console.log(newWord);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
