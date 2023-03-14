@@ -538,7 +538,7 @@ const handlePlayerAttempt = async () => {
           if (guess[i] === w[i]) {
             updateWordDisplay(i, guess[i]);
             // document.getElementById("letter" + (i + 1)).innerHTML = guess[i];
-            document.getElementById("letter" + (i + 1)).style.backgroundColor = "blue";
+            document.getElementById("letter" + (i + 1)).style.backgroundColor = "#33cc33";
             document.getElementById("letter" + (i + 1)).disabled = true;
             player.placeHolder[i] = guess[i];
             correctMess += correctMess.length === 0 ? guess[i] : ", " + guess[i];
