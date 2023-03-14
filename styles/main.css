@@ -89,9 +89,17 @@ button:hover {
   display: flex;
   flex-direction: column;
   align-items: center;
-  height: 250px;
+  height: 400px;
   justify-content: center;
   border-bottom: 1px solid Black;
+}
+#prevWordsWrapper {
+  width: 100%;
+  flex-direction: column;
+  display: flex;
+  align-items: center;
+  height: 100px;
+  justify-content: center;
 }
 #words {
   width: 50%;
@@ -99,6 +107,23 @@ button:hover {
   flex-direction: row;
   justify-content: center;
   margin-right: 3%;
+}
+.wordsBox {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 75px;
+}
+#wordsPrev {
+  width: 50%;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-right: 3%;
+  height: 10px;
+  border-bottom: 1px solid white;
 }
 #startMenu {
   width: 100%;
@@ -167,6 +192,22 @@ button:hover {
   border: 1px solid black;
 }
 
+.letterBoxPrev {
+  height: 50px;
+  width: 40px;
+  background-color: #eeeeee;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 22px;
+  color: black;
+  border: 1px solid black;
+}
+
+.letterBox::placeholder {
+  color: #d5d5d5;
+}
+
 #guessHistory {
   width: 100%;
   display: flex;
@@ -187,11 +228,31 @@ button:hover {
   width: 10%;
   position: absolute;
   top: 25%;
-  left: 2%;
+  left: 5%;
   display: flex;
   flex-direction: column;
   align-items: flex-start;
   z-index: 999;
+}
+#prevGuessesBox {
+  width: 10%;
+  position: absolute;
+  top: 25%;
+  right: 5%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 999;
+}
+#prevWords {
+  height: 175px;
+  width: 50%;
+}
+#prevWords li {
+  text-align: left;
+  color: #ffffff;
+  padding-top: 2px;
+  padding-bottom: 2px;
 }
 #correctWords {
   width: 100%;

@@ -6,7 +6,9 @@ let playerModel = {
     wordCompleted: false,
     challengeCompleted: false,
     totalPoints: 0,
-    totalWords: 3
+    totalWords: 3,
+    prevGuess: "",
+    prevGuesses: []
   },
   challengesCompleted: [],
   currentCPS: 20,
@@ -205,6 +207,7 @@ const createPH = () => {
     input.onfocus = focusedInput;
     input.maxLength = 1;
     input.autocomplete = "off";
+    input.placeholder = "";
     // input.disabled = i === 0 ? false : true;
     document.getElementById("words").appendChild(input);
   }
@@ -416,15 +419,65 @@ const getInputs = () => {
   return str;
 }
 
+// const handleInputBG = (allowed = true) => {
+
+//   let lettersOOP = "";
+
+//   for (let i = 0; i < player.placeHolder.length; i++) {
+//     if (allowed && player.currentChallenge.wordCompleted || player.placeHolder[i] === "") {
+//       let w = handleWordRan(player.currentWord);
+//       let splitW = w.split("");
+//       let wCount = splitW.filter((x) => x === player.currentChallenge.prevGuess.charAt(i));
+//       let lSplit = lettersOOP.split("");
+//       let lCount = lSplit.filter((x) => x === player.currentChallenge.prevGuess.charAt(i));
+
+//       if (lCount < wCount) {
+//         document.getElementById("letter" + (i + 1)).placeholder = player.currentChallenge.prevGuess.charAt(i);
+//         document.getElementById("letter" + (i + 1)).style.backgroundColor = "#926b00"
+//         document.getElementById("letter" + (i + 1)).value = "";
+//         lettersOOP += player.currentChallenge.prevGuess.charAt(i);
+//         console.log(player.currentChallenge.prevGuess.charAt(i));
+//       } else {
+//         document.getElementById("letter" + (i + 1)).value = "";
+//         document.getElementById("letter" + (i + 1)).placeholder = player.currentChallenge.prevGuess.charAt(i);
+//         document.getElementById("letter" + (i + 1)).style.backgroundColor = "#f0f8ff"
+//       }
+//     } else {
+//       document.getElementById("letter" + (i + 1)).style.backgroundColor = "#f0f8ff"
+//       document.getElementById("letter" + (i + 1)).value = "";
+//     }
+//   }
+// }
+
 const clearInputs = () => {
 
   for (let i = 0; i < player.placeHolder.length; i++) {
     if (player.currentChallenge.wordCompleted || player.placeHolder[i] === "") {
-      document.getElementById("letter" + (i + 1)).value = "";
       document.getElementById("letter" + (i + 1)).style.backgroundColor = "#f0f8ff"
+      document.getElementById("letter" + (i + 1)).value = "";
     }
   }
 }
+
+const updatePrevGuesses = () => {
+
+  let prev = player.currentChallenge.prevGuesses.filter((x) => x === player.currentChallenge.prevGuess);
+
+  console.log(prev);
+
+  if (prev.length > 0) return;
+
+  player.currentChallenge.prevGuesses.push(player.currentChallenge.prevGuess);
+
+  document.getElementById("prevWords").innerHTML += "<li>" + player.currentChallenge.prevGuess + "</li>";
+
+  if (player.currentChallenge.prevGuesses.length > 5) {
+    document.getElementById("prevWords").style.overflow = "scroll";
+  }
+
+}
+
+//updatePrevGuesses();
 
 const handlePoints = () => {
   player.totalPoints += player.wordLen;
@@ -432,6 +485,7 @@ const handlePoints = () => {
 }
 
 const isWord = (guess) => RiTa.hasWord(guess);
+
 
 const handlePlayerAttempt = async () => {
 
@@ -442,6 +496,8 @@ const handlePlayerAttempt = async () => {
 
 
   if (guess.length != player.wordLen) return;
+
+  player.currentChallenge.prevGuess = guess;
 
   fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + guess, {
     method: 'GET', // or 'PUT' // data can be `string` or {object}!
@@ -490,11 +546,6 @@ const handlePlayerAttempt = async () => {
               outCorrectMess += outCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
             }
           } else {
-            // if (guessedCorrect.length > 0 && guessedCorrect.length < letterAmount.length) {
-            //   console.log("theres 1 correct but one more");
-            // }else{
-
-            // }
             outOfPlaceLetters += guess[i];
             outCorrectMess += outCorrectMess.length === 0 ? guess[i] : ", " + guess[i];
           }
@@ -552,7 +603,7 @@ const handlePlayerAttempt = async () => {
 
       } else {
         displayMessage(newMessage);
-
+        updatePrevGuesses();
         clearInputs();
         let num = player.placeHolder.findIndex((x) => x === "");
         player.currentChallenge.wordsI = num;
@@ -582,7 +633,7 @@ const handlePlayerAttempt = async () => {
   //   return;
   // }
 
-  //document.getElementById("message").innerHTML = message;
+  // document.getElementById("message").innerHTML = message;
 
 }
 
@@ -709,7 +760,7 @@ const resetPlayer = () => {
 
 
 const gameOver = (message) => {
-  clearInputs();
+  handleInputBG();
   resetPlayer();
   document.getElementById("words").innerHTML = "<li><p>Please Refresh the browser to play another challenge</p></li>";
   displayMessage(message)
@@ -726,7 +777,8 @@ const intermission = () => {
 
   let count = 5;
 
-
+  document.getElementById("prevWords").innerHTML = "";
+  document.getElementById("prevWords").style.overflow = "none";
   timer = setInterval(() => {
 
     if (count > 0) {
@@ -754,6 +806,8 @@ const playRound = () => {
   player.wordLen = newWord.length;
   player.currentWord = h;
   player.currentChallenge.wordsI = 0;
+  player.currentChallenge.prevGuess = "";
+  player.currentChallenge.prevGuesses = [];
   player.hintUsed = false;
   player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
