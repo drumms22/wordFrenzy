@@ -20,6 +20,7 @@ let playerModel = {
   wordsCompleted: [],
   wordLen: 0,
   hintUsed: false,
+  secondHintUsed: false,
   hintThreshold: 0,
   totalPoints: 0,
 }
@@ -70,11 +71,11 @@ const startTimer = () => timer = setInterval(() => {
     let extraZero = player.currentTime < 10 ? "0" : "";
     updateTimerDsiplay("" + extraZero + player.currentTime);
     player.currentTime--;
-    calcSecondHint()
     if (!player.hintUsed) {
       if (player.hintThreshold === 0) calcHintThreshhold();
       handleHint();
-      calcSecondHint()
+    } else if (player.hintUsed && !player.secondHintUsed && player.currentTime < 16) {
+      handleSecondHint();
     }
 
   } else {
@@ -119,9 +120,13 @@ const handleHint = () => {
 }
 
 
-const calcSecondHint = () => {
+const handleSecondHint = () => {
   let w = handleWordRan(player.currentWord);
-  if (w.length > 4 && player.currentCPS > 10) {
+  let phLen = player.placeHolder.filter((x) => x === "");
+
+  if (phLen.length < 3) return;
+
+  if (player.currentCPS > 10) {
     if (player.currentTime === 14) {
       document.getElementById("message2").innerHTML = "Still need help?";
     } else if (player.currentTime === 12) {
@@ -139,6 +144,7 @@ const calcSecondHint = () => {
       if (index === 2) numberText += "rd";
       if (index > 2) numberText += "th";
       document.getElementById("message2").innerHTML = "<span style='font-size: " + fs + "'>" + "The " + numberText + " letter is: " + hint + "</span>";
+      player.secondHintUsed = true;
 
     }
   }
@@ -463,8 +469,6 @@ const updatePrevGuesses = () => {
 
   let prev = player.currentChallenge.prevGuesses.filter((x) => x === player.currentChallenge.prevGuess);
 
-  console.log(prev);
-
   if (prev.length > 0) return;
 
   player.currentChallenge.prevGuesses.push(player.currentChallenge.prevGuess);
@@ -497,7 +501,7 @@ const handlePlayerAttempt = async () => {
 
   if (guess.length != player.wordLen) return;
 
-  player.currentChallenge.prevGuess = guess;
+  player.currentChallenge.prevGuess = guess.toLowerCase();
 
   fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + guess, {
     method: 'GET', // or 'PUT' // data can be `string` or {object}!
@@ -506,7 +510,7 @@ const handlePlayerAttempt = async () => {
     }
   }).then(res => res.json())
     .then(response => {
-      if (response.hasOwnProperty("resolution")) {
+      if (response.hasOwnProperty("resolution") && !isWord(guess)) {
         displayMessage(guess + " is not a word!!!");
         clearInputs();
         let num = player.placeHolder.findIndex((x) => x === "");
@@ -808,6 +812,7 @@ const playRound = () => {
   player.currentChallenge.prevGuess = "";
   player.currentChallenge.prevGuesses = [];
   player.hintUsed = false;
+  player.secondHintUsed = false;
   player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;

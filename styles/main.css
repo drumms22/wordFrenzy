@@ -11,6 +11,7 @@ body {
   padding: 0;
   margin: 0;
   padding-bottom: 150px;
+  font-family: "Rampart One", cursive;
 }
 ul {
   list-style: none;
@@ -81,6 +82,8 @@ button:hover {
   border-bottom: 1px solid Black;
   background-color: rgb(23, 23, 23);
   height: 125px;
+  border: 1px solid #9b3434;
+  border-radius: 10px 10px 10px 10px;
 }
 .messageBox {
   height: 50%;
@@ -100,7 +103,7 @@ button:hover {
   align-items: center;
   height: 400px;
   justify-content: center;
-  border-bottom: 1px solid Black;
+  border-bottom: 1px solid #9b3434;
 }
 #prevWordsWrapper {
   width: 100%;
@@ -163,10 +166,12 @@ button:hover {
   margin-left: 25%;
   flex-direction: column;
   align-items: center;
-  border: 2px solid black;
+  border: 1px solid #9b3434;
   padding: 10px;
   background-color: #212324;
   color: #f0f8ff;
+  border-radius: 10px 10px 10px 10px;
+  margin-top: 1.5%;
 }
 #guessContainer {
   width: 100%;
@@ -181,6 +186,14 @@ button:hover {
   width: 10%;
   height: 50px;
   display: none;
+  background-color: #9b3434;
+  color: #ffffff;
+}
+
+#guess:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
 }
 #guessIncorrect {
   height: 50px;
