@@ -1,6 +1,11 @@
 body {
   width: 100%;
-  background-color: #f4dc9a;
+  background: rgb(6, 6, 6);
+  background: linear-gradient(
+    180deg,
+    rgba(6, 6, 6, 1) 68%,
+    rgba(125, 59, 59, 1) 100%
+  );
   color: #212324;
   text-shadow: 0 0 1px rgb(255, 255, 255);
   padding: 0;
@@ -44,11 +49,15 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  background-color: #212324;
 }
 #title {
   font-size: 45px;
   color: #f0f8ff;
+  font-family: "Rampart One", cursive;
+  background-color: #e51300;
+  text-shadow: 2px 3px 0 black;
+  padding: 15px;
+  border-radius: 40px 40px 40px 40px;
 }
 #header {
   width: 100%;
@@ -141,7 +150,8 @@ button:hover {
   background-color: rgb(255, 255, 255);
   color: black;
   text-shadow: none;
-  border: 2px solid black;
+  border: 2px solid #9b3434;
+  border-radius: 10px 10px 10px 10px;
 }
 #HTPTitle {
   text-decoration: underline;
@@ -179,9 +189,17 @@ button:hover {
   height: 50px;
 }
 #startGame {
-  width: 7%;
+  width: 14%;
   margin-top: 1%;
   height: 50px;
+  background-color: #9b3434;
+  color: #ffffff;
+}
+
+#startGame:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
 }
 
 .letterBox {
@@ -261,14 +279,20 @@ button:hover {
   align-items: flex-start;
 }
 #startGameBtnWrapper {
-  width: 100%;
+  width: 50%;
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 3%;
+  background-color: rgb(255, 255, 255);
+  padding-top: 15px;
+  padding-bottom: 15px;
+  text-shadow: none;
+  border: 2px solid #9b3434;
+  border-radius: 10px 10px 10px 10px;
 }
 #SPCInput {
-  width: 5%;
+  width: 10%;
   height: 20px;
   font-size: 16px;
 }
