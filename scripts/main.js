@@ -48,7 +48,7 @@ const loadData = () => {
   if (data != "") {
     let user = JSON.parse(data);
     document.getElementById("totalPoints").innerHTML = user.totalPoints;
-    document.getElementById("totalTime").innerHTML = user.totalTimeSpent;
+    document.getElementById("totalTime").innerHTML = user.totalTimeSpent + "s";
     document.getElementById("totalWords").innerHTML = user.totalWordsCompleted;
     document.getElementById("totalChallenges").innerHTML = user.totalChallenegesCompleted;
     let currentCPS = (parseInt(user.totalTimeSpent) / parseInt(user.totalCharCount));
