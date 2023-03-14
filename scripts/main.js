@@ -471,8 +471,8 @@ const updatePrevGuesses = () => {
 
   document.getElementById("prevWords").innerHTML += "<li>" + player.currentChallenge.prevGuess + "</li>";
 
-  if (player.currentChallenge.prevGuesses.length > 5) {
-    document.getElementById("prevWords").style.overflow = "scroll";
+  if (player.currentChallenge.prevGuesses.length > 7) {
+    document.getElementById("prevWords").style.overflowY = "scroll";
   }
 
 }
@@ -777,7 +777,7 @@ const intermission = () => {
   let count = 5;
 
   document.getElementById("prevWords").innerHTML = "";
-  document.getElementById("prevWords").style.overflow = "none";
+  document.getElementById("prevWords").style.overflowY = "hidden";
   timer = setInterval(() => {
 
     if (count > 0) {
