@@ -10,7 +10,6 @@ body {
   text-shadow: 0 0 1px rgb(255, 255, 255);
   padding: 0;
   margin: 0;
-  padding-bottom: 150px;
   font-family: "Rampart One", cursive;
 }
 ul {
@@ -43,6 +42,7 @@ button:hover {
 }
 #container {
   width: 100%;
+  height: 100%;
 }
 #titleWrapper {
   position: relative;
@@ -88,7 +88,6 @@ button:hover {
   width: 100%;
   display: flex;
   flex-direction: row;
-  border-bottom: 1px solid Black;
 }
 .scoreTimeBox {
   width: 50%;
@@ -103,7 +102,6 @@ button:hover {
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  border-bottom: 1px solid Black;
   background-color: rgb(23, 23, 23);
   height: 125px;
   border: 1px solid #9b3434;

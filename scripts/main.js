@@ -223,7 +223,7 @@ const timesUp = () => {
 }
 
 const updateTimerDsiplay = (sec, min = 0) => {
-  document.getElementById("time").innerHTML = "" + sec;
+  document.getElementById("time").innerHTML = "" + sec + "s";
 }
 
 const displayGame = () => {
@@ -642,6 +642,8 @@ const handlePlayerAttempt = async () => {
         if (player.currentChallenge.challengeI === player.currentChallenge.totalWords - 1) {
           player.currentChallenge.challengeCompleted = true;
           player.totalChallenegesCompleted++;
+          player.totalPoints += 15;
+          document.getElementById("score").innerHTML = "" + player.totalPoints;
           updatePlayer();
           gameOver("You have completed the challenge!!!")
         } else {
@@ -901,6 +903,7 @@ const playRound = () => {
   document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
   let newWord = getWord(num, num);
+  console.log(newWord);
   let h = handleRamNum(newWord);
   player.wordLen = newWord.length;
   player.currentWord = h;
