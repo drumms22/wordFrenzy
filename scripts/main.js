@@ -126,7 +126,7 @@ const calcPos = () => {
 let hintType = "";
 const handleHint = () => {
 
-  if (player.currentTime === 73 - 2) {
+  if (player.currentTime === player.hintThreshold - 2) {
     let pos = calcPos();
 
     fetch(`https://salmon-barnacle-shoe.cyclic.app/words/hint?word=${player.currentWord}&p=${pos}&type=${hintType}`, {
@@ -159,7 +159,7 @@ const handleHint = () => {
 
       })
 
-  } else if (player.currentTime === 73) {
+  } else if (player.currentTime === player.hintThreshold) {
     let m = "Heres ";
     if (hintType === "definition") {
       m += "the definition";
@@ -167,7 +167,7 @@ const handleHint = () => {
       m += "a synonym(s)";
     }
     document.getElementById("message2").innerHTML = m;
-  } else if (player.currentTime === 73 + 3) {
+  } else if (player.currentTime === player.hintThreshold + 3) {
     document.getElementById("message2").innerHTML = "Looks like you need help";
     let r = generateRandomNumber(0, 1);
     const hintTypes = ["definition", "synonym"];
