@@ -29,6 +29,7 @@ let playerModel = {
   totalCharCount: 0
 }
 
+
 let dataLoaded = false;
 
 let jokeCounter = 1;
@@ -41,7 +42,7 @@ let timer = null;
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
 
-const getWord = (min = 4, max = 4) => RiTa.randomWord({ minLength: min, maxLength: max });
+// const getWord = (min = 4, max = 4) => RiTa.randomWord({ minLength: min, maxLength: max });
 
 const loadData = () => {
   let data = getCookie("player");
@@ -116,19 +117,34 @@ const startTimer = () => timer = setInterval(() => {
 
 }, 1000);
 
+const calcPos = () => {
+  let gen1 = Math.floor(Math.random() * 100) + 100;
+  let gen2 = Math.floor(Math.random() * 1000000) + 1000000;
+  let num = 4 + player.currentChallenge.challengeI;
+  return "" + gen1 + "" + num + "" + gen2;
+}
+let hintType = "";
 const handleHint = () => {
-  if (player.currentTime === player.hintThreshold - 2) {
-    let w = handleWordRan(player.currentWord);
 
-    fetch("https://api.dictionaryapi.dev/api/v2/entries/en/" + w, {
+  if (player.currentTime === 73 - 2) {
+    let pos = calcPos();
+
+    fetch(`https://salmon-barnacle-shoe.cyclic.app/words/hint?word=${player.currentWord}&p=${pos}&type=${hintType}`, {
       method: 'GET', // or 'PUT' // data can be `string` or {object}!
       headers: {
         'Content-Type': 'application/json'
       }
     }).then(res => res.json())
       .then(response => {
-        if (!response.resolution) {
-          let meaning = response[0].meanings[0].definitions[0].definition;
+
+        if (!response.error) {
+          let meaning = "";
+
+          if (hintType === "synonym") {
+            meaning = response.data.length > 3 ? response.data.slice(0, 3).join(", ") : response.data.join(", ");
+          } else {
+            meaning = response.data[0];
+          }
           let fs = "16px";
 
           if (meaning.length > 35) {
@@ -143,10 +159,19 @@ const handleHint = () => {
 
       })
 
-  } else if (player.currentTime === player.hintThreshold) {
-    document.getElementById("message2").innerHTML = "Heres the definition";
-  } else if (player.currentTime === player.hintThreshold + 3) {
+  } else if (player.currentTime === 73) {
+    let m = "Heres ";
+    if (hintType === "definition") {
+      m += "the definition";
+    } else {
+      m += "a synonym(s)";
+    }
+    document.getElementById("message2").innerHTML = m;
+  } else if (player.currentTime === 73 + 3) {
     document.getElementById("message2").innerHTML = "Looks like you need help";
+    let r = generateRandomNumber(0, 1);
+    const hintTypes = ["definition", "synonym"];
+    hintType = hintTypes[r];
   }
 }
 
@@ -899,32 +924,56 @@ const checkPlayer = () => {
 
 }
 
-const playRound = () => {
+const playRound = async () => {
 
   //clearInterval(timer);
   document.getElementById("continueGame").style.display = "none";
   let num = 4 + player.currentChallenge.challengeI;
-  let newWord = getWord(num, num);
+  // let newWord = getWord(num, num);
+  let res = await getWord(num);
+  let h = res.data[0];
+  const start = () => {
+    player.wordLen = num;
+    player.currentWord = h;
+    player.currentChallenge.wordsI = 0;
+    player.currentChallenge.prevGuess = "";
+    player.currentChallenge.prevGuesses = [];
+    player.hintUsed = false;
+    player.secondHintUsed = false;
+    player.currentTime = num * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
+    player.challengeStarted = true;
+    player.currentChallenge.wordCompleted = false;
+    document.getElementById("message2").innerHTML = "";
+    createPH();
+    timerFunc(() => {
+      document.getElementById("letter1").focus();
+      startTimer();
+      displayMessage("Time has started!");
+      document.getElementById("guess").style.display = "block";
+    }, 10);
+  }
 
-  let h = handleRamNum(newWord);
-  player.wordLen = newWord.length;
-  player.currentWord = h;
-  player.currentChallenge.wordsI = 0;
-  player.currentChallenge.prevGuess = "";
-  player.currentChallenge.prevGuesses = [];
-  player.hintUsed = false;
-  player.secondHintUsed = false;
-  player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
-  player.challengeStarted = true;
-  player.currentChallenge.wordCompleted = false;
-  document.getElementById("message2").innerHTML = "";
-  createPH();
-  timerFunc(() => {
-    document.getElementById("letter1").focus();
-    startTimer();
-    displayMessage("Time has started!");
-    document.getElementById("guess").style.display = "block";
-  }, 10);
+  await start();
+  // console.log(newWord);
+  //let h = handleRamNum(newWord);
+  // player.wordLen = newWord.length;
+  // player.currentWord = h;
+  // player.currentChallenge.wordsI = 0;
+  // player.currentChallenge.prevGuess = "";
+  // player.currentChallenge.prevGuesses = [];
+  // player.hintUsed = false;
+  // player.secondHintUsed = false;
+  // player.currentTime = newWord.length * player.currentCPS;//player.currentChallenge.type === "challenge" ? newWord.length * player.currentCPS : 0;
+  // player.challengeStarted = true;
+  // player.currentChallenge.wordCompleted = false;
+  // document.getElementById("message2").innerHTML = "";
+  // createPH();
+  // timerFunc(() => {
+  //   document.getElementById("letter1").focus();
+  //   startTimer();
+  //   displayMessage("Time has started!");
+  //   document.getElementById("guess").style.display = "block";
+  // }, 10);
 }
 
 const determineSPC = () => {
@@ -952,7 +1001,7 @@ const continueGame = () => {
   startChallenge()
 }
 
-const play = () => {
+const play = async () => {
 
   determineSPC();
   checkPlayer();
@@ -1008,7 +1057,13 @@ window.addEventListener("keydown", (e) => {
   }
 
 })
-
+const getWord = async (num) => {
+  let pos = await calcPos();
+  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`)
+  //use string literals
+  let dataJson = await data.json();
+  return dataJson;
+}
 
 const getData = (guess, success, failed) => {
   let xhttp = new XMLHttpRequest();
