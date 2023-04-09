@@ -62,9 +62,9 @@ let soundPlaying = false;
 let musicOn = true;
 let lastIndex = -1;
 const sounds = [
-  new Howl({ src: ['../assets/audio/bkg1.mp3'], volume: .02, }),
-  new Howl({ src: ['../assets/audio/bkg2.mp3'], volume: .02, }),
-  new Howl({ src: ['../assets/audio/bkg3.mp3'], volume: .02, })
+  new Howl({ src: ['assets/audio/bkg1.mp3'], volume: .02, }),
+  new Howl({ src: ['assets/audio/bkg2.mp3'], volume: .02, }),
+  new Howl({ src: ['assets/audio/bkg3.mp3'], volume: .02, })
 ];
 const playBKMusic = () => {
 
