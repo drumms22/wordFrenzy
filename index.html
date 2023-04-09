@@ -13,6 +13,7 @@
       rel="stylesheet"
     />
     <title>Word Frenzy</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
   </head>
   <body>
     <div id="container">
@@ -35,62 +36,68 @@
                     <p id="totalWords">0</p>
                   </div>
                   <div class="statsBox">
-                    <h4 style="text-decoration: underline">Total Chall</h4>
+                    <h4 style="text-decoration: underline">Total Fenzy's</h4>
                     <p id="totalChallenges">0</p>
                   </div>
                   <div class="statsBox">
-                    <h4 style="text-decoration: underline">Current CPS</h4>
+                    <h4 style="text-decoration: underline">Current Sp/d</h4>
                     <p id="currentCPS">0</p>
                   </div>
                 </div>
                 <h1 id="title">Word Frenzy</h1>
+                <button onclick="showHtp()" id="htpBtn">How to Play</button>
               </div>
-              <div id="howToPlayContent">
-                <h1 id="HTPTitle">How to play</h1>
-                <p>You will be attempting a Frenzy Challenge</p>
-                <p>
-                  You get 3 words starting from 4 characters to 6 characters in
-                  length
-                </p>
-                <p>
-                  Time is based off of "seconds per character (spc)": sweeps is
-                  20spc * 5char = 100 seconds
-                </p>
-                <p>
-                  Time will start counting down, in which you will have
-                  unlimited guesses
-                </p>
-                <p>
-                  You will progress through the words in ascending order
-                  shortest to longest
-                </p>
-                <p>
-                  You need to guess each word correctly, if the timer gets to
-                  00, you will fail
-                </p>
-                <p>
-                  Successful completion of the challenge rewards an extra 15
-                  points
-                </p>
-                <p
-                  style="
-                    font-weight: 900;
-                    color: rgb(246, 172, 0);
-                    font-size: 20px;
-                    text-decoration: underline;
-                  "
-                >
-                  **Please remember, this is for TESTING, not what will be in
-                  the final product!
-                </p>
+              <div class="largeBox" id="categoriesWrapper">
+                <h2>Frenzy's</h2>
+                <div id="categoriesContent"></div>
               </div>
               <div id="startGameBtnWrapper">
-                <h3 id="SPCTitle">Seconds Per Character (SPC)</h3>
-                <p>*Default is 20spc | Max is 50spc</p>
-                <input type="number" id="SPCInput" placeholder="20" />
-                <button onclick="play()" id="startGame">Start Game</button>
+                <h3 id="SPCTitle">Select Difficulty</h3>
+                <div id="diffSelWrapper">
+                  <div class="diffRadItem">
+                    <h4>Easy</h4>
+                    <input
+                      type="radio"
+                      onchange="handleDiff(0)"
+                      name="diffRadio"
+                      id="diff10"
+                    />
+                  </div>
+                  <div class="diffRadItem">
+                    <h4>Normal</h4>
+                    <input
+                      type="radio"
+                      onchange="handleDiff(1)"
+                      name="diffRadio"
+                      checked
+                      id="diff11"
+                    />
+                  </div>
+                  <div class="diffRadItem">
+                    <h4>Hard</h4>
+                    <input
+                      type="radio"
+                      onchange="handleDiff(2)"
+                      name="diffRadio"
+                      id="diff12"
+                    />
+                  </div>
+                  <div class="diffRadItem">
+                    <h4>Frenzy</h4>
+                    <input
+                      type="radio"
+                      onchange="handleDiff(3)"
+                      name="diffRadio"
+                      id="diff13"
+                    />
+                  </div>
+                </div>
+                <button onclick="play()" id="startGame">Play Frenzy</button>
               </div>
             </div>
+            <button id="openGDBtn" onclick="openGameData()">
+              Get Game Data
+            </button>
           </div>
           <div class="flip-card-back">
             <div id="gameContent">
@@ -101,6 +108,9 @@
               <div id="header">
                 <div class="scoreTimeBox">
                   <p>Score: <span id="score">0</span></p>
+                </div>
+                <div class="scoreTimeBox">
+                  <h3 id="categorySelectedTxt"></h3>
                 </div>
                 <div class="scoreTimeBox">
                   <p>Time: <span id="time">00</span></p>
@@ -115,7 +125,7 @@
                 </div>
               </div>
               <div id="wordsWrapper">
-                <div class="wordsBox"><ul id="words"></ul></div>
+                <div class="wordsBox"><div id="words"></div></div>
               </div>
 
               <div id="prevGuessesBox">
@@ -134,7 +144,7 @@
               <div id="guessHistory">
                 <div class="guessHistoryContentBox">
                   <h4 style="text-decoration: underline">Incorrect</h4>
-                  <p id="guessIncorrect"></p>
+                  <p class="incorrect" id="guessIncorrect"></p>
                 </div>
                 <div class="guessHistoryContentBox">
                   <h4 style="text-decoration: underline">OutOfPlace</h4>
@@ -145,9 +155,80 @@
           </div>
         </div>
       </div>
+      <div id="howToPlayContentWrapper">
+        <div class="htpContent">
+          <h1 id="HTPTitle">How to play</h1>
+          <p>
+            Select a <span style="font-weight: bolder">Frenzy</span> you would
+            like to
+            <span style="font-weight: bolder">play</span>
+          </p>
+
+          <p>
+            Select your difficulty, Higher difficulties provide extra points
+          </p>
+          <p>
+            After clicking "Play Frenzy", Time will start counting down, in
+            which you will have unlimited guesses
+          </p>
+          <p>
+            Each round is weighted to start with an easier word and gradually
+            increase in difficulty
+          </p>
+          <p>
+            You need to guess each word(s) correctly, if the timer reaches 00,
+            you will fail
+          </p>
+          <p>
+            Hints are given as time progresses depending on the amount of time
+            you're given
+          </p>
+
+          <p>
+            <!-- <p
+            style="
+              font-weight: 900;
+              color: rgb(246, 172, 0);
+              font-size: 20px;
+              text-decoration: underline;
+            "
+          >
+            **Please remember, this is for TESTING, not what will be in the
+            final product!
+          </p> -->
+          </p>
+        </div>
+
+        <button onclick="hideHtp()" id="htpBtnClose">Close</button>
+      </div>
+      <div id="getMyDataWrapper">
+        <div class="htpContent">
+          <h1 id="HTPTitle">Get My Game</h1>
+          <div id="myDataDiv">
+            <h3 id="">Enter game code</h3>
+            <input type="text" id="gameCode" />
+            <button id="getGameDataBtn" onclick="getGameData()">Load</button>
+            <p id="">Need a game code?</p>
+            <button id="clickHere" onclick="getNewGameCode()">Get Code</button>
+          </div>
+          <h2 id="newCode"></h2>
+          <div id="newCodeMessage">
+            <p class="newCodeMessageFont">
+              Copy and safely store this code on your computer or a secure place
+            </p>
+            <p class="newCodeMessageFont">
+              If you lose this code, you will lose your game data!
+            </p>
+          </div>
+        </div>
+
+        <button onclick="closeGameData()" id="htpBtnClose">Close</button>
+      </div>
+      <div id="musicBtnDiv"></div>
     </div>
   </body>
 
   <script src="./scripts/storage.js"></script>
   <script src="./scripts/main.js"></script>
+  <script src="./scripts/modeHandler.js"></script>
 </html>
