@@ -832,8 +832,7 @@ button:hover {
   align-items: center;
   border-bottom: 1px solid #000;
 }
-.lobbyPlayerBox:first-child {
-}
+
 .lobbyPlayerBoxHeader {
   width: 50%;
   display: flex;

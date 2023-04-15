@@ -1,5 +1,5 @@
 // client-side JavaScript code
-let socket = io("http://localhost:3000/", { transports: ['websocket', 'polling', 'flashsocket'] });
+let socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'] });
 let lobbySettings = {
   catSel: "wordsLobbyItem",
   diffSel: 1,
