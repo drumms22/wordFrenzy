@@ -1,5 +1,5 @@
 // client-side JavaScript code
-let socket = io(url, { transports: ['websocket', 'polling', 'flashsocket'] });
+let socket = io(url, { transports: ['websocket', 'polling'] });
 let lobbySettings = {
   catSel: "wordsLobbyItem",
   diffSel: 1,
@@ -14,9 +14,6 @@ let hintsRemaining = 2;
 
 function connect() {
 
-  socket.on('connect', () => {
-    console.log('Connected to the server!');
-  });
 
   let prevLobby = getCookie("lobbyCode");
   let playerId = getCookie("gameCode");
@@ -30,6 +27,10 @@ function connect() {
 
 
 }
+
+socket.on('connect', () => {
+  console.log('Connected to the server!');
+});
 
 function startHTH() {
   let prevLobby = getCookie("lobbyCode");

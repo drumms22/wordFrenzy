@@ -1431,20 +1431,20 @@ const getHint = async (payload) => {
 
 
 const handleCategorySel = (id) => {
-  setCookie("selCat", id, 100);
-  let catArr = document.getElementsByClassName("categoriesItem");
+  // setCookie("selCat", id, 100);
+  // let catArr = document.getElementsByClassName("categoriesItem");
 
 
 
-  for (let i = 0; i < catArr.length; i++) {
-    if (document.getElementById(catArr[i].id).classList.contains("selectedItem")) {
-      document.getElementById(catArr[i].id).classList.remove("selectedItem");
-    }
-  };
+  // for (let i = 0; i < catArr.length; i++) {
+  //   if (document.getElementById(catArr[i].id).classList.contains("selectedItem")) {
+  //     document.getElementById(catArr[i].id).classList.remove("selectedItem");
+  //   }
+  // };
 
-  selectedCategory = id;
+  // selectedCategory = id;
 
-  document.getElementById(id).classList.add("selectedItem");
+  // document.getElementById(id).classList.add("selectedItem");
 
 }
 
@@ -1458,22 +1458,22 @@ const handleDiff = (num) => {
 
 const createCategories = () => {
 
-  const categories = ["Words", "Animals", "Cars", "Cities", "Sports", "Movies"];
+  // const categories = ["Words", "Animals", "Cars", "Cities", "Sports", "Movies"];
 
-  categories.map((cat, i) => {
-    const colors = ['#181818', 'rgb(187, 84, 84)', '#2C3E50', '#9B59B6', '#F1C40F', '#1ABC9C', '#E67E22', '#3498DB', '#BDC3C7', '#2980B9'];
-    let id = getCatId(cat.toLowerCase());
-    let div = `<div class="categoriesItem" id="${id}" onclick="handleCategorySel('${id}')"><h4>${cat}</h4></div>`;
-    let c = cat.split(" ");
+  // categories.map((cat, i) => {
+  //   const colors = ['#181818', 'rgb(187, 84, 84)', '#2C3E50', '#9B59B6', '#F1C40F', '#1ABC9C', '#E67E22', '#3498DB', '#BDC3C7', '#2980B9'];
+  //   let id = getCatId(cat.toLowerCase());
+  //   let div = `<div class="categoriesItem" id="${id}" onclick="handleCategorySel('${id}')"><h4>${cat}</h4></div>`;
+  //   let c = cat.split(" ");
 
-    if (c.length > 1) {
-      let joined = c.join("");
-      id = getCatId(joined.toLowerCase());
+  //   if (c.length > 1) {
+  //     let joined = c.join("");
+  //     id = getCatId(joined.toLowerCase());
 
-      div = `<div class="categoriesItem" id="${id}" onclick="handleCategorySel('${id}')"><h4>${cat.split(" ")[0]} ${cat.split(" ")[1]}</h4></div>`;
-    }
-    document.getElementById("categoriesContent").innerHTML += div;
-  })
+  //     div = `<div class="categoriesItem" id="${id}" onclick="handleCategorySel('${id}')"><h4>${cat.split(" ")[0]} ${cat.split(" ")[1]}</h4></div>`;
+  //   }
+  //   document.getElementById("categoriesContent").innerHTML += div;
+  // })
 
 
 }
@@ -1640,6 +1640,20 @@ const getLobCatId = (cat) => {
 
   return str;
 }
+
+const getCatId = (cat) => {
+  let c = cat.split(" ");
+  let str = c;
+  if (c.length > 1) {
+    let joined = c.join("");
+    str = joined;
+  }
+
+  str += "Item";
+
+  return str;
+}
+
 const createLobbyCategories = () => {
 
   const categories = ["Words", "Animals", "Cars", "Cities", "Sports", "Movies"];
