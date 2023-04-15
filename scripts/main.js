@@ -777,8 +777,9 @@ const checkName = async (name, path, extra) => {
 }
 
 const validateGuess = async (guess, word) => {
-
-  switch (selectedCategory) {
+  let regex = /Lobby/;
+  //handleHint(hintsTrigger, selectedCategory.replace(regex, ""));
+  switch (selectedCategory.replace(regex, "")) {
     case "wordsItem":
       return await checkWordGuess(guess);
     case "animalsItem":
@@ -791,6 +792,8 @@ const validateGuess = async (guess, word) => {
       return await checkSportGuess(guess, word);
     case "moviesItem":
       return await checkMovieGuess(guess, word);
+    default:
+      return false;
   }
 
 }
