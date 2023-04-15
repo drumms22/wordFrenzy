@@ -17,13 +17,13 @@ function connect() {
 
   let prevLobby = getCookie("lobbyCode");
   let playerId = getCookie("gameCode");
-
-  if (!playerId) {
-    alert("Please create gamecode before proceeding!");
+  let username = getCookie("username");
+  if (!playerId || !username) {
+    alert("Please have an approved username to continue!");
     return;
   }
 
-  socket.emit('createLobby', { playerId, prevLobby: prevLobby ? prevLobby : "" });
+  socket.emit('createLobby', { playerId, username, prevLobby: prevLobby ? prevLobby : "" });
 
 
 }
@@ -53,11 +53,12 @@ function displayLobbyToRomm(id) {
 function joinLobby() {
   let lobbyId = document.getElementById("headToHeadCode").value;
   let playerId = getCookie("gameCode");
-  if (!playerId) {
-    alert("Please create gamecode before proceeding!");
+  let username = getCookie("username");
+  if (!playerId || !username) {
+    alert("Please have an approved username to continue!");
     return;
   }
-  socket.emit('joinLobby', { lobbyId, playerId });
+  socket.emit('joinLobby', { lobbyId, playerId, username });
 }
 
 function reJoinLobby() {
@@ -140,8 +141,8 @@ socket.on('joined', (data) => {
     document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
     creatorMess = "My Lobby";
   } else {
-    let creator = data.lobby.players.findIndex((p) => p.isCreator);
-    creatorMess = `Player ${creator + 1}'s Lobby`;
+    let creator = data.lobby.players.filter((p) => p.isCreator);
+    creatorMess = `${creator[0].username}'s Lobby`;
   }
   document.getElementById("lobbyTitle").innerHTML = creatorMess;
   if (!data.player.isCreator) document.getElementById("startHTH").style.display = "none";
@@ -294,8 +295,8 @@ socket.on("newLobby", (data) => {
       document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
       creatorMess = "My Lobby";
     } else {
-      let creator = data.lobby.players.findIndex((p) => p.isCreator);
-      creatorMess = `Player ${creator + 1}'s Lobby`;
+      let creator = data.lobby.players.filter((p) => p.isCreator);
+      creatorMess = `${creator[0].username}'s Lobby`;
       document.getElementById("startHTH").style.display = "none";
     }
     document.getElementById("lobbyTitle").innerHTML = creatorMess;
@@ -342,12 +343,12 @@ const updatePlayerDisplay = (players, gameStarted) => {
 
   let progress = !p[0].wordsGuessed ? "Waiting" : p[0].wordsGuessed.length > 2 ? 3 : p[0].wordsGuessed.length;
   let div = "";
-  div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>You</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
+  div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>${p[0].username}</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
 
   for (let i = 0; i < players.length; i++) {
     if (players[i].id.toString() !== playerId) {
       let progress = players[i].wordsGuessed.length > 2 ? 3 : players[i].wordsGuessed.length;
-      div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>Player ${(i + 1)}</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
+      div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>${players[i].username}</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
     }
   }
 

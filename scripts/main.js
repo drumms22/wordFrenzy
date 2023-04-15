@@ -949,7 +949,7 @@ const handlePlayerAttempt = async () => {
     }
     if (player.currentChallenge.outOfPlaceLetters.length > 0) {
       document.getElementById("guessOutOfPlace").style.display = "block"
-      document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
+      document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.outOfPlaceLetters.join(' | ');
     }
 
     document.getElementById("message").innerHTML = "You got " + (check.incorrectLetters.length > 0 ? check.incorrectLetters.join(', ') : "none ") + " incorrect | You got " + (check.outOfPlaceLetters.length > 0 ? check.outOfPlaceLetters.join(', ') : "none") + " out of place";
@@ -1548,10 +1548,10 @@ const getGameData = async () => {
   if (data) {
 
 
-    setCookie("gameCode", input.value);
-
+    setCookie("gameCode", data._id);
+    setCookie("username", data.username);
     input.value = "";
-    let dataStr = await JSON.stringify(data);
+    let dataStr = await data.data;
 
     closeGameData();
 
@@ -1579,25 +1579,51 @@ const getNewGameCode = async () => {
 
   let code = await getCookie("gameCode");
   let player = await getCookie("player");
+  let username = document.getElementById("username");
+  let match = /^[a-zA-Z0-9@!_$]+$/.test(username);
+  if (username.value.length < 3 || username.value.length > 10 || !match) {
+    alert("Username: min 3, max 10, can include letters, numbers, @, !, _, $");
+    return;
+  }
+
+
   let mess = "";
-  if (!code && player) {
-    let playerData = await JSON.parse(player);
-
-    if (playerData.totalWordsCompleted > 0) {
-      let res = await fetchGameData('/save', {
-        method: 'POST', body: JSON.stringify({ data: [playerData] }), headers: {
-          'Content-Type': 'application/json'
-        }
-      });
-      if (res) {
-        mess = res;
-        await setCookie("gameCode", res);
-      } else {
-        mess = "Not able to get code, please try again later!";
-      }
-
+  if (!code) {
+    let playerData = "";
+    if (player) {
+      playerData = await JSON.parse(player);
     } else {
-      mess = "Please play a Frenzy before generating a code!";
+      let spc = Math.floor(100 / 5) + 1;
+      playerData = {
+        // }
+        totalPoints: 0,
+        totalTimeSpent: 0,
+        totalChallenegesCompleted: 0,
+        totalWordsCompleted: 0,
+        totalCharCount: 0,
+        speedData: {
+          totalChar: parseInt(user.speedData.totalChar),
+          totalTime: parseInt(user.speedData.totalTime)
+        },
+        currentCPS: spc
+      };
+    }
+
+
+    let res = await fetchGameData('/save', {
+      method: 'POST', body: JSON.stringify({ data: [playerData], username: username.value }), headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+    if (res) {
+      mess = res;
+      await setCookie("gameCode", res);
+      await setCookie("username", username.value);
+      username.value = "";
+      closeGameData();
+      closeRightPanel();
+    } else {
+      mess = "Not able to get code, please try again later!";
     }
 
   } else {

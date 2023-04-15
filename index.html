@@ -300,19 +300,28 @@
         <div class="htpContent">
           <h1 id="HTPTitle">Get My Game</h1>
           <div id="myDataDiv">
-            <h3 id="">Enter game code</h3>
-            <input type="text" id="gameCode" />
-            <button id="getGameDataBtn" onclick="getGameData()">Load</button>
-            <p id="">Need a game code?</p>
-            <button id="clickHere" onclick="getNewGameCode()">Get Code</button>
+            <h4 id="">Enter Username or code</h4>
+            <div class="input-row">
+              <input type="text" id="gameCode" />
+              <button id="getGameDataBtn" onclick="getGameData()">Load</button>
+            </div>
+            <h2 style="font-weight: bolder;"id="">Need to create one?</h2>
+          </div>
+          <div id="signupWrapper">
+            <h4 style="margin: 3">Enter a username</h4>
+            <p style="font-size: 12px; margin: 3">(3-10 char, letters, numbers, and @, !, _, $)</p>
+            <div class="input-row">
+              <input type="text" id="username" maxlength="10" minlength="3"/>
+              <button id="clickHere" onclick="getNewGameCode()">Create</button>
+            </div>
           </div>
           <h2 id="newCode"></h2>
           <div id="newCodeMessage">
             <p class="newCodeMessageFont">
-              Copy and safely store this code on your computer or a secure place
+              Please keep this information securely stored
             </p>
             <p class="newCodeMessageFont">
-              If you lose this code, you will lose your game data!
+              You will lose your data if you don't have it!
             </p>
           </div>
         </div>
