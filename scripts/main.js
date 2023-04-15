@@ -751,8 +751,7 @@ const checkMovieGuess = async (guess, word) => {
 const checkName = async (name, path, extra) => {
 
   try {
-    console.log("checkname name: ", name);
-    console.log("checkname path: ", path);
+
     //salmon-barnacle-shoe.cyclic.app
     const response = await fetch(`${url}categories/${path}/check`, {
       method: 'POST', // or 'PUT' // data can be `string` or {object}!
@@ -766,7 +765,7 @@ const checkName = async (name, path, extra) => {
     });
 
     const jsonData = await response.json();
-    console.log("checkname res: ", jsonData);
+
     return jsonData.data[0];
 
   } catch (error) {
@@ -831,7 +830,6 @@ const handlePlayerAttempt = async () => {
 
 
   let validate = await validateGuess(guessWSpace, word);
-  console.log("validate guess: ", validate);
 
   if (guessWSpace !== word && !validate) {
     displayMessage("That is not correct, keep trying!");
@@ -841,7 +839,7 @@ const handlePlayerAttempt = async () => {
   }
 
   let check = await checkNewGuess(word, guessWSpace);
-  console.log("check guess: ", check);
+
   const notMatchedIndexes = check.notMatchedIndexes.concat(check.outOfPlaceIndexes).sort((a, b) => a - b);
   const wordLetters = word.split('');
   const spaces = [...wordLetters.join('').matchAll(new RegExp(" ", 'gi'))].map(a => a.index);
@@ -911,8 +909,6 @@ const handlePlayerAttempt = async () => {
     }
   } else {
     // Highlight out of place letters
-
-    console.log("checkGuess");
 
     let newTempInc = player.currentChallenge.incorrectLetters;
 
