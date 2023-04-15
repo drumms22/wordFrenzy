@@ -54,34 +54,63 @@ button:hover {
   align-items: center;
   justify-content: center;
 }
+#lobbyTitleWrapper {
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+#lobbyTitle {
+  font-size: 45px;
+  color: #f0f8ff;
+  font-family: "Rampart One", cursive;
+  background-color: #e51300;
+  text-shadow: 2px 3px 0 black;
+  padding: 15px;
+  border-radius: 40px 40px 40px 40px;
+}
 #stats {
   position: absolute;
-  left: 10;
+  left: 30;
   top: 20;
-  width: 30%;
+  width: 180px;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   border: 2px solid #e51300;
   border-radius: 5px;
 }
-#stats h4 {
-  margin-left: 5px;
+.statsBoxTitle {
+  background-color: #e51300;
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid #000000;
+  width: 100%;
+}
+.statsBox > h4 {
+  margin: 5px;
+}
+.statsBox > p {
+  margin: 5px;
 }
 .statsBox {
   background-color: #fff;
   color: #000000;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-right: 1px solid #000000;
-  width: 250px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  border-bottom: 1px solid #000000;
+  width: 100%;
 }
 .statsBox:first-child {
-  border-left: 1px solid black;
-  border-radius: 3px 0 0 3px;
+  border-radius: 3px 3px 0 0px;
 }
 .statsBox:last-child {
-  border-left: 1px solid black;
-  border-radius: 0 3px 3px 0;
+  border-radius: 0 0 3px 3px;
+  border-bottom: none;
 }
 #title {
   font-size: 45px;
@@ -325,12 +354,6 @@ button:hover {
   color: #ffffff;
   transition: 0.25s;
 }
-#startGame:hover,
-#htpBtnClose:hover {
-  background-color: #fff;
-  color: #000000;
-  cursor: pointer;
-}
 #htpBtnClose {
   background-color: #9b3434;
   color: #ffffff;
@@ -338,6 +361,22 @@ button:hover {
   height: 65px;
   margin-top: 25px;
   transition: 0.25s;
+}
+#playHTH {
+  width: 14%;
+  margin-top: 1%;
+  height: 50px;
+  background-color: #9b3434;
+  color: #ffffff;
+  transition: 0.25s;
+}
+#startGame:hover,
+#htpBtnClose:hover,
+#HTHBtnClose:hover,
+#startHTH:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
 }
 
 .letterBoxPrev {
@@ -474,21 +513,23 @@ button:hover {
   transform: scale(1.1);
   border: 4px solid #000;
 }
-#htpBtn {
+
+#headToHeadWrapper {
   position: absolute;
-  right: 150;
-  top: 20;
-  width: 200px;
-  height: 100px;
-  background-color: #9b3434;
-  color: #ffffff;
-  font-size: 20px;
-  transition: 0.25s;
-}
-#htpBtn:hover {
-  background-color: #fff;
-  color: #000000;
-  cursor: pointer;
+  top: 0;
+  left: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(6, 6, 6, 0.8716736694677871) 100%,
+    rgba(98, 98, 98, 0.33665966386554624) 100%
+  );
+  width: 100vw;
+  height: 100vh;
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  text-align: center;
+  align-items: center;
 }
 #getMyDataWrapper {
   position: absolute;
@@ -506,6 +547,49 @@ button:hover {
   flex-direction: column;
   text-align: center;
   align-items: center;
+}
+#headToHeadCode {
+  font-size: 15px;
+  width: 35%;
+  height: 30px;
+  border-radius: 5px 5px 5px 5px;
+  border: 2px solid #9b3434;
+}
+#headToHeadBtn {
+  background-color: #9b3434;
+  color: #fff;
+  border-radius: 5px 5px 5px 5px;
+  width: 5%;
+  padding: 5px;
+  height: 30px;
+}
+#headToHeadBtn:hover {
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+  color: #000000;
+  border: 2px solid #000;
+}
+
+#createLobby {
+  background-color: #9b3434;
+  color: #fff;
+  border-radius: 5px 5px 5px 5px;
+  width: 10%;
+  padding: 10px;
+}
+#createLobby:hover {
+  background-color: rgb(255, 255, 255);
+  cursor: pointer;
+  color: #000000;
+  border: 2px solid #000;
+}
+#HTHBtnClose {
+  background-color: #9b3434;
+  color: #ffffff;
+  width: 150px;
+  height: 65px;
+  margin-top: 25px;
+  transition: 0.25s;
 }
 #clickHere {
   background-color: #9b3434;
@@ -548,11 +632,27 @@ button:hover {
   font-size: 14px;
   color: #515151;
 }
+#htpBtn {
+  position: absolute;
+  right: 100;
+  top: 20;
+  width: 150px;
+  height: 100px;
+  background-color: #9b3434;
+  color: #ffffff;
+  font-size: 20px;
+  transition: 0.25s;
+}
+#htpBtn:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
+}
 #openGDBtn {
   position: absolute;
-  right: 150;
+  right: 100;
   top: 150;
-  width: 200px;
+  width: 150px;
   height: 100px;
   background-color: #9b3434;
   color: #ffffff;
@@ -564,8 +664,24 @@ button:hover {
   color: #000000;
   cursor: pointer;
 }
+#openHTHBtn {
+  position: absolute;
+  right: 100;
+  top: 280;
+  width: 150px;
+  height: 100px;
+  background-color: #9b3434;
+  color: #ffffff;
+  font-size: 20px;
+  transition: 0.25s;
+}
+#openHTHBtn:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
+}
 #musicBtn {
-  width: 200px;
+  width: 150px;
   height: 100px;
   background-color: #9b3434;
   color: #ffffff;
@@ -577,12 +693,193 @@ button:hover {
   color: #000000;
   cursor: pointer;
 }
+#leaveLobby {
+  position: absolute;
+  top: 630;
+  left: 45;
+  width: 150px;
+  height: 50px;
+  background-color: #9b3434;
+  color: #ffffff;
+  font-size: 20px;
+  transition: 0.25s;
+}
+#leaveLobby:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
+}
 #musicBtnDiv {
   position: absolute;
-  right: 150;
-  top: 280;
-  width: 200px;
+  right: 100;
+  top: 410;
+  width: 150px;
   height: 100px;
+}
+#lobby {
+  width: 100%;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+}
+#categoriesLobbyWrapper {
+  align-items: center;
+  width: 60%;
+}
+#categoriesLobbyContent {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  padding-bottom: 5%;
+}
+.categoriesLobbyItem {
+  width: 150px;
+  height: 40px;
+  background-color: #181818;
+  border: 4px solid rgb(187, 84, 84);
+  color: #ffffff;
+  border-radius: 8px;
+  margin-left: 2%;
+  margin-top: 2%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: 0.25s;
+}
+.categoriesLobbyItem h4 {
+  text-shadow: 1px 1px 1px black;
+}
+.categoriesLobbyItem:hover {
+  background-color: rgb(187, 84, 84);
+  cursor: pointer;
+  color: #fff;
+  transform: scale(1.1);
+  border: 4px solid #000;
+}
+.selectedLobbyItem {
+  background-color: rgb(187, 84, 84);
+  cursor: pointer;
+  color: #fff;
+  transform: scale(1.1);
+  border: 4px solid #000;
+}
+#lobbyFrenzyWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 70px;
+}
+#diffLobSelWrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+}
+#lobbyFrenzyDisplayWrapper {
+  width: 60%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-evenly;
+  padding-bottom: 3%;
+}
+.selectedLobbyItem {
+  background-color: rgb(187, 84, 84);
+  cursor: pointer;
+  color: #fff;
+  transform: scale(1.1);
+  border: 4px solid #000;
+}
+#startHTH {
+  width: 14%;
+  margin-top: 1%;
+  height: 50px;
+  background-color: #9b3434;
+  color: #ffffff;
+  transition: 0.25s;
+}
+
+#lobbyPlayerDisplayWrapper {
+  position: absolute;
+  width: 180px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e51300;
+  border: 2px solid #e51300;
+  border-radius: 5px;
+  top: 460;
+  left: 30;
+  text-align: center;
+}
+#lobbyPlayerDisplayWrapper > h2 {
+  color: #fff;
+  margin: 5;
+}
+#lobbyPlayerDisplayBody {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+.lobbyPlayerBox {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  border-bottom: 1px solid #000;
+}
+.lobbyPlayerBox:first-child {
+}
+.lobbyPlayerBoxHeader {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  flex-wrap: wrap;
+  border-right: 1px solid #000;
+}
+.lobbyPlayerBoxBody {
+  width: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.lobbyPlayerBoxHeader > h3 {
+  margin: 5px;
+}
+#getHint {
+  margin-top: 2%;
+  width: 10%;
+  height: 50px;
+  display: none;
+  background-color: #9b3434;
+  color: #ffffff;
+}
+#getHint:hover {
+  background-color: #fff;
+  color: #000000;
+  cursor: pointer;
+}
+#joinCodeDiplayWrapper {
+  position: absolute;
+  width: 500px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  color: #fff;
+  top: 20;
+  left: 300;
+}
+
+#joinCodeDiplayWrapper > h4 {
+  margin: 5;
+  text-decoration: underline;
+}
+#joinCodeDiplayWrapper > h3 {
+  margin: 5;
 }
 /* ======================================================================================================================================*/
 

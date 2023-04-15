@@ -1,64 +1,4 @@
-let playerModel = {
-  currentChallenge: {
-    type: "",
-    challengeI: 0,
-    wordCompleted: false,
-    challengeCompleted: false,
-    totalPoints: 0,
-    totalWords: 3,
-    prevGuess: "",
-    prevGuesses: [],
-    ogTime: 0,
-    hints: {
-      used: [],
-      hintMessages: [],
-      triggers: [],
-      maxHints: 0,
-      completed: false
-    },
-    incorrectLetters: [],
-    outOfPlaceLetters: [],
-    correctLetters: []
-  },
-  challengesCompleted: [],
-  currentCPS: 20,
-  challengeStarted: false,
-  currentTime: 0,
-  guesses: [],
-  currentWord: "",
-  placeHolder: [],
-  wordsCompleted: [],
-  wordLen: 0,
-  hintUsed: false,
-  secondHintUsed: false,
-  hintThreshold: 0,
-  totalPoints: 0,
-  totalWordsCompleted: 0,
-  totalChallenegesCompleted: 0,
-  totalTimeSpent: 0,
-  totalCharCount: 0,
-  speedData: {
-    totalChar: 5,
-    totalTime: 100,
-  }
-}
-let extra = "";
-let selectedCategory = "";
 
-let selectedDiff = 1;
-
-let dataLoaded = false;
-
-let jokeCounter = 1;
-
-let player = playerModel;
-
-
-let timer = null;
-
-const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
-
-let soundPlaying = false;
 let musicOn = true;
 let lastIndex = -1;
 const sounds = [
@@ -179,41 +119,50 @@ const timerFunc = async (callback, time, ...arg) => {
 }
 
 const startTimer = () => timer = setInterval(() => {
-
+  // (player.currentChallenge.ogTime - 5)
   if (player.currentTime > 0) {
     let extraZero = player.currentTime < 10 ? "0" : "";
     updateTimerDsiplay("" + extraZero + player.currentTime);
 
     player.currentTime--;
 
-    if (!player.currentChallenge.hints.completed) {
+    if (!player.currentChallenge.hints.completed && !inLobby) {
       let preMess = player.currentChallenge.hints.triggers.findIndex((trigger) => player.currentTime === (trigger + 2));
       let hintsTrigger = player.currentChallenge.hints.triggers.findIndex((trigger) => player.currentTime === trigger);
       if (preMess > -1 && hintsTrigger === -1) {
         document.getElementById("message2").innerHTML = "Hint incoming!!!"
       } else if (hintsTrigger > -1 && preMess === -1) {
-        handleHint(hintsTrigger);
+        let regex = /Lobby/;
+        handleHint(hintsTrigger, selectedCategory.replace(regex, ""));
       }
     }
 
   } else {
     updateTimerDsiplay("00");
-    timesUp();
+    if (inLobby || hthStarted) {
+      handleTimesUp();
+    } else {
+      timesUp();
+    }
   }
 
 }, 1000);
 
-const handleHint = async (index) => {
+const handleHint = async (index, cat) => {
   let payload = {
     type: "normal",
     hintsUsed: player.currentChallenge.hints.used,
   }
 
-  switch (selectedCategory) {
+  switch (cat) {
     case "wordsItem":
       payload.word = player.currentWord;
-      payload.type = index === player.currentChallenge.hints.triggers[1] ?
-        "reveal" : index === player.currentChallenge.hints.triggers[2] ? "synonym" : "definition";
+      if (!inLobby && !hthStarted) {
+        payload.type = index === player.currentChallenge.hints.triggers[1] ?
+          "reveal" : index === player.currentChallenge.hints.triggers[2] ? "synonym" : "definition";
+      } else {
+        payload.type = index === 2 ? "definition" : "synonym";
+      }
       break;
     case "animalsItem":
       payload.animal = player.currentWord;
@@ -234,19 +183,20 @@ const handleHint = async (index) => {
       break;
   }
 
-  if (index >= (player.currentChallenge.hints.triggers.length - 1)) {
+  if (!inLobby && index >= (player.currentChallenge.hints.triggers.length - 1)) {
     payload.type = "reveal";
   }
 
+
   let res = await getHint(JSON.stringify(payload));
 
-  if (!res.error) {
+  if (!res.error || res != undefined || res != null) {
     player.currentChallenge.hints.used = res[0].hintsUsed;
     player.currentChallenge.hints.completed = res[0].completed;
     player.currentChallenge.hints.hintMessages.push(res[0].hint);
     document.getElementById("message2").innerHTML = res[0].hint;
   } else {
-    player.currentChallenge.hints.completed = res[0].completed;
+    player.currentChallenge.hints.completed = true;
     document.getElementById("message2").innerHTML = "Hint cannot be found, good luck!";
   }
 }
@@ -442,7 +392,7 @@ const updatePrevGuesses = () => {
 
 const handlePoints = () => {
   player.totalPoints += player.wordLen;
-  document.getElementById("score").innerHTML = "" + player.totalPoints;
+
 }
 
 const isWord = (guess) => RiTa.hasWord(guess);
@@ -801,8 +751,8 @@ const checkMovieGuess = async (guess, word) => {
 const checkName = async (name, path, extra) => {
 
   try {
-
-    const response = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/${path}/check`, {
+    //salmon-barnacle-shoe.cyclic.app
+    const response = await fetch(`${url}categories/${path}/check`, {
       method: 'POST', // or 'PUT' // data can be `string` or {object}!
       body: JSON.stringify({
         name,
@@ -845,7 +795,7 @@ const handlePlayerAttempt = async () => {
   let word = usw(player.currentWord).toLowerCase();
   const inputs = document.querySelectorAll('.letterBox');
   const guess = Array.from(inputs).map(input => input.value).join('').toLowerCase();
-  // console.log(guess);
+
   let guessWSpace = "";
   let count = 0;
   for (let i = 0; i < word.length; i++) {
@@ -859,6 +809,13 @@ const handlePlayerAttempt = async () => {
 
   }
 
+  if (player.currentChallenge.prevGuesses.includes(guessWSpace)) {
+    displayMessage("Please enter a different guess!");
+    clearIncorrectInputs(inputs);
+    focusNextOpenInput();
+    return;
+  }
+
   if (guessWSpace.length < word.length) {
     displayMessage("Please fill out all letter blocks!");
     focusNextOpenInput();
@@ -869,7 +826,7 @@ const handlePlayerAttempt = async () => {
   let validate = await validateGuess(guessWSpace, word);
 
 
-  if (!validate) {
+  if (guessWSpace !== word && !validate) {
     displayMessage("That is not correct, keep trying!");
     clearIncorrectInputs(inputs);
     focusNextOpenInput();
@@ -904,49 +861,82 @@ const handlePlayerAttempt = async () => {
   if (check.correctLetters.length === wordLetters.length) {
     player.totalWordsCompleted++;
     player.totalTimeSpent += (player.currentChallenge.ogTime - player.currentTime);
-    player.totalCharCount += word.length;
-    clearInterval(timer);
+    player.totalCharCount += joinWord(word).length;
+    addCorrectWord(word);
     displayMessage("Success! You guessed the word");
     handlePoints();
     document.getElementById("guessIncorrect").innerHTML = "";
     document.getElementById("guessOutOfPlace").innerHTML = "";
-    player.currentChallenge.wordCompleted = true;
-    addCorrectWord(word);
     player.wordsCompleted.push(word);
     calcSpeed((player.currentChallenge.ogTime - player.currentTime), word.length);
     updatePlayer();
-    if (player.currentChallenge.challengeI === 2) {
-      player.currentChallenge.challengeCompleted = true;
-      player.totalChallenegesCompleted++;
-      player.totalPoints += 15;
-      document.getElementById("score").innerHTML = "" + player.totalPoints;
-      updatePlayer();
+    if (inLobby) {
       updateGameData();
-      gameOver("You have completed the Freny!!!")
+      let p = player.lobbyData.player;
+      p.wordsGuessed.push(word);
+      handleHTHGuess(p);
     } else {
-      updateGameData();
-      document.getElementById("message2").innerHTML = "";
-      document.getElementById("guess").style.display = "none";
-      timerFunc(() => {
-        displayMessage("Next word incomming!");
-        document.getElementById("words").innerHTML = "";
+
+      clearInterval(timer);
+      player.currentChallenge.wordCompleted = true;
+      player.wordsCompleted.push(word);
+
+      if (player.currentChallenge.challengeI === 2) {
+        player.currentChallenge.challengeCompleted = true;
+        player.totalChallenegesCompleted++;
+        player.totalPoints += 15;
+        // document.getElementById("score").innerHTML = "" + player.totalPoints;
+        updateGameData();
+        gameOver("You have completed the Frenzy!!!")
+      } else {
+        updateGameData();
+        document.getElementById("message2").innerHTML = "";
+        document.getElementById("guess").style.display = "none";
         timerFunc(() => {
-          intermission();
-        }, 1000)
-      }, 2000)
+          displayMessage("Next word incomming!");
+          document.getElementById("words").innerHTML = "";
+          timerFunc(() => {
+            intermission();
+          }, 1000)
+        }, 2000)
+      }
     }
   } else {
     // Highlight out of place letters
 
-    let newIncorrect = check.incorrectLetters.filter((l) => !player.currentChallenge.incorrectLetters.includes(l));
-    if (newIncorrect.length > 0) {
-      player.currentChallenge.incorrectLetters = player.currentChallenge.incorrectLetters.concat(newIncorrect);
-    }
-    let newOOP = check.outOfPlaceLetters.filter((l) => !player.currentChallenge.outOfPlaceLetters.includes(l));
-    if (newOOP.length > 0) {
-      player.currentChallenge.outOfPlaceLetters = player.currentChallenge.outOfPlaceLetters.concat(newOOP);
+    let newTempInc = player.currentChallenge.incorrectLetters;
 
+    for (let i = 0; i < check.incorrectLetters.length; i++) {
+      let incCount = newTempInc.filter((l) => l === check.incorrectLetters[i]).length;
+
+      if (incCount === 0) {
+        newTempInc.push(check.incorrectLetters[i]);
+      }
     }
+
+    player.currentChallenge.incorrectLetters = newTempInc;
+
+    let newTempOOP = player.currentChallenge.outOfPlaceLetters;
+
+    for (let i = 0; i < check.outOfPlaceLetters.length; i++) {
+      let oopCount = newTempOOP.filter((l) => l === check.outOfPlaceLetters[i]).length;
+      let wCount = word.split("").filter((l) => l === check.outOfPlaceLetters[i]).length;
+      if (oopCount < wCount) {
+        newTempOOP.push(check.outOfPlaceLetters[i]);
+      }
+    }
+
+    player.currentChallenge.outOfPlaceLetters = newTempOOP;
+
+    // let newIncorrect = check.incorrectLetters.filter((l) => !player.currentChallenge.incorrectLetters.includes(l));
+    // if (newIncorrect.length > 0) {
+    //   player.currentChallenge.incorrectLetters = player.currentChallenge.incorrectLetters.concat(newIncorrect);
+    // }
+    // let newOOP = check.outOfPlaceLetters.filter((l) => !player.currentChallenge.outOfPlaceLetters.includes(l));
+    // if (newOOP.length > 0) {
+    //   player.currentChallenge.outOfPlaceLetters = player.currentChallenge.outOfPlaceLetters.concat(newOOP);
+
+    // }
 
     document.getElementById("guessIncorrect").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
     document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.outOfPlaceLetters.join(' | ');
@@ -999,26 +989,27 @@ const checkNewGuess = (word, guess) => {
   const wordLetters = word.split('');
   const guessLetters = guess.split('');
 
-  // Check for correct matches
+  // Check for correct order and matches
+  for (let i = 0; i < wordLetters.length && i < guessLetters.length; i++) {
+    const letter = guessLetters[i];
+    if (wordLetters[i] === letter) {
+      matchedIndexes.push(i);
+      correctLetters.push(letter);
+    } else {
+      notMatchedIndexes.push(i);
+    }
+  }
+
+  // Check for correct letters in wrong place
   for (let i = 0; i < guessLetters.length; i++) {
+    if (matchedIndexes.includes(i)) continue;
     const letter = guessLetters[i];
     const index = wordLetters.indexOf(letter);
-    if (index !== -1) {
-      if (index === i) {
-        if (wordLetters[i] !== " ") matchedIndexes.push(index);
-        correctLetters.push(letter);
-      } else {
-        // If the index has already been added to outOfPlaceIndexes, don't add it again
-        if (!outOfPlaceIndexes.includes(i) && !notMatchedIndexes.includes(index)) {
-          notMatchedIndexes.push(index);
-        }
-        outOfPlaceLetters.push(letter);
-        outOfPlaceIndexes.push(i);
-      }
-      wordLetters[index] = null;
+    if (index !== -1 && !matchedIndexes.includes(index) && !outOfPlaceIndexes.includes(index)) {
+      outOfPlaceIndexes.push(index);
+      outOfPlaceLetters.push(letter);
     } else {
       incorrectLetters.push(letter);
-      notMatchedIndexes.push(i);
     }
   }
 
@@ -1039,7 +1030,6 @@ const checkNewGuess = (word, guess) => {
     correctLetters
   };
 };
-
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -1070,7 +1060,7 @@ const resetPlayer = () => {
 
 const gameOver = (message) => {
   resetPlayer();
-  document.getElementById("words").innerHTML = "<li><p>Please Refresh the browser to play another challenge</p></li>";
+  document.getElementById("words").innerHTML = "<p>Please Refresh the browser to go back to the home page</p>";
   displayMessage(message)
   document.getElementById("guess").style.display = "none";
   document.getElementById("continueGame").style.display = "block";
@@ -1079,6 +1069,9 @@ const gameOver = (message) => {
 const nextLevel = () => {
   player.guesses = [];
   player.placeHolder = [];
+  player.currentChallenge.correctLetters = [];
+  player.currentChallenge.incorrectLetters = [];
+  player.currentChallenge.outOfPlaceLetters = [];
 }
 
 const intermission = () => {
@@ -1087,6 +1080,7 @@ const intermission = () => {
 
   document.getElementById("prevWords").innerHTML = "";
   document.getElementById("prevWords").style.overflowY = "hidden";
+  document.getElementById("message2").innerHTML = "";
   timer = setInterval(() => {
 
     if (count > 0) {
@@ -1100,19 +1094,10 @@ const intermission = () => {
     nextLevel()
     player.currentChallenge.challengeI++;
     playRound();
-  }, (1000 * count));
+  }, 4500);
 
 }
 
-const continueGame = () => {
-  player.currentChallenge.challengeI = -1;
-  document.getElementById("continueGame").style.display = "none";
-  player.currentChallenge.challengeCompleted = false;
-  document.getElementById("correctWords").innerHTML = "";
-  document.getElementById("message2").innerHTML = "";
-  document.getElementById("time").innerHTML = "";
-  intermission();
-}
 
 const setNewPlayer = () => {
   let obj = {
@@ -1147,6 +1132,8 @@ const updatePlayer = () => {
       }
     }
     setCookie("player", JSON.stringify(obj), 100);
+    let spc = Math.floor(player.speedData.totalTime / player.speedData.totalChar) + 1;
+    loadData(spc)
   }
 
 }
@@ -1158,7 +1145,6 @@ const checkPlayer = () => {
     let user = JSON.parse(data);
 
     let spc = 0;
-
     // if (!user.speedData) {
     //   spc = Math.floor(parseInt(player.speedData.totalChar) / parseInt(player.speedData.totalTime)) + 1;
     // } else {
@@ -1182,8 +1168,7 @@ const checkPlayer = () => {
 
 }
 
-const calcTime = () => {
-  let w = usw(player.currentWord);
+const calcTime = (w) => {
   let time = w.length * 20;
 
   switch (selectedDiff) {
@@ -1236,12 +1221,13 @@ const playRound = async () => {
   // document.getElementById("continueGame").style.display = "none";
   // let newWord = getWord(num, num);
   let res = await handleModes();
+
   let h = res[0];
   const start = () => {
     let w = usw(h);
 
-
-    setSession(w, h);
+    let startTime = 1000;//calcTime(w);
+    setSession(w, h, startTime);
     document.getElementById("message2").innerHTML = "";
     createInputs(w);
     timerFunc(() => {
@@ -1249,14 +1235,53 @@ const playRound = async () => {
       focusNextOpenInput();
       displayMessage("Time has started!");
       document.getElementById("guess").style.display = "block";
-    }, 200);
+    }, 100);
+  }
+
+  await start();
+
+}
+async function playHeadToHead(h, t) {
+
+  const start = () => {
+    let w = usw(h);
+
+    setSession(w, h, t);
+    document.getElementById("message2").innerHTML = "";
+    timerFunc(() => {
+      createInputs(w);
+      startTimer();
+      focusNextOpenInput();
+      displayMessage("Time has started!");
+      document.getElementById("guess").style.display = "block";
+      document.getElementById("getHint").style.display = "block";
+      document.getElementById("getHint").innerHTML = `${hintsRemaining} hints rem`;
+    }, 3000);
   }
 
   await start();
 
 }
 
-const setSession = (w, h) => {
+const continueGame = () => {
+  player.currentChallenge.challengeI = 0;
+  document.getElementById("continueGame").style.display = "none";
+  player.currentChallenge.challengeCompleted = false;
+  document.getElementById("correctWords").innerHTML = "";
+  document.getElementById("words").innerHTML = "";
+  document.getElementById("message2").innerHTML = "";
+  document.getElementById("time").innerHTML = "";
+  document.getElementById("prevWords").innerHTML = "";
+  displayMessage("Get ready!!!")
+  setTimeout(() => {
+    playRound();
+  }, 3000);
+
+}
+
+
+const setSession = (w, h, t) => {
+
   player.wordLen = joinWord(w).length;
   player.currentWord = h;
   player.currentChallenge.prevGuess = "";
@@ -1266,21 +1291,24 @@ const setSession = (w, h) => {
   player.currentChallenge.hints.maxHints = 0;
   player.currentChallenge.hints.triggers = [];
   player.currentChallenge.hints.used = [];
-  let startTime = calcTime();
-  player.currentTime = startTime;
-  player.currentChallenge.ogTime = startTime;
-  let hintData = calculateHintTriggers(startTime, joinWord(w).length);
+  player.currentTime = t;
+  player.currentChallenge.ogTime = t;
+  let hintData = calculateHintTriggers(t, joinWord(w).length);
   //if (startTime < 30) player.currentChallenge.hints.completed = true;
   player.currentChallenge.hints.triggers = hintData.triggers
   player.currentChallenge.hints.maxHints = hintData.hints;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
+  player.currentChallenge.correctLetters = [];
+  player.currentChallenge.incorrectLetters = [];
+  player.currentChallenge.outOfPlaceLetters = [];
+
 }
 
 const getWord = async () => {
   let num = 4 + player.currentChallenge.challengeI;
 
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/words?min=${num}&max=${num}`);
+  let data = await fetch(`${url}categories/words?min=${num}&max=${num}`);
   //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
@@ -1300,8 +1328,8 @@ const getAnimal = async () => {
     min = 9;
     max = 25
   }
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/animals?min=${min}&max=${max}`);
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
+  let data = await fetch(`${url}categories/animals?min=${min}&max=${max}`);
+  //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
   return dataJson.data;
@@ -1317,8 +1345,8 @@ const getCar = async () => {
     min = 5;
   }
 
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/cars?min=${min}&max=${max}`);
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
+  let data = await fetch(`${url}categories/cars?min=${min}&max=${max}`);
+  //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
   return dataJson.data;
@@ -1337,8 +1365,8 @@ const getCity = async () => {
     max = 25;
   }
 
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/cities?min=${min}&max=${max}`);
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
+  let data = await fetch(`${url}categories/cities?min=${min}&max=${max}`);
+  //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
   extra = dataJson.data[1];
@@ -1358,8 +1386,8 @@ const getSport = async () => {
     max = 25;
   }
 
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/sports?min=${min}&max=${max}`);
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
+  let data = await fetch(`${url}categories/sports?min=${min}&max=${max}`);
+  //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
   extra = dataJson.data[1];
@@ -1379,8 +1407,8 @@ const getMovie = async () => {
     max = 25;
   }
 
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/categories/movies?min=${min}&max=${max}`);
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
+  let data = await fetch(`${url}categories/movies?min=${min}&max=${max}`);
+  //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
   return dataJson.data;
@@ -1388,46 +1416,17 @@ const getMovie = async () => {
 
 const getHint = async (payload) => {
 
-  let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/hints`, {
+  let data = await fetch(`${url}hints`, {
     method: 'POST',
     body: payload,
     headers: {
       'Content-Type': 'application/json'
     }
   });
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
+  //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
   return dataJson.data;
-}
-
-const getData = (guess, success, failed) => {
-  let xhttp = new XMLHttpRequest();
-  xhttp.onreadystatechange = function () {
-    if (this.readyState == 4 && this.status == 200) {
-      let data = JSON.parse(this.responseText);
-
-      success(data);
-      // displayMessage(data[0].meanings[0].definitions[0].definition);
-    } else {
-      failed();
-    }
-  }
-  xhttp.open("GET", "https://api.dictionaryapi.dev/api/v2/entries/en/" + guess, false);
-  xhttp.send();
-}
-
-const getCatId = (cat) => {
-  let c = cat.split(" ");
-  let str = c;
-  if (c.length > 1) {
-    let joined = c.join("");
-    str = joined;
-  }
-
-  str += "Item";
-
-  return str;
 }
 
 
@@ -1485,7 +1484,7 @@ createCategories();
 const showHtp = () => document.getElementById("howToPlayContentWrapper").style.display = "flex";
 const hideHtp = () => document.getElementById("howToPlayContentWrapper").style.display = "none";
 
-if (selectedCategory === "") {
+if (selectedCategory === "" && !inLobby) {
   let cookie = getCookie("selCat");
   let selItem = "wordsItem";
   if (cookie) {
@@ -1495,7 +1494,7 @@ if (selectedCategory === "") {
   handleCategorySel(selItem);
 }
 
-if (selectedDiff === 1) {
+if (selectedDiff === 1 && !inLobby) {
   let cookie = getCookie("selDiff");
   if (cookie) {
     selectedDiff = parseInt(cookie);
@@ -1509,22 +1508,26 @@ if (!dataLoaded) {
   dataLoaded = true;
 }
 
+
 //6430f475530103d3127f0d16
 //64320d2d3410c4b03cafdbfa
 const getGameData = async () => {
 
+  if (player.currentTime > 0) return;
+
   let input = document.getElementById("gameCode");
 
   let data = await fetchGameData(`?id=${input.value}`);
-  //let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/words/word/?min=${num}&max=${num}&p=${pos}`);
-  //use string literals
+
   if (data) {
+
 
     setCookie("gameCode", input.value);
 
     input.value = "";
+    let dataStr = await JSON.stringify(data);
 
-    let dataStr = JSON.stringify(data);
+    closeGameData();
 
     await setCookie("player", dataStr);
 
@@ -1533,9 +1536,9 @@ const getGameData = async () => {
   }
 
 }
-const fetchGameData = async (url, extra) => {
+const fetchGameData = async (end, extra) => {
   try {
-    let data = await fetch(`https://salmon-barnacle-shoe.cyclic.app/users${url}`, { ...extra });
+    let data = await fetch(`${url}users${end}`, { ...extra });
     let dataJson = await data.json();
 
     return dataJson.data[0];
@@ -1596,10 +1599,104 @@ const updateGameData = async () => {
 }
 
 const openGameData = () => {
+  if (player.currentTime > 0) return;
   document.getElementById("getMyDataWrapper").style.display = "flex";
 }
 
 const closeGameData = () => {
   document.getElementById("getMyDataWrapper").style.display = "none";
 }
+const openHeadToHead = () => {
+  if (inLobby || player.currentTime > 0) return;
+  document.getElementById("headToHeadWrapper").style.display = "flex";
+}
 
+const closeHeadToHead = () => {
+  document.getElementById("headToHeadWrapper").style.display = "none";
+}
+
+const createNewLobby = () => {
+  connect();
+}
+
+if (!inLobby) {
+  let check = getCookie("inLobby");
+
+  if (check) {
+    inLobby = true;
+    reJoinLobby();
+  }
+}
+
+const getLobCatId = (cat) => {
+  let c = cat.split(" ");
+  let str = c;
+  if (c.length > 1) {
+    let joined = c.join("");
+    str = joined;
+  }
+
+  str += "LobbyItem";
+
+  return str;
+}
+const createLobbyCategories = () => {
+
+  const categories = ["Words", "Animals", "Cars", "Cities", "Sports", "Movies"];
+
+  categories.map((cat, i) => {
+    const colors = ['#181818', 'rgb(187, 84, 84)', '#2C3E50', '#9B59B6', '#F1C40F', '#1ABC9C', '#E67E22', '#3498DB', '#BDC3C7', '#2980B9'];
+    let id = getLobCatId(cat.toLowerCase());
+    let name = i === 1 ? "selectedLobbyItem" : "";
+    let div = `<div class="categoriesLobbyItem ${name}" id="${id}" onclick="handleLobbyCategorySel('${id}')"><h4>${cat}</h4></div>`;
+    document.getElementById("categoriesLobbyContent").innerHTML += div;
+  })
+
+
+}
+
+
+const handleLobbyCategorySel = (id) => {
+  let isCreator = player.lobbyData.player.isCreator;
+  if (!isCreator) return;
+  setCookie("selLobCat", id, 100);
+  let catArr = document.getElementsByClassName("categoriesLobbyItem");
+
+
+
+  for (let i = 0; i < catArr.length; i++) {
+    if (document.getElementById(catArr[i].id).classList.contains("selectedLobbyItem")) {
+      document.getElementById(catArr[i].id).classList.remove("selectedLobbyItem");
+    }
+  };
+
+  selectedCategory = id;
+
+  document.getElementById(id).classList.add("selectedLobbyItem");
+
+  displayLobbyToRomm(id);
+
+}
+
+createLobbyCategories();
+
+const getHTHHint = () => {
+
+  if (hintsRemaining === 0) return;
+
+  let regex = /Lobby/;
+  let s = lobbySettings.catSel.replace(regex, "")
+
+  handleHint(hintsRemaining, s);
+
+  hintsRemaining--;
+
+
+
+  if (hintsRemaining <= 0) {
+    document.getElementById("getHint").style.display = "none";
+  } else {
+    document.getElementById("getHint").innerHTML = `${hintsRemaining} hints rem`;
+  }
+
+}

@@ -14,6 +14,7 @@
     />
     <title>Word Frenzy</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
+    <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
   </head>
   <body>
     <div id="container">
@@ -22,30 +23,7 @@
           <div class="flip-card-front">
             <div id="startMenu">
               <div id="titleWrapper">
-                <div id="stats">
-                  <div class="statsBox">
-                    <h4 style="text-decoration: underline">Total Points</h4>
-                    <p id="totalPoints">0</p>
-                  </div>
-                  <div class="statsBox">
-                    <h4 style="text-decoration: underline">Total Time</h4>
-                    <p id="totalTime">0</p>
-                  </div>
-                  <div class="statsBox">
-                    <h4 style="text-decoration: underline">Total Words</h4>
-                    <p id="totalWords">0</p>
-                  </div>
-                  <div class="statsBox">
-                    <h4 style="text-decoration: underline">Total Fenzy's</h4>
-                    <p id="totalChallenges">0</p>
-                  </div>
-                  <div class="statsBox">
-                    <h4 style="text-decoration: underline">Current Sp/d</h4>
-                    <p id="currentCPS">0</p>
-                  </div>
-                </div>
                 <h1 id="title">Word Frenzy</h1>
-                <button onclick="showHtp()" id="htpBtn">How to Play</button>
               </div>
               <div class="largeBox" id="categoriesWrapper">
                 <h2>Frenzy's</h2>
@@ -95,9 +73,79 @@
                 <button onclick="play()" id="startGame">Play Frenzy</button>
               </div>
             </div>
-            <button id="openGDBtn" onclick="openGameData()">
-              Get Game Data
-            </button>
+            <div id="lobby">
+              <div id="lobbyTitleWrapper">
+                <h1 id="lobbyTitle">My Lobby</h1>
+              </div>
+              <div class="largeBox" id="categoriesLobbyWrapper">
+                <h2>Frenzy's</h2>
+                <div id="lobbyFrenzyWrapper">
+                  <div id="categoriesLobbyContent"></div>
+                  <div id="diffLobSelWrapper">
+                    <div class="diffLobRadItem">
+                      <h4>Easy</h4>
+                      <input
+                        type="radio"
+                        onchange="handleLobDiff(0)"
+                        name="diffLobRadio"
+                        id="lobDiff10"
+                      />
+                    </div>
+                    <div class="diffLobRadItem">
+                      <h4>Normal</h4>
+                      <input
+                        type="radio"
+                        onchange="handleLobDiff(1)"
+                        name="diffLobRadio"
+                        checked
+                        id="lobDiff11"
+                      />
+                    </div>
+                    <div class="diffLobRadItem">
+                      <h4>Hard</h4>
+                      <input
+                        type="radio"
+                        onchange="handleLobDiff(2)"
+                        name="diffLobRadio"
+                        id="lobDiff12"
+                      />
+                    </div>
+                    <div class="diffLobRadItem">
+                      <h4>Frenzy</h4>
+                      <input
+                        type="radio"
+                        onchange="handleLobDiff(3)"
+                        name="diffLobRadio"
+                        id="lobDiff13"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="startGameBtnWrapper">
+                <div id="lobbyFrenzyDisplayWrapper">
+                  
+                  <div class="lobbyFrenzyDisplayBox">
+                    <h2>Time</h2>
+                    <p id="lobbyTime"></p>
+                  </div>
+                  <div class="lobbyFrenzyDisplayBox">
+                    <h2>Words</h2>
+                    <p id="lobbyWords"></p>
+                  </div>
+                  <div class="lobbyFrenzyDisplayBox">
+                    <h2>Winner</h2>
+                    <p id="lobbyPoints"></p>
+                  </div>
+                </div>
+                <button onclick="startHTH()" id="startHTH">Play Frenzy</button>
+              </div>
+              <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
+              <div id="joinCodeDiplayWrapper">
+                <h4>Join Code</h4>
+                <h3 id="lobbyJoinCodeDisplay"></h3>
+              </div>
+            </div>
           </div>
           <div class="flip-card-back">
             <div id="gameContent">
@@ -107,7 +155,7 @@
               </div>
               <div id="header">
                 <div class="scoreTimeBox">
-                  <p>Score: <span id="score">0</span></p>
+                  <h3  id="score"></h3>
                 </div>
                 <div class="scoreTimeBox">
                   <h3 id="categorySelectedTxt"></h3>
@@ -140,6 +188,9 @@
                 <button id="continueGame" onclick="continueGame()">
                   Conitinue
                 </button>
+                <button id="getHint" onclick="getHTHHint()">
+                  Get Hint
+                </button>
               </div>
               <div id="guessHistory">
                 <div class="guessHistoryContentBox">
@@ -154,6 +205,33 @@
             </div>
           </div>
         </div>
+        <div id="lobbyPlayerDisplayWrapper">
+          <h2>Players</h2>
+          <div id="lobbyPlayerDisplayBody">
+
+          </div>
+        </div>
+        <!-- <div id="lobbyPlayerDisplayWrapper2">
+          <h2>Players</h2>
+          <div id="lobbyPlayerDisplayBody2">
+            <div class="lobbyPlayerBox">
+              <div class="lobbyPlayerBoxHeader">
+                <h3>You</h3> 
+              </div>
+              <div class="lobbyPlayerBoxBody">
+                <p>Waiting</p>
+              </div>
+            </div>
+            <div class="lobbyPlayerBox">
+              <div class="lobbyPlayerBoxHeader">
+                <h3>Player 2</h3> 
+              </div>
+              <div class="lobbyPlayerBoxBody">
+                <p>Waiting</p>
+              </div>
+            </div>
+          </div>
+        </div> -->
       </div>
       <div id="howToPlayContentWrapper">
         <div class="htpContent">
@@ -201,6 +279,14 @@
 
         <button onclick="hideHtp()" id="htpBtnClose">Close</button>
       </div>
+      <button onclick="showHtp()" id="htpBtn">How to Play</button>
+      <button id="openGDBtn" onclick="openGameData()">
+        Get Game Data
+      </button>
+      <button id="openHTHBtn" onclick="openHeadToHead()">
+        Head To Head
+      </button>
+      <div id="musicBtnDiv"></div>
       <div id="getMyDataWrapper">
         <div class="htpContent">
           <h1 id="HTPTitle">Get My Game</h1>
@@ -221,14 +307,56 @@
             </p>
           </div>
         </div>
-
         <button onclick="closeGameData()" id="htpBtnClose">Close</button>
       </div>
-      <div id="musicBtnDiv"></div>
+      <div id="stats"> 
+        <div class="statsBoxTitle">
+          <h3>My stats</h3>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Points</h4>
+          <p id="totalPoints">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Time</h4>
+          <p id="totalTime">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Words</h4>
+          <p id="totalWords">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Fenzy's</h4>
+          <p id="totalChallenges">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Current Sp/d</h4>
+          <p id="currentCPS">0</p>
+        </div>
+      </div>
+      <div id="headToHeadWrapper">
+        <div class="htpContent">
+          <h1 id="HTPTitle">Head To Head</h1>
+          <div id="myDataDiv">
+            <h3 id="">Enter lobby code</h3>
+            <input type="text" id="headToHeadCode" />
+            <button id="headToHeadBtn" onclick="joinLobby()">Join</button>
+            <p id="">Need a game code?</p>
+            <button id="createLobby" onclick="createNewLobby()">Creat Lobby</button>
+          </div>
+          <div id="newCodeMessage">
+            <p class="newCodeMessageFont">
+              Copy and past your join code or create a new lobby and share it!
+            </p>
+          </div>
+        </div>
+        <button onclick="closeHeadToHead()" id="HTHBtnClose">Close</button>
     </div>
   </body>
 
+  <script src="./scripts/globals.js"></script>
   <script src="./scripts/storage.js"></script>
+  <script src="./scripts/socketHandler.js"></script>
   <script src="./scripts/main.js"></script>
   <script src="./scripts/modeHandler.js"></script>
 </html>

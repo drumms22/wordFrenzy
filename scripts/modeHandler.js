@@ -1,19 +1,18 @@
 
 
-const titleCase = (string) => string[0].toUpperCase() + string.slice(1).toLowerCase();
 const startChallenge = () => {
-  timerFunc(() => {
-    displayMessage("Get Ready!!!");
-  }, 2000)
+
+  displayMessage("Get Ready!!!");
+
   timerFunc(() => {
     playRound();
   }, 3000)
 }
 
-const play = async () => {
+async function play() {
 
   document.getElementById("flipGameInner").classList.add("flip-game");
-  document.getElementById("score").innerHTML = "" + player.totalPoints;
+  document.getElementById("score").innerHTML = selectedDiff === 0 ? "Easy" : selectedDiff === 2 ? "Hard" : selectedDiff === 3 ? "Frenzy" : "Normal";
   let selSplit = selectedCategory.split("Item");
 
   document.getElementById("categorySelectedTxt").innerHTML = titleCase(selSplit[0]);
@@ -22,9 +21,9 @@ const play = async () => {
   // } else {
   //   constructChallenge("challenge");
   // }
-  await timerFunc(() => {
-    displayMessage("Get Ready!!!");
-  }, 2000)
+  // await timerFunc(() => {
+  //   displayMessage("Get Ready!!!");
+  // }, 2000)
   await timerFunc(() => {
     startChallenge();
   }, 3000)
