@@ -195,7 +195,7 @@
               <div id="guessHistory">
                 <div class="guessHistoryContentBox">
                   <h4 style="text-decoration: underline">Incorrect</h4>
-                  <p class="incorrect" id="guessIncorrect"></p>
+                  <p id="guessIncorrect"></p>
                 </div>
                 <div class="guessHistoryContentBox">
                   <h4 style="text-decoration: underline">OutOfPlace</h4>
@@ -277,16 +277,25 @@
           </p>
         </div>
 
+
         <button onclick="hideHtp()" id="htpBtnClose">Close</button>
       </div>
-      <button onclick="showHtp()" id="htpBtn">How to Play</button>
-      <button id="openGDBtn" onclick="openGameData()">
-        Get Game Data
-      </button>
-      <button id="openHTHBtn" onclick="openHeadToHead()">
-        Head To Head
-      </button>
-      <div id="musicBtnDiv"></div>
+      <button id="openRightPanelBtn" onclick="openRightPanel()">Open Menu</button>
+      <div id="rightSidePanelWrapper"></div>
+        <div id="rightSidePanel">
+          <div id="panelCloseBtnWrapper">
+            <button id="rightSidePanelBtn" onclick="closeRightPanel()" class="panelCloseBtn">X</button>
+          </div>
+          <button onclick="showHtp()" id="htpBtn">How to Play</button>
+          <button id="openGDBtn" onclick="openGameData()">
+            Get Game Data
+          </button>
+          <button id="openHTHBtn" onclick="openHeadToHead()">
+            Head To Head
+          </button>
+          <div id="musicBtnDiv"></div>
+        </div>
+
       <div id="getMyDataWrapper">
         <div class="htpContent">
           <h1 id="HTPTitle">Get My Game</h1>
@@ -311,7 +320,7 @@
       </div>
       <div id="stats"> 
         <div class="statsBoxTitle">
-          <h3>My stats</h3>
+          <h2>My stats</h2>
         </div>
         <div class="statsBox">
           <h4 style="text-decoration: underline">Total Points</h4>

@@ -943,9 +943,15 @@ const handlePlayerAttempt = async () => {
     //   player.currentChallenge.outOfPlaceLetters = player.currentChallenge.outOfPlaceLetters.concat(newOOP);
 
     // }
+    if (player.currentChallenge.incorrectLetters.length > 0) {
+      document.getElementById("guessIncorrect").style.display = "block"
+      document.getElementById("guessIncorrect").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
+    }
+    if (player.currentChallenge.outOfPlaceLetters.length > 0) {
+      document.getElementById("guessOutOfPlace").style.display = "block"
+      document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
+    }
 
-    document.getElementById("guessIncorrect").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
-    document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.outOfPlaceLetters.join(' | ');
     document.getElementById("message").innerHTML = "You got " + (check.incorrectLetters.length > 0 ? check.incorrectLetters.join(', ') : "none ") + " incorrect | You got " + (check.outOfPlaceLetters.length > 0 ? check.outOfPlaceLetters.join(', ') : "none") + " out of place";
     focusNextOpenInput();
   }
@@ -1232,7 +1238,7 @@ const playRound = async () => {
   const start = () => {
     let w = usw(h);
 
-    let startTime = 1000;//calcTime(w);
+    let startTime = calcTime(joinWord(w));
     setSession(w, h, startTime);
     document.getElementById("message2").innerHTML = "";
     createInputs(w);
@@ -1549,6 +1555,8 @@ const getGameData = async () => {
 
     closeGameData();
 
+    closeRightPanel();
+
     await setCookie("player", dataStr);
 
     await checkPlayer();
@@ -1720,5 +1728,17 @@ const getHTHHint = () => {
   } else {
     document.getElementById("getHint").innerHTML = `${hintsRemaining} hints rem`;
   }
+
+}
+
+const closeRightPanel = () => {
+  document.getElementById("rightSidePanel").classList.remove("rightPanelIsActive");
+  document.getElementById("rightSidePanelWrapper").style.display = "none";
+
+}
+
+const openRightPanel = () => {
+  document.getElementById("rightSidePanelWrapper").style.display = "flex";
+  document.getElementById("rightSidePanel").classList.add("rightPanelIsActive");
 
 }

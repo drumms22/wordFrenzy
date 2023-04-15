@@ -107,6 +107,7 @@ socket.on('lobbyCreated', (data) => {
   inLobby = true;
   setCookie("inLobby", true);
   document.getElementById("headToHeadWrapper").style.display = "none";
+  closeRightPanel();
   document.getElementById("startMenu").style.display = "none";
   document.getElementById("lobby").style.display = "flex";
   player.lobbyData.lobby = data.lobby;
@@ -125,7 +126,9 @@ socket.on('joined', (data) => {
   inLobby = true;
   player.lobbyData.player = data.player;
   player.lobbyData.lobby = data.lobby;
+
   document.getElementById("headToHeadCode").value = "";
+  closeRightPanel();
   document.getElementById("headToHeadWrapper").style.display = "none";
   document.getElementById("startMenu").style.display = "none";
   document.getElementById("lobby").style.display = "flex";
@@ -339,19 +342,19 @@ const updatePlayerDisplay = (players, gameStarted) => {
 
   let progress = !p[0].wordsGuessed ? "Waiting" : p[0].wordsGuessed.length > 2 ? 3 : p[0].wordsGuessed.length;
   let div = "";
-  div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h3>You</h3> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
+  div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>You</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
 
   for (let i = 0; i < players.length; i++) {
     if (players[i].id.toString() !== playerId) {
       let progress = players[i].wordsGuessed.length > 2 ? 3 : players[i].wordsGuessed.length;
-      div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h3>Player ${(i + 1)}</h3> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
+      div += `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>Player ${(i + 1)}</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>${hthStarted ? progress + "/3" : "Waiting"}</p></div></div>`;
     }
   }
 
   if (div !== "") {
     document.getElementById("lobbyPlayerDisplayBody").innerHTML = div;
   } else {
-    document.getElementById("lobbyPlayerDisplayBody").innerHTML = `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h3>No Player</h3> </div><div class="lobbyPlayerBoxBody"><p>Waiting</p></div></div>`;
+    document.getElementById("lobbyPlayerDisplayBody").innerHTML = `<div class="lobbyPlayerBox"><div class="lobbyPlayerBoxHeader"><h4>No Player</h4> </div><div class="lobbyPlayerBoxBody"><p style='font-size: 10px'>Waiting</p></div></div>`;
   }
 }
 
