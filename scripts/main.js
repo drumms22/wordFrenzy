@@ -85,10 +85,14 @@ const loadData = (spc) => {
   } else {
     document.getElementById("statsTitle").innerHTML = "Player"
   }
+
+  const hours = Math.floor(player.totalTimeSpent / 3600);  // 1 hour
+  const minutes = Math.floor((player.totalTimeSpent % 3600) / 60);  // 50 minutes
+  const seconds = player.totalTimeSpent % 60;
   let rank = Math.floor(player.totalPoints / 100);
   let maxSpd = "<span style='font-size: 10px;'>/100</span>";
   document.getElementById("totalPoints").innerHTML = player.totalPoints;
-  document.getElementById("totalTime").innerHTML = player.totalTimeSpent + "s";
+  document.getElementById("totalTime").innerHTML = `${hours}h ${minutes}m ${seconds}s`;
   document.getElementById("totalWords").innerHTML = player.totalWordsCompleted;
   document.getElementById("totalChallenges").innerHTML = player.totalChallenegesCompleted;
   document.getElementById("totalRank").innerHTML = rank;
