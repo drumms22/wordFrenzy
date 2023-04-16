@@ -153,6 +153,20 @@
                 </div>
                 <button onclick="startHTH()" id="startHTH">Play Frenzy</button>
               </div>
+              <div id="lobbyPanel">
+                <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
+                  <button id="leftSidePanelBtn" onclick="closeLobbyPanel()" class="panelCloseBtn">X</button>
+                </div>
+                <div id="lobbyPlayerDisplayWrapper">
+                  <div class="lobbyDisplayHeader">
+                    <h2>Players</h2>
+                  </div>
+                  <div id="lobbyPlayerDisplayBody">
+        
+                  </div>
+                </div>
+                <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
+              </div>
             </div>
           </div>
           <div class="flip-card-back">
@@ -212,20 +226,6 @@
               </div>
             </div>
           </div>
-        </div>
-        <div id="lobbyPanel">
-          <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
-            <button id="leftSidePanelBtn" onclick="closeLobbyPanel()" class="panelCloseBtn">X</button>
-          </div>
-          <div id="lobbyPlayerDisplayWrapper">
-            <div class="lobbyDisplayHeader">
-              <h2>Players</h2>
-            </div>
-            <div id="lobbyPlayerDisplayBody">
-  
-            </div>
-          </div>
-          <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
         </div>
         <!-- <div id="lobbyPlayerDisplayWrapper2">
           <h2>Players</h2>

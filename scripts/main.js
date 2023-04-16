@@ -1596,7 +1596,8 @@ const getNewGameCode = async () => {
   let code = await getCookie("gameCode");
   let player = await getCookie("player");
   let username = document.getElementById("username");
-  let match = /^[a-zA-Z0-9@!_$]+$/.test(username);
+  let match = /^[a-zA-Z0-9@!_$]+$/.test(username.value);
+
   if (username.value.length < 3 || username.value.length > 10 || !match) {
     alert("Username: min 3, max 10, can include letters, numbers, @, !, _, $");
     return;

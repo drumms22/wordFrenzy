@@ -1522,4 +1522,14 @@ button:hover {
   .mobileBtnHeader {
     padding-bottom: 10px;
   }
+  .rightPanelIsActive {
+    right: 0 !important;
+    width: 100% !important;
+    border-left: none;
+  }
+  .leftPanelIsActive {
+    left: 0 !important;
+    width: 100% !important;
+    border-right: none;
+  }
 }
