@@ -1,7 +1,7 @@
 body {
   width: 100%;
-  position: relative;
-  min-height: 1000px;
+
+  min-height: 100px;
   background: rgb(6, 6, 6);
   background: linear-gradient(
     180deg,
@@ -44,7 +44,7 @@ button:hover {
 }
 #container {
   width: 100%;
-  height: 100%;
+
   position: relative;
 }
 #titleWrapper {
@@ -942,6 +942,10 @@ button:hover {
 #openLeftPanelBtn {
   display: none;
 }
+#leftPanelCloseBtnWrapper {
+  display: none;
+}
+
 #openRightPanelBtn {
   position: absolute;
   right: 150;
@@ -1011,11 +1015,7 @@ button:hover {
   transform: rotateY(180deg);
 }
 
-@media (max-width: 768px) {
-  body {
-    min-height: 1000px;
-  }
-
+@media (max-width: 1000px) {
   #openRightPanelBtn {
     position: relative;
     width: 30%;
