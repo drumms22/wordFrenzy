@@ -1254,7 +1254,7 @@ const playRound = async () => {
   const start = () => {
     let w = usw(h);
 
-    let startTime = 2000; //calcTime(joinWord(w));
+    let startTime = calcTime(joinWord(w));
     setSession(w, h, startTime);
     document.getElementById("message2").innerHTML = "";
     createInputs(w);
