@@ -204,6 +204,9 @@ socket.on('nextWord', (data) => {
   hintsRemaining = 2;
   document.getElementById("getHint").style.display = "block";
   document.getElementById("getHint").innerHTML = `${hintsRemaining} hints rem`;
+  document.getElementById("prevWords").innerHTML = "";
+  document.getElementById("guessOutOfPlace").style.display = "none";
+  document.getElementById("guessIncorrect").style.display = "none";
   extr = data.wordData.extr;
   let w = usw(data.wordData.word);
   setSession(w, data.wordData.word, player.currentTime);
@@ -285,8 +288,8 @@ socket.on("newLobby", (data) => {
   let p = data.lobby.players.filter((x) => x.id.toString() === playerId);
   player.lobbyData.player = p[0];
   setCookie("lobbyCode", data.lobby.code, 100);
-  document.getElementById("message2").innerHTML = "";
   setTimeout(() => {
+    document.getElementById("message2").innerHTML = "";
     document.getElementById("flipGameInner").classList.remove("flip-game");
     socket.emit("refresh", { lobbyCode: data.lobby.code });
     updatePlayerDisplay(data.lobby.players, false);
