@@ -85,13 +85,13 @@ const loadData = (spc) => {
   } else {
     document.getElementById("statsTitle").innerHTML = "Player"
   }
-
+  let rank = Math.floor(player.totalPoints / 100);
   let maxSpd = "<span style='font-size: 10px;'>/100</span>";
   document.getElementById("totalPoints").innerHTML = player.totalPoints;
   document.getElementById("totalTime").innerHTML = player.totalTimeSpent + "s";
   document.getElementById("totalWords").innerHTML = player.totalWordsCompleted;
   document.getElementById("totalChallenges").innerHTML = player.totalChallenegesCompleted;
-
+  document.getElementById("totalRank").innerHTML = rank;
   let spcMess = 100 - spc;
   document.getElementById("currentCPS").innerHTML = spcMess + "" + maxSpd;
 

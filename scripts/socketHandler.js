@@ -166,6 +166,9 @@ socket.on('unableToJoin', (data) => {
 
   alert(data.message);
 })
+socket.on("alert", (msg) => {
+  alert(msg);
+})
 
 //THIS IS FOR ALL CLIENTS ----------------------------------------------------
 
