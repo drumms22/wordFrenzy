@@ -79,6 +79,13 @@ sounds.forEach(function (sound) {
 
 
 const loadData = (spc) => {
+  let username = getCookie("username");
+  if (username) {
+    document.getElementById("statsTitle").innerHTML = username;
+  } else {
+    document.getElementById("statsTitle").innerHTML = "Player"
+  }
+
   let maxSpd = "<span style='font-size: 10px;'>/100</span>";
   document.getElementById("totalPoints").innerHTML = player.totalPoints;
   document.getElementById("totalTime").innerHTML = player.totalTimeSpent + "s";
