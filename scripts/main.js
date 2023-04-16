@@ -954,16 +954,20 @@ const handlePlayerAttempt = async () => {
     //   player.currentChallenge.outOfPlaceLetters = player.currentChallenge.outOfPlaceLetters.concat(newOOP);
 
     // }
+    let mainMess = "";
     if (player.currentChallenge.incorrectLetters.length > 0) {
       document.getElementById("guessIncorrect").style.display = "block"
       document.getElementById("guessIncorrect").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
+      mainMess += "You got some incorrect";
     }
     if (player.currentChallenge.outOfPlaceLetters.length > 0) {
       document.getElementById("guessOutOfPlace").style.display = "block"
       document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.outOfPlaceLetters.join(' | ');
+      if (mainMess.length > 0) mainMess += " and "
+      mainMess += "You got some out of place";
     }
-
-    document.getElementById("message").innerHTML = "You got " + (check.incorrectLetters.length > 0 ? check.incorrectLetters.join(', ') : "none ") + " incorrect | You got " + (check.outOfPlaceLetters.length > 0 ? check.outOfPlaceLetters.join(', ') : "none") + " out of place";
+    document.getElementById("message").innerHTML = mainMess;
+    //"You got " + (check.incorrectLetters.length > 0 ? check.incorrectLetters.join(', ') : "none ") + " incorrect | You got " + (check.outOfPlaceLetters.length > 0 ? check.outOfPlaceLetters.join(', ') : "none") + " out of place";
     focusNextOpenInput();
   }
 
@@ -1249,7 +1253,7 @@ const playRound = async () => {
   const start = () => {
     let w = usw(h);
 
-    let startTime = calcTime(joinWord(w));
+    let startTime = 2000; //calcTime(joinWord(w));
     setSession(w, h, startTime);
     document.getElementById("message2").innerHTML = "";
     createInputs(w);
@@ -1664,7 +1668,7 @@ const updateGameData = async () => {
 }
 
 const openGameData = () => {
-  if (player.currentTime > 0) return;
+  if (inLobby || player.currentTime > 0) return;
   document.getElementById("getMyDataWrapper").style.display = "flex";
 }
 
@@ -1784,11 +1788,11 @@ const openRightPanel = () => {
 
 const closeLeftPanel = () => {
   document.getElementById("mobileStatsWrapper").classList.remove("leftPanelIsActive");
-
+  document.getElementById("rightSidePanelWrapper").style.display = "none";
 }
 
 const openLeftPanel = () => {
-
+  document.getElementById("rightSidePanelWrapper").style.display = "flex";
   document.getElementById("mobileStatsWrapper").classList.add("leftPanelIsActive");
 
 }

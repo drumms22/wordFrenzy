@@ -1,13 +1,17 @@
 body {
   width: 100%;
-
-  min-height: 100px;
-  background: rgb(6, 6, 6);
   background: linear-gradient(
     180deg,
     rgba(6, 6, 6, 1) 68%,
     rgba(125, 59, 59, 1) 100%
   );
+  background-attachment: fixed;
+  height: 100vh;
+  /* background: linear-gradient(
+    180deg,
+    rgba(6, 6, 6, 1) 68%,
+    rgba(125, 59, 59, 1) 100%
+  ); */
   color: #212324;
   text-shadow: 0 0 1px rgb(255, 255, 255);
   padding: 0;
@@ -689,6 +693,9 @@ button:hover {
   color: #000000;
   cursor: pointer;
 }
+#musicBtnDiv {
+  width: 150px;
+}
 #musicBtn {
   margin-top: 15px;
   width: 150px;
@@ -719,10 +726,7 @@ button:hover {
   color: #000000;
   cursor: pointer;
 }
-#musicBtnDiv {
-  width: 150px;
-  height: 100px;
-}
+
 #lobby {
   width: 100%;
   display: none;
@@ -1189,7 +1193,7 @@ button:hover {
   #lobbyPlayerDisplayWrapper {
     position: relative;
     width: 100%;
-    height: 100%;
+    height: 70%;
     display: none;
     flex-direction: column;
     align-items: center;
@@ -1218,6 +1222,7 @@ button:hover {
     flex-direction: column;
     background-color: #ffffff;
     align-items: center;
+
     z-index: 9999;
     top: 0;
     left: -402;
@@ -1288,9 +1293,9 @@ button:hover {
     transition: 0.25s;
   }
   #leaveLobby {
-    position: absolute;
-    top: 400;
-    right: 150;
+    position: relative;
+    top: 0;
+    right: 0;
     width: 150px;
     height: 50px;
     background-color: #9b3434;
@@ -1298,5 +1303,214 @@ button:hover {
     font-size: 20px;
     transition: 0.25s;
     z-index: 99999;
+  }
+  #musicBtn {
+    margin-top: 15px;
+    width: 150px;
+    height: 100px;
+    background-color: #9b3434;
+    color: #ffffff;
+    font-size: 20px;
+  }
+  #musicBtnDiv {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  #gameContent {
+    position: relative;
+    display: flex;
+    width: 100%;
+    margin-left: 0;
+    flex-direction: column;
+    align-items: center;
+    border: 0;
+    padding: 0;
+    background-color: #212324;
+    color: #f0f8ff;
+    border-radius: 0;
+    margin-top: 1.5%;
+  }
+  #header {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+  .scoreTimeBox {
+    width: 33%;
+    display: flex;
+    flex-direction: column;
+  }
+  .scoreTimeBox:last-child {
+    width: 37%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+  #messageWrapper {
+    margin: 0;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    background-color: rgb(23, 23, 23);
+    height: 100px;
+    border: none;
+    border-bottom: 1px solid #9b3434;
+    border-top: 1px solid #9b3434;
+    border-radius: 0;
+  }
+  .messageBox {
+    height: 40%;
+    width: 95%;
+    flex-wrap: wrap;
+  }
+  #message {
+    font-size: 13px;
+  }
+  #message2 {
+    font-size: 11px;
+  }
+  #correctWordsWrapper {
+    width: 80%;
+    height: 50px;
+    position: absolute;
+    top: 43%;
+    left: 5%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    z-index: 999;
+    align-items: center;
+  }
+  #correctWordsWrapper > h5 {
+    margin-right: 5px;
+  }
+  #prevGuessesBox {
+    width: 80%;
+    height: 50px;
+    position: absolute;
+    top: 50%;
+    left: 5%;
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+    flex-wrap: nowrap;
+    z-index: 999;
+  }
+
+  #prevWords {
+    height: 50px;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  #prevWords li {
+    color: #ffffff;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-left: 5px;
+  }
+  #correctWords {
+    height: 50px;
+    width: 80%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+  #wordsWrapper {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    height: 330px;
+    justify-content: flex-start;
+    border-bottom: 1px solid #9b3434;
+    padding-top: 2%;
+  }
+  #words {
+    width: 80%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .letterBox {
+    height: 50px;
+    width: 35px;
+    background-color: #f0f8ff;
+    color: black;
+    border: 2px solid black;
+  }
+  #guessContainer {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 0;
+    height: 100px;
+  }
+  #guess {
+    margin-top: 2%;
+    width: 30%;
+    height: 50px;
+    display: none;
+    background-color: #9b3434;
+    color: #ffffff;
+  }
+  #continueGame {
+    margin-top: 2%;
+    width: 30%;
+    height: 50px;
+
+    background-color: #9b3434;
+    color: #ffffff;
+  }
+  #getHint {
+    width: 30%;
+  }
+  #guessIncorrect {
+    height: 50px;
+    background-color: #7d0000;
+    padding: 5px;
+    display: none;
+  }
+  #guessOutOfPlace {
+    height: 50px;
+    background-color: #926b00;
+    padding: 5px;
+    display: none;
+  }
+  #guessHistory {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+    justify-content: flex-start;
+    height: 200px;
+  }
+  .guessHistoryContentBox {
+    width: 100%;
+    align-items: start;
+
+    display: flex;
+    flex-direction: row;
+    height: 50px;
+    padding-left: 10px;
+  }
+  #guessOutOfPlace {
+    margin-left: 20px;
+    height: 25px;
+  }
+  #guessIncorrect {
+    margin-left: 40px;
+    height: 25px;
+  }
+  .mobileBtnHeader {
+    padding-bottom: 10px;
   }
 }
