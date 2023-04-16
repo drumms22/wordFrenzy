@@ -12,7 +12,7 @@ body {
   text-shadow: 0 0 1px rgb(255, 255, 255);
   padding: 0;
   margin: 0;
-  font-family: "Rampart One", cursive;
+  font-family: "Rampart One", Arial, sans-serif, cursive;
 }
 ul {
   list-style: none;
@@ -1015,12 +1015,13 @@ button:hover {
   transform: rotateY(180deg);
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   #openRightPanelBtn {
     position: relative;
     width: 30%;
     right: 0;
     top: 0;
+    height: 50px;
     margin-top: 10px;
   }
   #openLeftPanelBtn {
@@ -1133,5 +1134,44 @@ button:hover {
   #leftSidePanelBtn {
     margin-right: 15px;
     margin-top: 5px;
+  }
+  .htpContent {
+    width: 90%;
+    padding: 5px;
+  }
+  .htpContent > p {
+    font-size: 13px;
+  }
+  #gameCode {
+    font-size: 15px;
+    width: 70%;
+  }
+  #username {
+    font-size: 15px;
+    width: 70%;
+  }
+  .input-row {
+    flex-direction: column;
+  }
+  #getGameDataBtn {
+    width: 30%;
+    margin-top: 5px;
+  }
+  #clickHere {
+    width: 30%;
+    margin-top: 5px;
+  }
+  #headToHeadBtn {
+    width: 30%;
+    margin-top: 5px;
+  }
+  .newCodeMessageFont {
+    font-size: 14px;
+  }
+  #headToHeadCode {
+    width: 70%;
+  }
+  #createLobby {
+    width: 30%;
   }
 }
