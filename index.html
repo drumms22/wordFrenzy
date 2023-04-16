@@ -20,6 +20,10 @@
   </head>
   <body>
     <div id="container">
+      <div style="padding: 0;width: 100%;display: flex; flex-direction: row; justify-content: space-evenly;">
+        <button id="openLeftPanelBtn" onclick="openLeftPanel()">Open Stats</button>
+        <button id="openRightPanelBtn" onclick="openRightPanel()">Open Menu</button>
+      </div>
       <div id="flipGame" class="flip-card">
         <div id="flipGameInner" class="flip-card-inner">
           <div class="flip-card-front">
@@ -282,10 +286,10 @@
 
         <button onclick="hideHtp()" id="htpBtnClose">Close</button>
       </div>
-      <button id="openRightPanelBtn" onclick="openRightPanel()">Open Menu</button>
+
       <div id="rightSidePanelWrapper"></div>
         <div id="rightSidePanel">
-          <div id="panelCloseBtnWrapper">
+          <div class="panelCloseBtnWrapper">
             <button id="rightSidePanelBtn" onclick="closeRightPanel()" class="panelCloseBtn">X</button>
           </div>
           <button onclick="showHtp()" id="htpBtn">How to Play</button>
@@ -329,33 +333,38 @@
         </div>
         <button onclick="closeGameData()" id="htpBtnClose">Close</button>
       </div>
-      <div id="stats"> 
-        <div class="statsBoxTitle">
-          <h2 id="statsTitle">My stats</h2>
+      <div id="mobileStatsWrapper">
+        <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
+          <button id="leftSidePanelBtn" onclick="closeLeftPanel()" class="panelCloseBtn">X</button>
         </div>
-        <div class="statsBox">
-          <h4 style="text-decoration: underline">Total Points</h4>
-          <p id="totalPoints">0</p>
-        </div>
-        <div class="statsBox">
-          <h4 style="text-decoration: underline">Total Rank</h4>
-          <p id="totalRank">0</p>
-        </div>
-        <div class="statsBox">
-          <h4 style="text-decoration: underline">Total Time</h4>
-          <p id="totalTime">0</p>
-        </div>
-        <div class="statsBox">
-          <h4 style="text-decoration: underline">Total Words</h4>
-          <p id="totalWords">0</p>
-        </div>
-        <div class="statsBox">
-          <h4 style="text-decoration: underline">Total Fenzy's</h4>
-          <p id="totalChallenges">0</p>
-        </div>
-        <div class="statsBox">
-          <h4 style="text-decoration: underline">Current Sp/d</h4>
-          <p id="currentCPS">0</p>
+        <div id="stats"> 
+          <div class="statsBoxTitle">
+            <h2 id="statsTitle">My stats</h2>
+          </div>
+          <div class="statsBox">
+            <h4 style="text-decoration: underline">Total Points</h4>
+            <p id="totalPoints">0</p>
+          </div>
+          <div class="statsBox">
+            <h4 style="text-decoration: underline">Total Rank</h4>
+            <p id="totalRank">0</p>
+          </div>
+          <div class="statsBox">
+            <h4 style="text-decoration: underline">Total Time</h4>
+            <p id="totalTime">0</p>
+          </div>
+          <div class="statsBox">
+            <h4 style="text-decoration: underline">Total Words</h4>
+            <p id="totalWords">0</p>
+          </div>
+          <div class="statsBox">
+            <h4 style="text-decoration: underline">Total Fenzy's</h4>
+            <p id="totalChallenges">0</p>
+          </div>
+          <div class="statsBox">
+            <h4 style="text-decoration: underline">Current Sp/d</h4>
+            <p id="currentCPS">0</p>
+          </div>
         </div>
       </div>
       <div id="headToHeadWrapper">

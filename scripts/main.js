@@ -1779,3 +1779,16 @@ const openRightPanel = () => {
   document.getElementById("rightSidePanel").classList.add("rightPanelIsActive");
 
 }
+
+
+
+const closeLeftPanel = () => {
+  document.getElementById("mobileStatsWrapper").classList.remove("leftPanelIsActive");
+
+}
+
+const openLeftPanel = () => {
+
+  document.getElementById("mobileStatsWrapper").classList.add("leftPanelIsActive");
+
+}
