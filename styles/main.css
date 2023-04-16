@@ -1340,7 +1340,7 @@ button:hover {
     justify-content: space-evenly;
   }
   .scoreTimeBox {
-    width: 33%;
+    width: 31%;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -1353,10 +1353,11 @@ button:hover {
     font-size: 16px;
   }
   .scoreTimeBox:last-child {
-    width: 37%;
+    width: 30%;
     display: flex;
     flex-direction: column;
     align-items: start;
+    margin-left: 2%;
   }
   #messageWrapper {
     margin: 0;
@@ -1503,9 +1504,8 @@ button:hover {
     height: 200px;
   }
   .guessHistoryContentBox {
-    width: 100%;
+    width: 95%;
     align-items: start;
-
     display: flex;
     flex-direction: row;
     height: 50px;
