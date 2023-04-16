@@ -213,6 +213,7 @@ button:hover {
 .letterBox {
   height: 50px;
   width: 40px;
+  font-size: 30px;
   background-color: #f0f8ff;
   color: black;
   border: 2px solid black;

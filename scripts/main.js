@@ -663,6 +663,7 @@ function createInputs(sentence) {
       input.dataset.index = j;
       input.placeholder = '_';
       input.autocomplete = "off";
+      input.autocapitalize = "none";
       input.oninput = handleInputFocus;
       input.onkeydown = handleBackspace;
       input.classList.add('letterBox');
