@@ -821,7 +821,16 @@ button:hover {
   right: 125;
   text-align: center;
 }
-#lobbyPlayerDisplayWrapper > h2 {
+.lobbyDisplayHeader {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e51300;
+  height: 80px;
+  justify-content: center;
+}
+.lobbyDisplayHeader > h2 {
   color: #fff;
   margin: 5;
   text-shadow: 2px 2px 1px black;
@@ -972,6 +981,9 @@ button:hover {
   flex-direction: row;
   justify-content: center;
   align-items: center;
+}
+#openLobbyPanelBtn {
+  display: none;
 }
 /* ======================================================================================================================================*/
 
@@ -1173,5 +1185,118 @@ button:hover {
   }
   #createLobby {
     width: 30%;
+  }
+  #lobbyPlayerDisplayWrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    background-color: #ffffff;
+    border: 0;
+    border-radius: 0;
+    top: 0;
+    left: 0;
+    z-index: 9999;
+  }
+  /* #joinCodeDiplayWrapper {
+    position: absolute;
+    width: 100px;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    color: #fff;
+    top: 0;
+    left: 0;
+  } */
+  #lobbyPanel {
+    position: fixed;
+    width: 400;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background-color: #ffffff;
+    align-items: center;
+    z-index: 9999;
+    top: 0;
+    left: -402;
+    transition: all 0.3s ease;
+  }
+  .lobbyPanelIsActive {
+    left: 0 !important;
+  }
+  #categoriesLobbyWrapper {
+    align-items: center;
+    width: 90%;
+    height: 300px;
+  }
+  #categoriesLobbyContent {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding-bottom: 5%;
+  }
+  .categoriesLobbyItem {
+    width: 80px;
+    height: 40px;
+    color: #ffffff;
+    border-radius: 5px;
+  }
+  #lobbyFrenzyDisplayWrapper {
+    width: 100%;
+  }
+  .lobbyFrenzyDisplayBox > h2 {
+    font-size: 15px;
+  }
+  .lobbyFrenzyDisplayBox > p {
+    font-size: 15px;
+  }
+  #startHTH {
+    width: 30%;
+  }
+  #joinCodeDiplayWrapper {
+    position: relative;
+    width: 50%;
+    top: 0;
+    left: 0;
+  }
+
+  #joinCodeDiplayWrapper > h4 {
+    margin: 5;
+    text-decoration: underline;
+  }
+  #joinCodeDiplayWrapper > h3 {
+    margin: 5;
+    font-size: 13px;
+  }
+  #mobileLobbySubHeader {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+  #openLobbyPanelBtn {
+    width: 25%;
+    margin-top: 1%;
+    display: block;
+    height: 50px;
+    background-color: #9b3434;
+    color: #ffffff;
+    transition: 0.25s;
+  }
+  #leaveLobby {
+    position: absolute;
+    top: 400;
+    right: 150;
+    width: 150px;
+    height: 50px;
+    background-color: #9b3434;
+    color: #ffffff;
+    font-size: 20px;
+    transition: 0.25s;
+    z-index: 99999;
   }
 }

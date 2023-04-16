@@ -83,6 +83,13 @@
               <div id="lobbyTitleWrapper">
                 <h1 id="lobbyTitle">My Lobby</h1>
               </div>
+              <div id="mobileLobbySubHeader">
+                <div id="joinCodeDiplayWrapper">
+                  <h4>Join Code</h4>
+                  <h3 id="lobbyJoinCodeDisplay"></h3>
+                </div>
+                <button onclick="openLobbyPanel()" id="openLobbyPanelBtn">View Lobby</button>
+              </div>
               <div class="largeBox" id="categoriesLobbyWrapper">
                 <h2>Categories</h2>
                 <div id="lobbyFrenzyWrapper">
@@ -146,11 +153,6 @@
                 </div>
                 <button onclick="startHTH()" id="startHTH">Play Frenzy</button>
               </div>
-              <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
-              <div id="joinCodeDiplayWrapper">
-                <h4>Join Code</h4>
-                <h3 id="lobbyJoinCodeDisplay"></h3>
-              </div>
             </div>
           </div>
           <div class="flip-card-back">
@@ -211,11 +213,19 @@
             </div>
           </div>
         </div>
-        <div id="lobbyPlayerDisplayWrapper">
-          <h2>Players</h2>
-          <div id="lobbyPlayerDisplayBody">
-
+        <div id="lobbyPanel">
+          <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
+            <button id="leftSidePanelBtn" onclick="closeLobbyPanel()" class="panelCloseBtn">X</button>
           </div>
+          <div id="lobbyPlayerDisplayWrapper">
+            <div class="lobbyDisplayHeader">
+              <h2>Players</h2>
+            </div>
+            <div id="lobbyPlayerDisplayBody">
+  
+            </div>
+          </div>
+          <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
         </div>
         <!-- <div id="lobbyPlayerDisplayWrapper2">
           <h2>Players</h2>

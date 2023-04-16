@@ -92,6 +92,7 @@ const handleHTHGuess = (data) => {
 
 const leaveLobby = () => {
   socket.emit('leaveLobby', { lobby: player.lobbyData.lobby, player: player.lobbyData.player })
+  closeLobbyPanel();
   document.getElementById("lobbyPlayerDisplayWrapper").style.display = "none";
   document.getElementById("lobby").style.display = "none";
   document.getElementById("startMenu").style.display = "flex";

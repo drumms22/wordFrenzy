@@ -1792,3 +1792,14 @@ const openLeftPanel = () => {
   document.getElementById("mobileStatsWrapper").classList.add("leftPanelIsActive");
 
 }
+
+const closeLobbyPanel = () => {
+  document.getElementById("lobbyPanel").classList.remove("lobbyPanelIsActive");
+
+}
+
+const openLobbyPanel = () => {
+
+  document.getElementById("lobbyPanel").classList.add("lobbyPanelIsActive");
+
+}
