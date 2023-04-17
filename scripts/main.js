@@ -164,7 +164,7 @@ const handleHint = async (index, cat) => {
     type: "normal",
     hintsUsed: player.currentChallenge.hints.used,
   }
-
+  console.log("handleHintCat: ", cat);
   switch (cat) {
     case "wordsItem":
       payload.word = player.currentWord;
@@ -200,7 +200,7 @@ const handleHint = async (index, cat) => {
 
 
   let res = await getHint(JSON.stringify(payload));
-
+  console.log("hint res: ", res);
   if (!res.error || res != undefined || res != null) {
     player.currentChallenge.hints.used = res[0].hintsUsed;
     player.currentChallenge.hints.completed = res[0].completed;
@@ -1453,9 +1453,11 @@ const getHint = async (payload) => {
       'Content-Type': 'application/json'
     }
   });
+  console.log(payload)
   //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
+  console.log(dataJson)
   return dataJson.data;
 }
 
