@@ -1105,8 +1105,8 @@ const nextLevel = () => {
 const intermission = () => {
 
   let count = 3;
-
   document.getElementById("prevWords").innerHTML = "";
+  document.getElementById("prevWords").display = "none";
   document.getElementById("prevWords").style.overflowY = "hidden";
   document.getElementById("message2").innerHTML = "";
   timer = setInterval(() => {
@@ -1296,10 +1296,12 @@ const continueGame = () => {
   document.getElementById("continueGame").style.display = "none";
   player.currentChallenge.challengeCompleted = false;
   document.getElementById("correctWords").innerHTML = "";
+  document.getElementById("correctWords").display = "none";
   document.getElementById("words").innerHTML = "";
   document.getElementById("message2").innerHTML = "";
   document.getElementById("time").innerHTML = "";
   document.getElementById("prevWords").innerHTML = "";
+  document.getElementById("prevWords").display = "none";
   displayMessage("Get ready!!!")
   setTimeout(() => {
     playRound();
