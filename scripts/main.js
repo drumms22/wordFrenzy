@@ -80,6 +80,7 @@ sounds.forEach(function (sound) {
 
 const loadData = (spc) => {
   let username = getCookie("username");
+  console.log(username);
   if (username) {
     document.getElementById("statsTitle").innerHTML = username;
   } else {
@@ -164,7 +165,6 @@ const handleHint = async (index, cat) => {
     type: "normal",
     hintsUsed: player.currentChallenge.hints.used,
   }
-  console.log("handleHintCat: ", cat);
   switch (cat) {
     case "wordsItem":
       payload.word = player.currentWord;
@@ -200,11 +200,23 @@ const handleHint = async (index, cat) => {
 
 
   let res = await getHint(JSON.stringify(payload));
-  console.log("hint res: ", res);
+
   if (!res.error || res != undefined || res != null) {
     player.currentChallenge.hints.used = res[0].hintsUsed;
     player.currentChallenge.hints.completed = res[0].completed;
     player.currentChallenge.hints.hintMessages.push(res[0].hint);
+    console.log(res[0].hint.length);
+    let size = "";
+    if (res[0].hint.length < 30) {
+      size = "16px";
+    } else if (res[0].hint.length < 60) {
+      size = "13px";
+    } else if (res[0].hint.length < 120) {
+      size = "11px";
+    } else {
+      size = "11px";
+    }
+    document.getElementById("message2").style.fontSize = size;
     document.getElementById("message2").innerHTML = res[0].hint;
   } else {
     player.currentChallenge.hints.completed = true;
@@ -212,22 +224,20 @@ const handleHint = async (index, cat) => {
   }
 }
 
-
 const calculateMaxHints = (totalTime) => {
   let maxHints = Math.floor(totalTime / 15) + 1; // adjust 15 to change interval time
 
   // cap at 3 hints
-  maxHints = Math.min(3, maxHints);
+  maxHints = Math.min(totalTime < 20 ? 0 : totalTime < 30 ? 1 : 2, maxHints);
 
   return maxHints;
 };
 const calculateHintTriggers = (totalTime) => {
-  if (totalTime < 30) {
+  if (totalTime < 6) {
     return { hints: 0, triggers: [] };
   }
-
   const maxHints = calculateMaxHints(totalTime);
-  const hintTriggers = [];
+  const hintTriggers = [totalTime - 5]; // Add the first hint trigger at the start of the array
   const hintIntervals = [];
   const timePerHint = totalTime / (maxHints + 1);
 
@@ -247,8 +257,8 @@ const calculateHintTriggers = (totalTime) => {
 
     hintTriggers.push(hintTime);
   });
-
-  return { hints: maxHints, triggers: hintTriggers };
+  console.log({ hints: maxHints + 1, triggers: hintTriggers });
+  return { hints: maxHints + 1, triggers: hintTriggers };
 };
 
 
@@ -852,6 +862,8 @@ const handlePlayerAttempt = async () => {
 
   let check = await checkNewGuess(word, guessWSpace);
 
+  console.log(check);
+
   const notMatchedIndexes = check.notMatchedIndexes.concat(check.outOfPlaceIndexes).sort((a, b) => a - b);
   const wordLetters = word.split('');
   const spaces = [...wordLetters.join('').matchAll(new RegExp(" ", 'gi'))].map(a => a.index);
@@ -868,7 +880,7 @@ const handlePlayerAttempt = async () => {
 
   });
 
-  player.currentChallenge.correctLetters = player.currentChallenge.correctLetters.concat(check.correctLetters);
+  player.currentChallenge.correctLetters = check.correctLetters;
   notMatchedIndexes.forEach(index => {
     if (spaces.findIndex((i) => index === i) === -1) {
 
@@ -877,14 +889,13 @@ const handlePlayerAttempt = async () => {
   });
   updatePrevGuesses();
   if (check.correctLetters.length === wordLetters.length) {
+    document.getElementById("correctWords").style.display = "block";
     player.totalWordsCompleted++;
     player.totalTimeSpent += (player.currentChallenge.ogTime - player.currentTime);
     player.totalCharCount += joinWord(word).length;
     addCorrectWord(word);
     displayMessage("Success! You guessed the word");
     handlePoints();
-    document.getElementById("guessIncorrect").innerHTML = "";
-    document.getElementById("guessOutOfPlace").innerHTML = "";
     player.wordsCompleted.push(word);
     calcSpeed((player.currentChallenge.ogTime - player.currentTime), word.length);
     updatePlayer();
@@ -937,24 +948,17 @@ const handlePlayerAttempt = async () => {
     let newTempOOP = player.currentChallenge.outOfPlaceLetters;
 
     for (let i = 0; i < check.outOfPlaceLetters.length; i++) {
-      let oopCount = newTempOOP.filter((l) => l === check.outOfPlaceLetters[i]).length;
+      let oopCount = player.currentChallenge.outOfPlaceLetters.filter((l) => l === check.outOfPlaceLetters[i]).length;
       let wCount = word.split("").filter((l) => l === check.outOfPlaceLetters[i]).length;
       if (oopCount < wCount) {
         newTempOOP.push(check.outOfPlaceLetters[i]);
       }
     }
 
-    player.currentChallenge.outOfPlaceLetters = newTempOOP;
+    let newOOP = updateOutOfPlaceLetters(joinWord(word), check.correctLetters, newTempOOP)
 
-    // let newIncorrect = check.incorrectLetters.filter((l) => !player.currentChallenge.incorrectLetters.includes(l));
-    // if (newIncorrect.length > 0) {
-    //   player.currentChallenge.incorrectLetters = player.currentChallenge.incorrectLetters.concat(newIncorrect);
-    // }
-    // let newOOP = check.outOfPlaceLetters.filter((l) => !player.currentChallenge.outOfPlaceLetters.includes(l));
-    // if (newOOP.length > 0) {
-    //   player.currentChallenge.outOfPlaceLetters = player.currentChallenge.outOfPlaceLetters.concat(newOOP);
+    player.currentChallenge.outOfPlaceLetters = newOOP;
 
-    // }
     let mainMess = "";
     if (player.currentChallenge.incorrectLetters.length > 0) {
       document.getElementById("guessIncorrect").style.display = "block"
@@ -974,7 +978,37 @@ const handlePlayerAttempt = async () => {
 
 };
 
+const updateOutOfPlaceLetters = (word, correctGuessArr, outOfPlace) => {
+  const outOfPlaceCopy = [...outOfPlace];
+  const wordCounts = {};
+  const correctGuessCounts = {};
 
+  // Get counts of letters in word and correctGuessArr
+  for (const letter of word) {
+    wordCounts[letter] = (wordCounts[letter] || 0) + 1;
+  }
+
+  for (const letter of correctGuessArr) {
+    correctGuessCounts[letter] = (correctGuessCounts[letter] || 0) + 1;
+  }
+
+  // Check which letters are out of place
+  for (const letter of outOfPlaceCopy) {
+    if (correctGuessCounts[letter] && correctGuessCounts[letter] >= wordCounts[letter]) {
+      // Remove the letter from the out of place array
+      outOfPlaceCopy.splice(outOfPlaceCopy.indexOf(letter), 1);
+    }
+  }
+
+  for (const letter of correctGuessArr) {
+    if (wordCounts[letter] > (correctGuessCounts[letter] || 0) && !outOfPlaceCopy.includes(letter)) {
+      // Add the letter to the out of place array
+      outOfPlaceCopy.push(letter);
+    }
+  }
+
+  return outOfPlaceCopy;
+};
 
 const clearIncorrectInputs = (inputs) => {
   for (let i = 0; i < inputs.length; i++) {
@@ -1064,6 +1098,7 @@ const checkNewGuess = (word, guess) => {
 
 
 const addCorrectWord = (word) => {
+  console.log(word);
   const li = document.createElement("li");
   li.innerHTML = word;
   document.getElementById("correctWords").appendChild(li);
@@ -1106,7 +1141,11 @@ const intermission = () => {
 
   let count = 3;
   document.getElementById("prevWords").innerHTML = "";
-  document.getElementById("prevWords").display = "none";
+  document.getElementById("prevWords").style.display = "none";
+  document.getElementById("guessOutOfPlace").innerHTML = "";
+  document.getElementById("guessOutOfPlace").style.display = "none";
+  document.getElementById("guessIncorrect").innerHTML = "";
+  document.getElementById("guessIncorrect").style.display = "none";
   document.getElementById("prevWords").style.overflowY = "hidden";
   document.getElementById("message2").innerHTML = "";
   timer = setInterval(() => {
@@ -1253,7 +1292,7 @@ const playRound = async () => {
   let h = res[0];
   const start = () => {
     let w = usw(h);
-
+    console.log(w);
     let startTime = calcTime(joinWord(w));
     setSession(w, h, startTime);
     document.getElementById("message2").innerHTML = "";
@@ -1296,12 +1335,16 @@ const continueGame = () => {
   document.getElementById("continueGame").style.display = "none";
   player.currentChallenge.challengeCompleted = false;
   document.getElementById("correctWords").innerHTML = "";
-  document.getElementById("correctWords").display = "none";
+  document.getElementById("correctWords").style.display = "none";
   document.getElementById("words").innerHTML = "";
   document.getElementById("message2").innerHTML = "";
   document.getElementById("time").innerHTML = "";
   document.getElementById("prevWords").innerHTML = "";
-  document.getElementById("prevWords").display = "none";
+  document.getElementById("prevWords").style.display = "none";
+  document.getElementById("guessOutOfPlace").innerHTML = "";
+  document.getElementById("guessOutOfPlace").style.display = "none";
+  document.getElementById("guessIncorrect").innerHTML = "";
+  document.getElementById("guessIncorrect").style.display = "none";
   displayMessage("Get ready!!!")
   setTimeout(() => {
     playRound();
@@ -1453,11 +1496,11 @@ const getHint = async (payload) => {
       'Content-Type': 'application/json'
     }
   });
-  console.log(payload)
+
   //let data = await fetch(`${url}words/word/?min=${num}&max=${num}&p=${pos}`);
   //use string literals
   let dataJson = await data.json();
-  console.log(dataJson)
+
   return dataJson.data;
 }
 
@@ -1757,26 +1800,6 @@ const handleLobbyCategorySel = (id) => {
 
 createLobbyCategories();
 
-const getHTHHint = () => {
-
-  if (hintsRemaining === 0) return;
-
-  let regex = /Lobby/;
-  let s = lobbySettings.catSel.replace(regex, "")
-
-  handleHint(hintsRemaining, s);
-
-  hintsRemaining--;
-
-
-
-  if (hintsRemaining <= 0) {
-    document.getElementById("getHint").style.display = "none";
-  } else {
-    document.getElementById("getHint").innerHTML = `${hintsRemaining} hints rem`;
-  }
-
-}
 
 const closeRightPanel = () => {
   document.getElementById("rightSidePanel").classList.remove("rightPanelIsActive");

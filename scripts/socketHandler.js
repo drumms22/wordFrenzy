@@ -11,6 +11,10 @@ let lobbySettings = {
 }
 
 let hintsRemaining = 2;
+let isInLobby = getCookie("lobbyCode");
+if (isInLobby) {
+  document.getElementById("lobbyPanel").style.display = "flex";
+}
 
 function connect() {
 
@@ -90,11 +94,28 @@ const handleHTHGuess = (data) => {
 
 }
 
+const getHTHHint = () => {
+
+  if (hintsRemaining === 0) return;
+
+  socket.emit("getHint", { lobbyCode: player.lobbyData.lobby.code, w: usw(player.currentWord), num: hintsRemaining })
+
+  hintsRemaining--;
+
+  if (hintsRemaining <= 0) {
+    document.getElementById("getHint").style.display = "none";
+  } else {
+    document.getElementById("getHint").innerHTML = `${hintsRemaining} hints rem`;
+  }
+
+}
+
 const leaveLobby = () => {
   socket.emit('leaveLobby', { lobby: player.lobbyData.lobby, player: player.lobbyData.player })
   closeLobbyPanel();
-  document.getElementById("lobbyPlayerDisplayWrapper").style.display = "none";
+  document.getElementById("lobbyPanel").style.display = "none";
   document.getElementById("lobby").style.display = "none";
+  document.getElementById("flipGameInner").classList.remove("flip-game");
   document.getElementById("startMenu").style.display = "flex";
   unsetPlayerLobby()
 }
@@ -115,7 +136,7 @@ socket.on('lobbyCreated', (data) => {
   player.lobbyData.lobby = data.lobby;
   player.lobbyData.player = data.lobby.players[0];
   setCookie("lobbyCode", data.lobby.code, 100);
-  document.getElementById("lobbyPlayerDisplayWrapper").style.display = "flex";
+  document.getElementById("lobbyPanel").style.display = "flex";
   document.getElementById("joinCodeDiplayWrapper").style.display = "flex";
   updatePlayerDisplay(data.lobby.players, false);
   document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
@@ -149,7 +170,7 @@ socket.on('joined', (data) => {
   if (!data.player.isCreator) document.getElementById("startHTH").style.display = "none";
   player.lobbyData.player = data.player;
   player.lobbyData.lobby = data.lobby;
-  document.getElementById("lobbyPlayerDisplayWrapper").style.display = "flex";
+  document.getElementById("lobbyPanel").style.display = "flex";
 
   updatePlayerDisplay(data.lobby.players, false);
   setCookie("inLobby", true);
@@ -158,7 +179,7 @@ socket.on('joined', (data) => {
 
 socket.on('unableToJoin', (data) => {
 
-  document.getElementById("lobbyPlayerDisplayWrapper").style.display = "none";
+  document.getElementById("lobbyPanel").style.display = "none";
   document.getElementById("lobby").style.display = "none";
   document.getElementById("startMenu").style.display = "flex";
   if (document.getElementById("headToHeadCode")) document.getElementById("headToHeadCode").value = "";
@@ -171,13 +192,19 @@ socket.on("alert", (msg) => {
   alert(msg);
 })
 
+socket.on("getHint", (hint) => {
+  document.getElementById("message2").innerHTML = hint;
+})
+
 //THIS IS FOR ALL CLIENTS ----------------------------------------------------
 
 //Starts the game for all connected clients
 socket.on('start', (data) => {
 
+  document.getElementById("leaveLobby").style.display = "none";
   hthStarted = true;
-  extr = data.wordData.extr;
+  extra = data.wordData.extr;
+  document.getElementById("loading-screen").style.display = "none";
   document.getElementById("flipGameInner").classList.add("flip-game");
   document.getElementById("score").innerHTML = lobbySettings.diffSel === 0 ? "Easy" : lobbySettings.diffSel === 2 ? "Hard" : lobbySettings.diffSel === 3 ? "Frenzy" : "Normal";
   let regex = /LobbyItem/;
@@ -211,7 +238,7 @@ socket.on('nextWord', (data) => {
   document.getElementById("prevWords").innerHTML = "";
   document.getElementById("guessOutOfPlace").style.display = "none";
   document.getElementById("guessIncorrect").style.display = "none";
-  extr = data.wordData.extr;
+  extra = data.wordData.extr;
   let w = usw(data.wordData.word);
   setSession(w, data.wordData.word, player.currentTime);
   document.getElementById("words").innerHTML = "";
@@ -283,7 +310,12 @@ socket.on('onTimesUp', (data) => {
   updateGameData();
 });
 
+socket.on("loading", () => {
+  document.getElementById("loading-screen").style.display = "flex";
+})
+
 socket.on("newLobby", (data) => {
+
   //await io.to(data.lobby.code).emit("newLobby", { lobbySettings: lobbySettings[newLobby.code], lobby: newLobby });
   lobbySettings = data.lobbySettings;
   player.lobbyData.lobby = data.lobby;
@@ -295,6 +327,7 @@ socket.on("newLobby", (data) => {
   setTimeout(() => {
     document.getElementById("message2").innerHTML = "";
     document.getElementById("flipGameInner").classList.remove("flip-game");
+    document.getElementById("leaveLobby").style.display = "block";
     socket.emit("refresh", { lobbyCode: data.lobby.code });
     updatePlayerDisplay(data.lobby.players, false);
     let creatorMess = "";
@@ -345,6 +378,9 @@ const handleClientLobbySel = () => {
 const updatePlayerDisplay = (players, gameStarted) => {
 
   let playerId = getCookie("gameCode");
+
+  document.getElementById("lobbyPanel").style.display = "flex";
+
 
   p = players.filter((x) => x.id.toString() === playerId);
 

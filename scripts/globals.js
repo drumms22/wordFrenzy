@@ -48,7 +48,7 @@ let playerModel = {
 }
 //https://salmon-barnacle-shoe.cyclic.app/
 //http://localhost:3000/
-const url = "https://word-frenzy-api-production.up.railway.app/";
+const url = "http://localhost:3000/";//"https://word-frenzy-api-production.up.railway.app/";
 
 let extra = "";
 let selectedCategory = "";

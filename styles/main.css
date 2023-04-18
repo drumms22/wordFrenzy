@@ -712,15 +712,13 @@ button:hover {
   cursor: pointer;
 }
 #leaveLobby {
-  position: absolute;
-  top: 400;
-  right: 150;
-  width: 150px;
-  height: 50px;
   background-color: #9b3434;
   color: #ffffff;
   font-size: 20px;
   transition: 0.25s;
+  margin-top: 10px;
+  width: 70%;
+  height: 40px;
 }
 #leaveLobby:hover {
   background-color: #fff;
@@ -814,16 +812,12 @@ button:hover {
 }
 
 #lobbyPlayerDisplayWrapper {
-  position: absolute;
-  width: 200px;
-  display: none;
+  width: 100%;
   flex-direction: column;
   align-items: center;
-  background-color: #e51300;
+  background-color: #ffffff;
   border: 2px solid #e51300;
   border-radius: 5px;
-  top: 200;
-  right: 125;
   text-align: center;
 }
 .lobbyDisplayHeader {
@@ -990,6 +984,34 @@ button:hover {
 #openLobbyPanelBtn {
   display: none;
 }
+#lobbyPanel {
+  position: absolute;
+  right: 130;
+  top: 200;
+  width: 200px;
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  z-index: 99;
+}
+#loading-screen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.98);
+  z-index: 9999;
+  display: none;
+  justify-content: center;
+  align-items: center;
+}
+
+#loading-screen img {
+  width: 300px;
+  height: 300px;
+}
+
 /* ======================================================================================================================================*/
 
 .flip-card {
@@ -1195,7 +1217,7 @@ button:hover {
     position: relative;
     width: 100%;
     height: 70%;
-    display: none;
+    display: flex;
     flex-direction: column;
     align-items: center;
     background-color: #ffffff;
@@ -1219,7 +1241,7 @@ button:hover {
     position: fixed;
     width: 400;
     height: 100%;
-    display: flex;
+    display: none;
     flex-direction: column;
     background-color: #ffffff;
     align-items: center;
@@ -1231,6 +1253,7 @@ button:hover {
   }
   .lobbyPanelIsActive {
     left: 0 !important;
+    width: 100% !important;
   }
   #categoriesLobbyWrapper {
     align-items: center;
@@ -1294,16 +1317,6 @@ button:hover {
     transition: 0.25s;
   }
   #leaveLobby {
-    position: relative;
-    top: 0;
-    right: 0;
-    width: 150px;
-    height: 50px;
-    background-color: #9b3434;
-    color: #ffffff;
-    font-size: 20px;
-    transition: 0.25s;
-    z-index: 99999;
   }
   #musicBtn {
     margin-top: 15px;
