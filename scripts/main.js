@@ -2006,7 +2006,7 @@ const sendInvite = async (playerTo) => {
 const displayPlayersNotIn = async () => {
   let playerId = await getCookie("gameCode");
   let notIn = await fetchInviteData(`notin/?playerFrom=${playerId}`);
-  console.log(notIn);
+
   document.getElementById("notInDiv").innerHTML = "";
   for (let i = 0; i < notIn.length; i++) {
     document.getElementById("notInDiv").innerHTML += `<li class="invite-items">
