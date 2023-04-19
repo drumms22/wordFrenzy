@@ -626,7 +626,8 @@ const hasTooManyOfOneChar = (word, guess, correctGuesses) => {
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function handleInputFocus(event) {
   const currentInput = event.target;
-  if (currentInput.value === "") return;
+
+  if (currentInput.value === "" || currentInput.value === " ") return;
   const inputs = document.querySelectorAll('.letterBox');
   const currentIndex = Array.from(inputs).indexOf(currentInput);
 
