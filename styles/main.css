@@ -571,21 +571,21 @@ button:hover {
   border: 2px solid #9b3434;
 }
 #myDataDiv {
-  padding-top: 5%;
+  padding-top: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
   width: 100%;
+  height: 300px;
 }
 #notInDiv {
   padding-top: 5%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: space-evenly;
   width: 100%;
   padding: 0;
+  height: 300px;
 }
 #sendInvite {
   background-color: #9b3434;
@@ -627,6 +627,7 @@ button:hover {
   width: 20%;
   padding: 5px;
   height: 50px;
+  margin-top: 5%;
 }
 #headToHeadBtn:hover {
   background-color: rgb(255, 255, 255);
@@ -980,7 +981,7 @@ button:hover {
   flex-direction: column;
   align-items: center;
   background-color: #e51300;
-  height: 80px;
+  height: 70px;
   justify-content: center;
 }
 .lobbyDisplayHeader > h2 {

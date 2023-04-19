@@ -1877,7 +1877,14 @@ if (!inLobby) {
 const viewInvites = () => {
   document.getElementById("headToHeadBtn").classList.remove("invite-button");
   document.getElementById('invitesDisplayWrapper').style.display = "flex";
-  displayInvites();
+
+  if (player.invites.length > 0) {
+    displayInvites();
+  } else {
+    document.getElementById("inviteCount").innerHTML = `0 invites to view`;
+    document.getElementById('invitesDisplayBody').innerHTML = `<li class="invite-items" style="justify-content: center; align-items: center;">No invites</li>`;
+  }
+
 
 }
 
@@ -1906,7 +1913,7 @@ const denyInvite = async (id) => {
     } else {
       player.invites = [];
       document.getElementById("inviteCount").innerHTML = `0 invites to view`;
-      document.getElementById('invitesDisplayBody').innerHTML = "";
+      document.getElementById('invitesDisplayBody').innerHTML = `<li class="invite-items" style="justify-content: center; align-items: center;">No invites</li>`;
     }
   } else {
     alert("Invite not denied!")
@@ -1917,8 +1924,12 @@ const displayInvites = () => {
   let invites = player.invites;
 
   document.getElementById('invitesDisplayBody').innerHTML = "";
-
-  document.getElementById("inviteCount").innerHTML = `${invites.length} ${invites.length > 1 ? "invites" : "invite"} to view`;
+  if (invites.length > 5) {
+    document.getElementById("invitesDisplayBody").style.overflow = "scroll";
+  } else {
+    document.getElementById("invitesDisplayBody").style.overflow = "none";
+  }
+  document.getElementById("inviteCount").innerHTML = `${invites.length} ${invites.length === 1 ? "invites" : "invite"} to view`;
   // Get the invites display container
   const invitesContainer = document.getElementById('invitesDisplayBody');
 
@@ -2008,6 +2019,18 @@ const displayPlayersNotIn = async () => {
   let notIn = await fetchInviteData(`notin/?playerFrom=${playerId}`);
 
   document.getElementById("notInDiv").innerHTML = "";
+  if (notIn.length <= 0) {
+
+    document.getElementById("inviteCount").innerHTML = `0 invites to view`;
+    document.getElementById('notInDiv').innerHTML = `<li class="invite-items" style="justify-content: center; align-items: center;">No invites</li>`;
+    return;
+  }
+  if (notIn.length > 5) {
+    document.getElementById("notInDiv").style.overflow = "scroll";
+  } else {
+    document.getElementById("notInDiv").style.overflow = "none";
+  }
+
   for (let i = 0; i < notIn.length; i++) {
     document.getElementById("notInDiv").innerHTML += `<li class="invite-items">
     <div class="username-container">

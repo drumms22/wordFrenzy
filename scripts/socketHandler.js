@@ -277,7 +277,7 @@ socket.on('refreshLobby', (data) => {
   if (playerData[0].isCreator) {
     creatorMess = "My Lobby";
   } else {
-    let creator = data.lobby.players.filter((p) => p.isCreator);
+    let creator = data.players.filter((p) => p.isCreator);
     creatorMess = `${creator[0].username}'s Lobby`;
   }
   document.getElementById("lobbyTitle").innerHTML = creatorMess;
