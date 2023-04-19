@@ -110,6 +110,10 @@ const getHTHHint = () => {
 }
 
 const leaveLobby = () => {
+  if (hthStarted) {
+    alert("Please participate in your challenge!")
+    return;
+  }
   socket.emit('leaveLobby', { lobby: player.lobbyData.lobby, player: player.lobbyData.player })
   closeLobbyPanel();
   document.getElementById("lobbyPanel").style.display = "none";
@@ -297,7 +301,7 @@ socket.on('handleWinner', (data) => {
 });
 
 socket.on('onTimesUp', (data) => {
-
+  hthStarted = false;
   clearInterval(timer);
   document.getElementById("words").innerHTML = "";
   document.getElementById("message").innerHTML = "Time has ran out!";
