@@ -115,6 +115,8 @@ const leaveLobby = () => {
     return;
   }
   socket.emit('leaveLobby', { lobby: player.lobbyData.lobby, player: player.lobbyData.player })
+  deleteCookie("lobbyCode");
+  deleteCookie("inLobby");
   closeLobbyPanel();
   document.getElementById("lobbyPanel").style.display = "none";
   document.getElementById("lobby").style.display = "none";
@@ -266,6 +268,19 @@ socket.on('refreshUi', (data) => {
 socket.on('refreshLobby', (data) => {
 
   player.lobbyData.lobby = data;
+
+  let playerData = data.players.filter((p) => p.id === player.lobbyData.player.id);
+
+  player.lobbyData.player = playerData[0];
+
+  let creatorMess = "";
+  if (playerData[0].isCreator) {
+    creatorMess = "My Lobby";
+  } else {
+    let creator = data.lobby.players.filter((p) => p.isCreator);
+    creatorMess = `${creator[0].username}'s Lobby`;
+  }
+  document.getElementById("lobbyTitle").innerHTML = creatorMess;
   updatePlayerDisplay(data.players, true);
 
 });
@@ -335,7 +350,6 @@ socket.on("newLobby", (data) => {
     updatePlayerDisplay(data.lobby.players, false);
     let creatorMess = "";
     if (p[0].isCreator) {
-      document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
       creatorMess = "My Lobby";
     } else {
       let creator = data.lobby.players.filter((p) => p.isCreator);

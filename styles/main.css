@@ -251,7 +251,7 @@ button:hover {
   align-items: center;
 }
 #howToPlayContentWrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   background: linear-gradient(
@@ -530,7 +530,7 @@ button:hover {
 }
 
 #headToHeadWrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   background: linear-gradient(
@@ -547,7 +547,7 @@ button:hover {
   align-items: center;
 }
 #getMyDataWrapper {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   background: linear-gradient(
@@ -669,6 +669,11 @@ button:hover {
   width: 80%;
   align-items: start;
   justify-content: flex-end;
+}
+#invitesDisplayCloseBtn {
+  position: absolute;
+  top: 5;
+  right: 5;
 }
 .invite-items {
   display: flex;

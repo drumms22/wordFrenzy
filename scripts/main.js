@@ -1881,6 +1881,8 @@ const viewInvites = () => {
 
 }
 
+const closeInvitesDisplay = () => document.getElementById('invitesDisplayWrapper').style.display = "none";
+
 const denyInvite = async (id) => {
 
   if (id === undefined || id === null || id === "") return;
@@ -1913,6 +1915,8 @@ const denyInvite = async (id) => {
 
 const displayInvites = () => {
   let invites = player.invites;
+
+  document.getElementById('invitesDisplayBody').innerHTML = "";
 
   document.getElementById("inviteCount").innerHTML = `${invites.length} ${invites.length > 1 ? "invites" : "invite"} to view`;
   // Get the invites display container
@@ -1963,6 +1967,10 @@ const displayInvites = () => {
 };
 
 const openInvitePlayer = () => {
+  if (!player.lobbyData.player.isCreator) {
+    alert("Only the leader can invite!")
+    return;
+  }
   document.getElementById("inviteToLobbyWrapper").style.display = "flex";
   displayPlayersNotIn();
 }
