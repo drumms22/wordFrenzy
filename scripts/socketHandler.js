@@ -146,6 +146,7 @@ socket.on('lobbyCreated', (data) => {
   updatePlayerDisplay(data.lobby.players, false);
   document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
   document.getElementById("lobbyTitle").innerHTML = "My Lobby";
+  document.getElementById("maxPlayerNum").innerHTML = `${data.lobby.players.length}/2`;
 });
 
 //Response for joining a lobby, handles the UI and Player data
@@ -176,7 +177,7 @@ socket.on('joined', (data) => {
   player.lobbyData.player = data.player;
   player.lobbyData.lobby = data.lobby;
   document.getElementById("lobbyPanel").style.display = "flex";
-
+  document.getElementById("maxPlayerNum").innerHTML = `${data.lobby.players.length}/2`;
   updatePlayerDisplay(data.lobby.players, false);
   setCookie("inLobby", true);
   setCookie("lobbyCode", data.lobby.code, 100);

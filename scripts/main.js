@@ -1982,6 +1982,10 @@ const openInvitePlayer = () => {
     alert("Only the leader can invite!")
     return;
   }
+  if (player.lobbyData.lobby.players.length >= 2) {
+    alert("Your lobby is at max!");
+    return;
+  }
   document.getElementById("inviteToLobbyWrapper").style.display = "flex";
   displayPlayersNotIn();
 }

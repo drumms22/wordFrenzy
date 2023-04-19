@@ -983,11 +983,18 @@ button:hover {
   background-color: #e51300;
   height: 70px;
   justify-content: center;
+  position: relative;
 }
 .lobbyDisplayHeader > h2 {
   color: #fff;
   margin: 5;
   text-shadow: 2px 2px 1px black;
+}
+#maxPlayerNum {
+  position: absolute;
+  bottom: -10;
+  left: 10;
+  color: #fff;
 }
 #lobbyPlayerDisplayBody {
   width: 100%;
