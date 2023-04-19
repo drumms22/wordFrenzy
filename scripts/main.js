@@ -1964,18 +1964,15 @@ const displayInvites = () => {
 
 const openInvitePlayer = () => {
   document.getElementById("inviteToLobbyWrapper").style.display = "flex";
+  displayPlayersNotIn();
 }
 
 const closeInvitePlayer = () => {
   document.getElementById("inviteToLobbyWrapper").style.display = "none";
 }
 
-const sendInvite = async () => {
-  let playerTo = document.getElementById("inviteUsernameTxt").value;
-  let message = document.getElementById("inviteMessage");
-  if (message.classList.contains("good")) message.classList.remove("good");
-  if (message.classList.contains("bad")) message.classList.remove("bad");
-  message.innerHTML = "";
+const sendInvite = async (playerTo) => {
+
   if (playerTo.length < 3 || playerTo.length > 10) {
     alert("Please enter a valid Username!");
     return;
@@ -1988,12 +1985,30 @@ const sendInvite = async () => {
   });
 
   if (send[0]) {
+    alert("Invite sent!")
 
-    message.classList.add("good");
-    message.innerHTML = "Your invite was sent!";
+    await displayPlayersNotIn();
+
   } else {
-    message.classList.add("bad");
-    message.innerHTML = "Your invite was not sent!";
+    alert("Invite not sent!")
+
+  }
+}
+
+const displayPlayersNotIn = async () => {
+  let playerId = await getCookie("gameCode");
+  let notIn = await fetchInviteData(`notin/?playerFrom=${playerId}`);
+  console.log(notIn);
+  document.getElementById("notInDiv").innerHTML = "";
+  for (let i = 0; i < notIn.length; i++) {
+    document.getElementById("notInDiv").innerHTML += `<li class="invite-items">
+    <div class="username-container">
+      <h3>${notIn[i].username}</h3>
+    </div>
+    <div class="button-wrapper">
+      <button onclick="sendInvite('${notIn[i].username}')" class="invite-display-btns">Invite</button>
+    </div>
+    </li>`
   }
 }
 
