@@ -54,23 +54,22 @@ function displayLobbyToRomm(id) {
   socket.emit('changeCatSel', { lobbyId: player.lobbyData.lobby.code, selId: id });
 }
 
-function joinLobby() {
-  let lobbyId = document.getElementById("headToHeadCode").value;
+function joinLobby(lobbyId, inviteId) {
   let playerId = getCookie("gameCode");
   let username = getCookie("username");
   if (!playerId || !username) {
     alert("Please have an approved username to continue!");
     return;
   }
-  socket.emit('joinLobby', { lobbyId, playerId, username });
+  socket.emit('joinLobby', { lobbyId, playerId, username, inviteId });
 }
 
 function reJoinLobby() {
   let lobbyCode = getCookie("lobbyCode");
   let playerId = getCookie("gameCode");
-
-  if (lobbyCode && playerId) {
-    socket.emit('reJoinLobby', { lobbyCode, playerId });
+  let username = getCookie("username");
+  if (lobbyCode && playerId && username) {
+    socket.emit('reJoinLobby', { lobbyCode, playerId, username });
   }
 }
 
@@ -150,17 +149,17 @@ socket.on('joined', (data) => {
   player.lobbyData.player = data.player;
   player.lobbyData.lobby = data.lobby;
 
-  document.getElementById("headToHeadCode").value = "";
+
   closeRightPanel();
+  document.getElementById("invitesDisplayWrapper").style.display = "none";
   document.getElementById("headToHeadWrapper").style.display = "none";
   document.getElementById("startMenu").style.display = "none";
+  document.getElementById("loading-screen").style.display = "none";
   document.getElementById("lobby").style.display = "flex";
   let isCreator = player.lobbyData.player.isCreator;
 
   let creatorMess = "";
   if (isCreator) {
-    document.getElementById("joinCodeDiplayWrapper").style.display = "flex";
-    document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
     creatorMess = "My Lobby";
   } else {
     let creator = data.lobby.players.filter((p) => p.isCreator);
@@ -181,8 +180,8 @@ socket.on('unableToJoin', (data) => {
 
   document.getElementById("lobbyPanel").style.display = "none";
   document.getElementById("lobby").style.display = "none";
+  document.getElementById("loading-screen").style.display = "none";
   document.getElementById("startMenu").style.display = "flex";
-  if (document.getElementById("headToHeadCode")) document.getElementById("headToHeadCode").value = "";
 
   unsetPlayerLobby();
 

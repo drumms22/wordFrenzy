@@ -80,7 +80,7 @@ sounds.forEach(function (sound) {
 
 const loadData = (spc) => {
   let username = getCookie("username");
-  console.log(username);
+
   if (username) {
     document.getElementById("statsTitle").innerHTML = username;
   } else {
@@ -205,7 +205,7 @@ const handleHint = async (index, cat) => {
     player.currentChallenge.hints.used = res[0].hintsUsed;
     player.currentChallenge.hints.completed = res[0].completed;
     player.currentChallenge.hints.hintMessages.push(res[0].hint);
-    console.log(res[0].hint.length);
+
     let size = "";
     if (res[0].hint.length < 30) {
       size = "16px";
@@ -257,7 +257,7 @@ const calculateHintTriggers = (totalTime) => {
 
     hintTriggers.push(hintTime);
   });
-  console.log({ hints: maxHints + 1, triggers: hintTriggers });
+
   return { hints: maxHints + 1, triggers: hintTriggers };
 };
 
@@ -862,7 +862,6 @@ const handlePlayerAttempt = async () => {
 
   let check = await checkNewGuess(word, guessWSpace);
 
-  console.log(check);
 
   const notMatchedIndexes = check.notMatchedIndexes.concat(check.outOfPlaceIndexes).sort((a, b) => a - b);
   const wordLetters = word.split('');
@@ -1098,7 +1097,7 @@ const checkNewGuess = (word, guess) => {
 
 
 const addCorrectWord = (word) => {
-  console.log(word);
+
   const li = document.createElement("li");
   li.innerHTML = word;
   document.getElementById("correctWords").appendChild(li);
@@ -1292,7 +1291,7 @@ const playRound = async () => {
   let h = res[0];
   const start = () => {
     let w = usw(h);
-    console.log(w);
+
     let startTime = calcTime(joinWord(w));
     setSession(w, h, startTime);
     document.getElementById("message2").innerHTML = "";
@@ -1726,6 +1725,7 @@ const closeGameData = () => {
 }
 const openHeadToHead = () => {
   if (inLobby || player.currentTime > 0) return;
+  document.getElementById("openHTHBtn").classList.remove("invite-button");
   document.getElementById("headToHeadWrapper").style.display = "flex";
 }
 
@@ -1737,14 +1737,6 @@ const createNewLobby = () => {
   connect();
 }
 
-if (!inLobby) {
-  let check = getCookie("inLobby");
-
-  if (check) {
-    inLobby = true;
-    reJoinLobby();
-  }
-}
 
 const getLobCatId = (cat) => {
   let c = cat.split(" ");
@@ -1810,9 +1802,8 @@ const closeRightPanel = () => {
 const openRightPanel = () => {
   document.getElementById("rightSidePanelWrapper").style.display = "flex";
   document.getElementById("rightSidePanel").classList.add("rightPanelIsActive");
-
+  document.getElementById("openRightPanelBtn").classList.remove("invite-button");
 }
-
 
 
 const closeLeftPanel = () => {
@@ -1836,3 +1827,173 @@ const openLobbyPanel = () => {
   document.getElementById("lobbyPanel").classList.add("lobbyPanelIsActive");
 
 }
+
+const getInvites = async () => {
+
+  let playerId = await getCookie("gameCode");
+
+  if (playerId) {
+
+
+    let invites = await fetchInviteData(`?playerTo=${playerId}&accepted=false`);
+
+    if (invites && invites.length > 0) {
+      player.invites = invites;
+      document.getElementById("openRightPanelBtn").classList.add("invite-button");
+      document.getElementById("openHTHBtn").classList.add("invite-button");
+      document.getElementById("headToHeadBtn").classList.add("invite-button");
+    }
+
+
+  }
+
+
+}
+
+const fetchInviteData = async (query, extra) => {
+  try {
+    let data = await fetch(`${url}lobby/invites/${query}`, { ...extra });
+    let dataJson = await data.json();
+
+    return dataJson.data;
+  } catch (error) {
+    return false;
+  }
+}
+
+
+if (!inLobby) {
+  let check = getCookie("inLobby");
+
+  if (check) {
+    inLobby = true;
+    reJoinLobby();
+  } else {
+    getInvites()
+  }
+}
+
+const viewInvites = () => {
+  document.getElementById("headToHeadBtn").classList.remove("invite-button");
+  document.getElementById('invitesDisplayWrapper').style.display = "flex";
+  displayInvites();
+
+}
+
+const denyInvite = async (id) => {
+
+  if (id === undefined || id === null || id === "") return;
+
+  let send = await fetchInviteData("deny", {
+    method: 'POST', body: JSON.stringify({ id }), headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+
+  if (send[0]) {
+
+    let playerId = getCookie("gameCode");
+
+    let invites = await fetchInviteData(`?playerTo=${playerId}&accepted=false`);
+
+    if (invites && invites.length > 0) {
+      player.invites = invites;
+      await displayInvites();
+    } else {
+      player.invites = [];
+      document.getElementById("inviteCount").innerHTML = `0 invites to view`;
+      document.getElementById('invitesDisplayBody').innerHTML = "";
+    }
+  } else {
+    alert("Invite not denied!")
+  }
+}
+
+const displayInvites = () => {
+  let invites = player.invites;
+
+  document.getElementById("inviteCount").innerHTML = `${invites.length} ${invites.length > 1 ? "invites" : "invite"} to view`;
+  // Get the invites display container
+  const invitesContainer = document.getElementById('invitesDisplayBody');
+
+  // Loop through the invites array and create an <li> element for each
+  invites.forEach(invite => {
+    // Create the <li> element
+    const inviteElement = document.createElement('li');
+    inviteElement.classList.add('invite-items');
+
+    // Create the username container and append it to the <li> element
+    const usernameContainer = document.createElement('div');
+    usernameContainer.classList.add('username-container');
+    const usernameNode = document.createElement('h3');
+    usernameNode.textContent = invite.usernameFrom;
+    usernameContainer.appendChild(usernameNode);
+    inviteElement.appendChild(usernameContainer);
+
+    // Create the join/deny button wrapper and append it to the <li> element
+    const buttonWrapper = document.createElement('div');
+    buttonWrapper.classList.add('button-wrapper');
+    inviteElement.appendChild(buttonWrapper);
+
+    // Create the join button and append it to the button wrapper
+    const joinButton = document.createElement('button');
+    joinButton.innerHTML = 'Join';
+    joinButton.classList.add('invite-display-btns')
+    joinButton.addEventListener('click', () => {
+      // Handle join button click
+      joinLobby(invite.lobbyCode, invite._id)
+    });
+    buttonWrapper.appendChild(joinButton);
+
+    // Create the deny button and append it to the button wrapper
+    const denyButton = document.createElement('button');
+    denyButton.innerHTML = 'Deny';
+    denyButton.classList.add('invite-display-btns')
+    denyButton.addEventListener('click', () => {
+      // Handle deny button click
+      denyInvite(invite._id);
+    });
+    buttonWrapper.appendChild(denyButton);
+
+    // Append the <li> element to the invites display container
+    invitesContainer.appendChild(inviteElement);
+  });
+};
+
+const openInvitePlayer = () => {
+  document.getElementById("inviteToLobbyWrapper").style.display = "flex";
+}
+
+const closeInvitePlayer = () => {
+  document.getElementById("inviteToLobbyWrapper").style.display = "none";
+}
+
+const sendInvite = async () => {
+  let playerTo = document.getElementById("inviteUsernameTxt").value;
+  let message = document.getElementById("inviteMessage");
+  if (message.classList.contains("good")) message.classList.remove("good");
+  if (message.classList.contains("bad")) message.classList.remove("bad");
+  message.innerHTML = "";
+  if (playerTo.length < 3 || playerTo.length > 10) {
+    alert("Please enter a valid Username!");
+    return;
+  }
+
+  let send = await fetchInviteData("save", {
+    method: 'POST', body: JSON.stringify({ lobbyCode: player.lobbyData.lobby.code, playerFrom: player.lobbyData.player.id, playerTo }), headers: {
+      'Content-Type': 'application/json'
+    }
+  });
+
+  if (send[0]) {
+
+    message.classList.add("good");
+    message.innerHTML = "Your invite was sent!";
+  } else {
+    message.classList.add("bad");
+    message.innerHTML = "Your invite was not sent!";
+  }
+}
+
+

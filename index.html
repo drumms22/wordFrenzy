@@ -23,6 +23,17 @@
       <div id="loading-screen">
         <img src="./assets/loading.gif" alt="Loading...">
       </div>
+      <div id="inviteToLobbyWrapper">
+        <div class="htpContent">
+          <h1 id="HTPTitle">Invite A Friend</h1>
+          <div id="myDataDiv">
+            <input type="text" id="inviteUsernameTxt" maxlength="10" />
+            <button id="sendInvite" onclick="sendInvite()">Invite</button>
+            <h4 id="inviteMessage" ></h4>
+          </div>
+        </div>
+        <button onclick="closeInvitePlayer()" id="HTHBtnClose">Close</button>
+      </div>
       <div class="mobileBtnHeader" style="width: 100%;display: flex; flex-direction: row; justify-content: space-evenly;">
         <button id="openLeftPanelBtn" onclick="openLeftPanel()">Open Stats</button>
         <button id="openRightPanelBtn" onclick="openRightPanel()">Open Menu</button>
@@ -40,6 +51,7 @@
   
             </div>
           </div>
+          <button onclick="openInvitePlayer()" id="inviteToLobby">Invite</button>
                   <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
         </div>
         <div id="flipGameInner" class="flip-card-inner">
@@ -384,18 +396,21 @@
         <div class="htpContent">
           <h1 id="HTPTitle">Head To Head</h1>
           <div id="myDataDiv">
-            <h3 id="">Enter lobby code</h3>
-            <div class="input-row">
-              <input type="text" id="headToHeadCode" />
-              <button id="headToHeadBtn" onclick="joinLobby()">Join</button>
-            </div>
-            <p id="">Need a game code?</p>
+              <button id="headToHeadBtn" onclick="viewInvites()">View Invites</button>
+            <H2 style="font-weight: bolder;" id="">OR</H2>
             <button id="createLobby" onclick="createNewLobby()">Creat Lobby</button>
           </div>
-          <div id="newCodeMessage">
-            <p class="newCodeMessageFont">
-              Copy and past your join code or create a new lobby and share it!
-            </p>
+          <div id="invitesDisplayWrapper">
+            <div id="invitesDisplayHeader">
+              <h1>Invites</h1>
+              <div id="invitesDisplaySubHeader">
+                <p id="inviteCount"></p>
+              </div>
+            </div>
+
+            <ul id="invitesDisplayBody">
+              
+            </ul>
           </div>
         </div>
         <button onclick="closeHeadToHead()" id="HTHBtnClose">Close</button>
