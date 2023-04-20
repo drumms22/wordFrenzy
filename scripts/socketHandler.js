@@ -207,6 +207,8 @@ socket.on("getHint", (hint) => {
 //Starts the game for all connected clients
 socket.on('start', (data) => {
 
+  hintsRemaining = 2;
+
   document.getElementById("leaveLobby").style.display = "none";
   hthStarted = true;
   extra = data.wordData.extr;
