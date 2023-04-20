@@ -19,7 +19,28 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script> 
   </head>
   <body>
+    <noscript>
+      <div id="notFoundScreen">
+        <h1>Word Frenzy requires cookies and JavaScript enabled</h1>
+        <h1>Please enable these and refresh your browser</h1>
+      </div>
+    </noscript>
     <div id="container">
+      <div id="cookieAlertWrapper">
+        <div id="cookieAlertHeader">
+          <h1>Cookie Acknowledgement</h1>
+        </div>
+        <div id="cookieAlertBody">
+          <p>Cookies are needed for this website</p>
+          <p>Cookies are used strictly for this websites functionality</p>
+          <p>At no time is personal data collected or stored</p>
+          <button id="cookieAckn" onclick="acknCookies()">Acknowledge</button>
+        </div>
+      </div>
+      <div id="notFoundScreen">
+        <h1>Word Frenzy requires cookies and JavaScript enabled</h1>
+        <h1>Please enable these and refresh your browser</h1>
+      </div>
       <div id="loading-screen">
         <img src="./assets/loading.gif" alt="Loading...">
       </div>

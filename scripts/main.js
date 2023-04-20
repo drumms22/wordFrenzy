@@ -2048,3 +2048,21 @@ const displayPlayersNotIn = async () => {
 }
 
 
+const checkCookieAckn = () => {
+
+  let cookAckn = getCookie("cookAckn");
+
+  if (!cookAckn) {
+    document.getElementById("cookieAlertWrapper").classList.add("cookie-panel-active");
+  }
+
+}
+
+const acknCookies = () => {
+  document.getElementById("cookieAlertWrapper").classList.remove("cookie-panel-active");
+  setCookie("cookAckn", true, 100);
+}
+
+setTimeout(() => {
+  checkCookieAckn();
+}, 1000);

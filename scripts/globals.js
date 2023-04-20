@@ -1,3 +1,14 @@
+
+// Check if cookies are enabled
+if (!navigator.cookieEnabled) {
+  // Cookies are not enabled
+  // Render an error message or redirect to a page explaining the issue
+  document.getElementById("notFoundScreen").style.display = "flex";
+  window.stop();
+}
+
+
+
 let playerModel = {
   currentChallenge: {
     type: "",
