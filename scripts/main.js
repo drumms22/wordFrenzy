@@ -1570,7 +1570,12 @@ const createCategories = () => {
 
 createCategories();
 
-const showHtp = () => document.getElementById("howToPlayContentWrapper").style.display = "flex";
+const showHtp = () => {
+  if (document.getElementById("htpBtn").classList.contains("invite-button")) document.getElementById("htpBtn").classList.remove("invite-button");
+  document.getElementById("howToPlayContentWrapper").style.display = "flex"
+  let htpComp = getCookie("ptpTutComp");
+  if (!htpComp) setCookie("ptpTutComp", true, 100);
+};
 const hideHtp = () => document.getElementById("howToPlayContentWrapper").style.display = "none";
 
 if (selectedCategory === "" && !inLobby) {
@@ -2065,4 +2070,13 @@ const acknCookies = () => {
 
 setTimeout(() => {
   checkCookieAckn();
-}, 1000);
+}, 500);
+
+const ptpTut = () => {
+  let ptpTutComp = getCookie("ptpTutComp");
+  if (ptpTutComp) return;
+  document.getElementById("openRightPanelBtn").classList.add("invite-button");
+  document.getElementById("htpBtn").classList.add("invite-button");
+}
+
+ptpTut()
