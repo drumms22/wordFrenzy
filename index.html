@@ -26,6 +26,13 @@
       </div>
     </noscript>
     <div id="container">
+      <div class="overlay">
+        <canvas id="sparks-canvas"></canvas>
+        <div class="message">
+          <h1>Congratulations!</h1>
+          <p>You are the winner!</p>
+        </div>
+      </div>
       <div id="cookieAlertWrapper">
         <div id="cookieAlertHeader">
           <h1>Cookie Acknowledgement</h1>
@@ -47,6 +54,7 @@
       <div id="inviteToLobbyWrapper">
         <div class="htpContent">
           <h1 id="HTPTitle">Invite A Friend</h1>
+          <input type="text" id="usernameSearch" onkeyup="searchUsers(this)" autocomplete="off" placeholder="Username..."/>
           <ul id="notInDiv">
             
           </ul>
@@ -294,42 +302,24 @@
             <p>If creating, username's must be 3-10 characters long and can include letters, numbers, and @, !, _, $</p>
             <p>Head to Head requires a username, Single player does not</p>
             <h3>Single Player</h3>
-            <p>
-              Select a categories you would like to play
-            </p>
-            <p>
-              Select your difficulty, higher difficulties provide extra points
-            </p>
-            <p>
-              
-                After clicking "Play Frenzy", time will start counting down, in
-                which you will have unlimited guesses
-              
-            </p>
-            <p>
-              Each round is weighted to start with an easier word and gradually
-              increase in difficulty
-            </p>
-            <p>
-              You need to guess each word(s) correctly, if the timer reaches 00,
-              you will fail
-            </p>
-            <p>
-              Hints are given as time progresses depending on the amount of time
-              you're given
-            </p>
-
-          <h3>Head To Head</h3>
-          <p>Click the "Head To Head" button in the menu</p>
-          <p>You will have 2 options, creating a lobby and viewing invites</p>
-          <p>If you have invites availble, you will be able to join or deny an invite</p>
-          <p>Rather be a lobby leader? Create your own and invite a friend</p>
-          <p>Lobby leaders can invite players and change lobby settings</p>
-          <p>Once the lobby is full, the leader can start the game</p>
-          <p>Head To Head works similarly to Single player, other than a few differences</p>
-          <p>All players are given the same time and hints</p>
-          <p>Refreshing the browser will auto kick you from the game after it has started</p>
-          <p>Once the Head To Head match is complete, all players are put back into the lobby</p>
+            <p>Select a categories you would like to play</p>
+            <p>Select your difficulty, higher difficulties provide extra points</p>
+            <p> After clicking "Play Frenzy", time will start counting down, in which you will have unlimited guesses</p>
+            <p>Each round is weighted to start with an easier word and gradually increase in difficulty </p>
+            <p>You need to guess each word(s) correctly, if the timer reaches 00, you will fail</p>
+            <p>Hints are given as time progresses depending on the amount of time you're given</p>
+            <h3>Head To Head</h3>
+            <p>Click the "Head To Head" button in the menu</p>
+            <p>You will have 2 options, creating a lobby and viewing invites</p>
+            <p>If you have invites availble, you will be able to join or deny an invite</p>
+            <p>Rather be a lobby leader? Create your own and invite a friend</p>
+            <p>Lobby leaders can invite players and change lobby settings</p>
+            <p>Once the lobby is full, the leader can start the game</p>
+            <p>Head To Head works similarly to Single player, other than a few differences</p>
+            <p>All players are given the same time and hints</p>
+            <p>Hints are maximum 2 per word and can be used whenever needed</p>
+            <p>Refreshing the browser will auto kick you from the game after it has started</p>
+            <p>Once the Head To Head match is complete, all players are put back into the lobby</p>
           </div>
         </div>
 

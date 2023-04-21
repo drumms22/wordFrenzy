@@ -1873,6 +1873,7 @@ if (!inLobby) {
 
   if (check) {
     inLobby = true;
+    document.getElementById("loading-screen").style.display = "flex";
     reJoinLobby();
   } else {
     getInvites()
@@ -1981,8 +1982,15 @@ const displayInvites = () => {
     invitesContainer.appendChild(inviteElement);
   });
 };
+const fetchNotIn = async () => {
+  let playerId = await getCookie("gameCode");
+  let notIn = await fetchInviteData(`notin/?playerFrom=${playerId}`);
+  player.playersNotIn = notIn;
+  player.playersNotInOrig = notIn;
+  return true;
+}
 
-const openInvitePlayer = () => {
+const openInvitePlayer = async () => {
   if (!player.lobbyData.player.isCreator) {
     alert("Only the leader can invite!")
     return;
@@ -1992,7 +2000,8 @@ const openInvitePlayer = () => {
     return;
   }
   document.getElementById("inviteToLobbyWrapper").style.display = "flex";
-  displayPlayersNotIn();
+  await fetchNotIn();
+  await displayPlayersNotIn();
 }
 
 const closeInvitePlayer = () => {
@@ -2023,30 +2032,36 @@ const sendInvite = async (playerTo) => {
   }
 }
 
+const searchUsers = (e) => {
+  console.log(e.value);
+  let filered = player.playersNotInOrig.filter((p) => p.username.includes(e.value));
+  console.log(filered);
+  player.playersNotIn = filered;
+  displayPlayersNotIn();
+}
+
 const displayPlayersNotIn = async () => {
-  let playerId = await getCookie("gameCode");
-  let notIn = await fetchInviteData(`notin/?playerFrom=${playerId}`);
 
   document.getElementById("notInDiv").innerHTML = "";
-  if (notIn.length <= 0) {
+  if (player.playersNotIn.length <= 0) {
 
     document.getElementById("inviteCount").innerHTML = `0 invites to view`;
     document.getElementById('notInDiv').innerHTML = `<li class="invite-items" style="justify-content: center; align-items: center;">No invites</li>`;
     return;
   }
-  if (notIn.length > 5) {
+  if (player.playersNotIn.length > 5) {
     document.getElementById("notInDiv").style.overflow = "scroll";
   } else {
     document.getElementById("notInDiv").style.overflow = "none";
   }
 
-  for (let i = 0; i < notIn.length; i++) {
+  for (let i = 0; i < player.playersNotIn.length; i++) {
     document.getElementById("notInDiv").innerHTML += `<li class="invite-items">
     <div class="username-container">
-      <h3>${notIn[i].username}</h3>
+      <h3>${player.playersNotIn[i].username}</h3>
     </div>
     <div class="button-wrapper">
-      <button onclick="sendInvite('${notIn[i].username}')" class="invite-display-btns">Invite</button>
+      <button onclick="sendInvite('${player.playersNotIn[i].username}')" class="invite-display-btns">Invite</button>
     </div>
     </li>`
   }
@@ -2080,3 +2095,60 @@ const ptpTut = () => {
 }
 
 ptpTut()
+function showOverlay() {
+  const canvas = document.getElementById('sparks-canvas');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const sparks = [];
+
+  // create spark particles
+  for (let i = 0; i < 50; i++) {
+    const x = canvas.width / 2;
+    const y = canvas.height / 2;
+    const vx = Math.random() * 6 - 3;
+    const vy = Math.random() * 6 - 3;
+    const size = Math.random() * 3;
+    const color = '#fff';
+    sparks.push({ x, y, vx, vy, size, color });
+  }
+
+  // animate spark particles
+  function animateSparks() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (let i = 0; i < sparks.length; i++) {
+      ctx.beginPath();
+      ctx.fillStyle = sparks[i].color;
+      ctx.arc(sparks[i].x, sparks[i].y, sparks[i].size, 0, 2 * Math.PI);
+      ctx.fill();
+      sparks[i].x += sparks[i].vx;
+      sparks[i].y += sparks[i].vy;
+      sparks[i].size -= 0.05;
+      if (sparks[i].size <= 0) {
+        sparks.splice(i, 1);
+      }
+    }
+    if (sparks.length > 0) {
+      requestAnimationFrame(animateSparks);
+    }
+  }
+
+  animateSparks();
+
+  // show overlay
+  const overlay = document.querySelector('.overlay');
+  overlay.style.display = 'block';
+}
+
+// let seconds = 0;
+// const intervalId = setInterval(() => {
+//   showOverlay();
+//   seconds++;
+//   if (seconds === 30) {
+//     clearInterval(intervalId);
+//   }
+// }, 1000);
+
+
+
+// showOverlay();

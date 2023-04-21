@@ -161,7 +161,6 @@ socket.on('joined', (data) => {
   document.getElementById("invitesDisplayWrapper").style.display = "none";
   document.getElementById("headToHeadWrapper").style.display = "none";
   document.getElementById("startMenu").style.display = "none";
-  document.getElementById("loading-screen").style.display = "none";
   document.getElementById("lobby").style.display = "flex";
   let isCreator = player.lobbyData.player.isCreator;
 
@@ -181,6 +180,7 @@ socket.on('joined', (data) => {
   updatePlayerDisplay(data.lobby.players, false);
   setCookie("inLobby", true);
   setCookie("lobbyCode", data.lobby.code, 100);
+  setTimeout(() => document.getElementById("loading-screen").style.display = "none", 300);
 });
 
 socket.on('unableToJoin', (data) => {
@@ -346,7 +346,24 @@ socket.on("newLobby", (data) => {
   player.lobbyData.player = p[0];
   setCookie("lobbyCode", data.lobby.code, 100);
   setTimeout(() => {
+    player.currentChallenge.challengeI = 0;
+    document.getElementById("continueGame").style.display = "none";
+    player.currentChallenge.challengeCompleted = false;
+    document.getElementById("correctWords").innerHTML = "";
+    document.getElementById("correctWords").style.display = "none";
+    document.getElementById("words").innerHTML = "";
     document.getElementById("message2").innerHTML = "";
+    document.getElementById("time").innerHTML = "";
+    document.getElementById("prevWords").innerHTML = "";
+    document.getElementById("prevWords").style.display = "none";
+    document.getElementById("guessOutOfPlace").innerHTML = "";
+    document.getElementById("guessOutOfPlace").style.display = "none";
+    document.getElementById("guessIncorrect").innerHTML = "";
+    document.getElementById("guessIncorrect").style.display = "none";
+    document.getElementById("message2").innerHTML = "";
+    player.currentChallenge.incorrectLetters = [];
+    player.currentChallenge.outOfPlaceLetters = [];
+
     document.getElementById("flipGameInner").classList.remove("flip-game");
     document.getElementById("leaveLobby").style.display = "block";
     socket.emit("refresh", { lobbyCode: data.lobby.code });

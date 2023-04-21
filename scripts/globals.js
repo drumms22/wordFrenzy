@@ -36,6 +36,8 @@ let playerModel = {
     player: {}
   },
   invites: [],
+  playersNotIn: [],
+  playersNotInOrig: [],
   challengesCompleted: [],
   currentCPS: 20,
   challengeStarted: false,
