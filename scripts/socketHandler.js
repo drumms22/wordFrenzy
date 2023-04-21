@@ -142,9 +142,8 @@ socket.on('lobbyCreated', (data) => {
   player.lobbyData.player = data.lobby.players[0];
   setCookie("lobbyCode", data.lobby.code, 100);
   document.getElementById("lobbyPanel").style.display = "flex";
-  document.getElementById("joinCodeDiplayWrapper").style.display = "flex";
+
   updatePlayerDisplay(data.lobby.players, false);
-  document.getElementById("lobbyJoinCodeDisplay").innerHTML = data.lobby.code;
   document.getElementById("lobbyTitle").innerHTML = "My Lobby";
   document.getElementById("maxPlayerNum").innerHTML = `${data.lobby.players.length}/2`;
 });
