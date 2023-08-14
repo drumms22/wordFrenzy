@@ -25,7 +25,8 @@ let playerModel = {
       hintMessages: [],
       triggers: [],
       maxHints: 0,
-      completed: false
+      completed: false,
+      hintsRemaining: 3
     },
     incorrectLetters: [],
     outOfPlaceLetters: [],
@@ -35,6 +36,7 @@ let playerModel = {
     lobby: {},
     player: {}
   },
+  wordCount: 2,
   invites: [],
   playersNotIn: [],
   playersNotInOrig: [],
@@ -52,7 +54,7 @@ let playerModel = {
   hintThreshold: 0,
   totalPoints: 0,
   totalWordsCompleted: 0,
-  totalChallenegesCompleted: 0,
+  totalChallengesCompleted: 0,
   totalTimeSpent: 0,
   totalCharCount: 0,
   speedData: {
@@ -62,7 +64,7 @@ let playerModel = {
 }
 //https://salmon-barnacle-shoe.cyclic.app/
 //http://localhost:3000/
-const url = "https://word-frenzy-api-production.up.railway.app/";
+const url = "http://localhost:3000/";//"https://word-frenzy-api-production.up.railway.app/";
 
 let extra = "";
 let selectedCategory = "";
@@ -80,8 +82,9 @@ let timer = null;
 
 const letters = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'];
 
-let soundPlaying = false;
-
 let hthStarted = false;
+let spStarted = false;
+
+let spaceInd = [];
 
 const titleCase = (string) => string[0].toUpperCase() + string.slice(1).toLowerCase();
