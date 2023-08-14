@@ -3,8 +3,14 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="keywords" content="word game, puzzle game, word guessing, fast-paced game, addicting game, multiplayer word game, challenging word game, words and friends, daily words game">
-    <meta name="description" content="Test your word-guessing speed with Word Frenzy - the addicting game that challenges you to guess as many words as you can in the shortest time possible. Play now and see how far you can go!">
+    <meta
+      name="keywords"
+      content="word game, puzzle game, word guessing, fast-paced game, addicting game, multiplayer word game, challenging word game, words and friends, daily words game"
+    />
+    <meta
+      name="description"
+      content="Test your word-guessing speed with Word Frenzy - the addicting game that challenges you to guess as many words as you can in the shortest time possible. Play now and see how far you can go!"
+    />
     <title>Word Frenzy - The Fast-Paced Word Guessing Game</title>
     <link rel="stylesheet" href="./styles/main.css" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -16,7 +22,7 @@
     <script src="https://unpkg.com/p5"></script>
     <script src="https://unpkg.com/rita"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.2.3/howler.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script> 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.6.1/socket.io.min.js"></script>
   </head>
   <body>
     <noscript>
@@ -26,11 +32,82 @@
       </div>
     </noscript>
     <div id="container">
-      <div class="overlay">
+      <div id="initScreen">
+        <div id="htp2BtnWrapper">
+          <button onclick="showHtp()" id="htp2Btn">How to Play</button>
+        </div>
+        <div id="titleWrapper">
+          <h1 id="initTitle">Word Frenzy</h1>
+        </div>
+        <div id="subtitleWrapper">
+          <p>
+            Challenge your word-guessing speed in a variety of different modes!
+          </p>
+        </div>
+        <div id="initScreenBody">
+          <div class="initScreenBodyDiv">
+            <div class="initScreenBodyMsgWrapper">
+              <p id="initScreenCreateMsg"></p>
+            </div>
+            <h3>Create New Username</h3>
+            <h4 style="margin: 3">Type a new username</h4>
+            <p style="font-size: 11px; margin: 3">
+              (3-10 char, letters, numbers, and @, !, _, $)
+            </p>
+            <input
+              type="text"
+              id="newUsername"
+              maxlength="10"
+              minlength="3"
+              onkeyup="checkUsername(this)"
+              autocomplete="off"
+            />
+            <button
+              onclick="createUser()"
+              class="usernameBtns"
+              id="createUsernameBtn"
+              disabled
+            >
+              Create
+            </button>
+          </div>
+          <hr />
+          <div class="initScreenBodyDiv">
+            <div class="initScreenBodyMsgWrapper">
+              <p id="initScreenEnterMsg"></p>
+            </div>
+            <h3>Already have one?</h3>
+            <h4 style="margin: 3">Enter it below</h4>
+            <input
+              type="text"
+              id="existUsername"
+              maxlength="10"
+              minlength="3"
+              onkeyup="checkUsername(this)"
+              autocomplete="off"
+            />
+            <button
+              onclick="getUser()"
+              class="usernameBtns"
+              id="existUsernameBtn"
+              disabled
+            >
+              Enter
+            </button>
+          </div>
+        </div>
+      </div>
+      <div id="winnerOverlay" class="overlay">
         <canvas id="sparks-canvas"></canvas>
-        <div class="message">
+        <div class="winnerMessageWapper">
           <h1>Congratulations!</h1>
           <p>You are the winner!</p>
+        </div>
+      </div>
+      <div id="loserOverlay" class="overlay">
+        <div class="loserMessageWapper">
+          <h1>You lost!</h1>
+          <p id="winnerIsMess">drumms_22 has won</p>
         </div>
       </div>
       <div id="cookieAlertWrapper">
@@ -49,38 +126,73 @@
         <h1>Please enable these and refresh your browser</h1>
       </div>
       <div id="loading-screen">
-        <img src="./assets/loading.gif" alt="Loading...">
+        <img src="./assets/loading.gif" alt="Loading..." />
       </div>
       <div id="inviteToLobbyWrapper">
         <div class="htpContent">
           <h1 id="HTPTitle">Invite A Friend</h1>
-          <input type="text" id="usernameSearch" onkeyup="searchUsers(this)" autocomplete="off" placeholder="Username..."/>
-          <ul id="notInDiv">
-            
-          </ul>
+          <input
+            type="text"
+            id="usernameSearch"
+            onkeyup="searchUsers(this)"
+            autocomplete="off"
+            placeholder="Username..."
+          />
+          <ul id="notInDiv"></ul>
         </div>
         <button onclick="closeInvitePlayer()" id="HTHBtnClose">Close</button>
       </div>
-      <div class="mobileBtnHeader" style="width: 100%;display: flex; flex-direction: row; justify-content: space-evenly;">
-        <button id="openLeftPanelBtn" onclick="openLeftPanel()">Open Stats</button>
-        <button id="openRightPanelBtn" onclick="openRightPanel()">Open Menu</button>
+      <div
+        class="mobileBtnHeader"
+        style="
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-evenly;
+        "
+      >
+        <button id="openLeftPanelBtn" onclick="openLeftPanel()">
+          Open Stats
+        </button>
+        <button id="openRightPanelBtn" onclick="openRightPanel()">
+          Open Menu
+        </button>
       </div>
       <div id="flipGame" class="flip-card">
         <div id="lobbyPanel">
           <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
-            <button id="leftSidePanelBtn" onclick="closeLobbyPanel()" class="panelCloseBtn">X</button>
+            <button
+              id="leftSidePanelBtn"
+              onclick="closeLobbyPanel()"
+              class="panelCloseBtn"
+            >
+              X
+            </button>
           </div>
           <div id="lobbyPlayerDisplayWrapper">
             <div class="lobbyDisplayHeader">
               <h2>Players</h2>
               <p id="maxPlayerNum"></p>
             </div>
-            <div id="lobbyPlayerDisplayBody">
-  
-            </div>
+            <div id="lobbyPlayerDisplayBody"></div>
           </div>
-          <button onclick="openInvitePlayer()" id="inviteToLobby">Invite</button>
-                  <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
+          <div id="maxPLayersWrapper">
+            <label for="max-players">Max Players:</label>
+            <input
+              type="number"
+              id="maxPlayers"
+              name="max-players"
+              min="2"
+              max="8"
+              value="2"
+              onchange="changeMaxPlayers(this)"
+            />
+          </div>
+
+          <button onclick="openInvitePlayer()" id="inviteToLobby">
+            Invite
+          </button>
+          <button onclick="leaveLobby()" id="leaveLobby">Leave Lobby</button>
         </div>
         <div id="flipGameInner" class="flip-card-inner">
           <div class="flip-card-front">
@@ -88,52 +200,89 @@
               <div id="titleWrapper">
                 <h1 id="title">Word Frenzy</h1>
               </div>
-              <div class="largeBox" id="categoriesWrapper">
-                <h2>Categories</h2>
-                <div id="categoriesContent"></div>
-              </div>
-              <div id="startGameBtnWrapper">
-                <h3 id="SPCTitle">Select Difficulty</h3>
-                <div id="diffSelWrapper">
-                  <div class="diffRadItem">
-                    <h4>Easy</h4>
-                    <input
-                      type="radio"
-                      onchange="handleDiff(0)"
-                      name="diffRadio"
-                      id="diff10"
-                    />
+              <div class="largeBox">
+                <div class="game-slection-upper" id="categoriesWrapper">
+                  <div class="largeBoxDiv">
+                    <div class="modeBox"><h3>Frenzy</h3></div>
+                    <div class="modeBox">
+                      <h3>Roulette</h3>
+                      <div class="modeBoxCS"><h3>Coming Soon!</h3></div>
+                    </div>
+                    <div class="modeBox">
+                      <h3>Unscramble</h3>
+                      <div class="modeBoxCS"><h3>Coming Soon!</h3></div>
+                    </div>
                   </div>
-                  <div class="diffRadItem">
-                    <h4>Normal</h4>
-                    <input
-                      type="radio"
-                      onchange="handleDiff(1)"
-                      name="diffRadio"
-                      checked
-                      id="diff11"
-                    />
-                  </div>
-                  <div class="diffRadItem">
-                    <h4>Hard</h4>
-                    <input
-                      type="radio"
-                      onchange="handleDiff(2)"
-                      name="diffRadio"
-                      id="diff12"
-                    />
-                  </div>
-                  <div class="diffRadItem">
-                    <h4>Frenzy</h4>
-                    <input
-                      type="radio"
-                      onchange="handleDiff(3)"
-                      name="diffRadio"
-                      id="diff13"
-                    />
+                  <div class="largeBoxDiv">
+                    <div class="game-slection-upper-header">
+                      <h2>
+                        Guess words shortest to longest, run out of time, you
+                        fail!
+                      </h2>
+                    </div>
+                    <div class="slider-container">
+                      <h2><u>How many words</u></h2>
+                      <input
+                        type="range"
+                        min="1"
+                        max="5"
+                        value="1"
+                        step="1"
+                        class="slider"
+                        id="myRange"
+                        oninput="handleWordCount(this)"
+                      />
+                      <p class="slider-value">1</p>
+                    </div>
+                    <h2><u>What Category</u></h2>
+                    <div id="categoriesContent"></div>
+                    <div class="difficultyWrapper">
+                      <h2><u>How Difficult</u></h2>
+                      <div id="diffSelWrapper">
+                        <div class="diffRadItem">
+                          <h4>Easy</h4>
+                          <input
+                            type="radio"
+                            onchange="handleDiff(0)"
+                            name="diffRadio"
+                            id="diff10"
+                          />
+                        </div>
+                        <div class="diffRadItem">
+                          <h4>Normal</h4>
+                          <input
+                            type="radio"
+                            onchange="handleDiff(1)"
+                            name="diffRadio"
+                            checked
+                            id="diff11"
+                          />
+                        </div>
+                        <div class="diffRadItem">
+                          <h4>Hard</h4>
+                          <input
+                            type="radio"
+                            onchange="handleDiff(2)"
+                            name="diffRadio"
+                            id="diff12"
+                          />
+                        </div>
+                        <div class="diffRadItem">
+                          <h4>Frenzy</h4>
+                          <input
+                            type="radio"
+                            onchange="handleDiff(3)"
+                            name="diffRadio"
+                            id="diff13"
+                          />
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 </div>
-                <button onclick="play()" id="startGame">Play Frenzy</button>
+                <div class="game-slection-lower">
+                  <button onclick="play()" id="startGame">Play Frenzy</button>
+                </div>
               </div>
             </div>
             <div id="lobby">
@@ -145,7 +294,9 @@
                   <h4>Join Code</h4>
                   <h3 id="lobbyJoinCodeDisplay"></h3>
                 </div>
-                <button onclick="openLobbyPanel()" id="openLobbyPanelBtn">View Lobby</button>
+                <button onclick="openLobbyPanel()" id="openLobbyPanelBtn">
+                  View Lobby
+                </button>
               </div>
               <div class="largeBox" id="categoriesLobbyWrapper">
                 <h2>Categories</h2>
@@ -194,7 +345,6 @@
               </div>
               <div id="startGameBtnWrapper">
                 <div id="lobbyFrenzyDisplayWrapper">
-                  
                   <div class="lobbyFrenzyDisplayBox">
                     <h2>Time</h2>
                     <p id="lobbyTime"></p>
@@ -212,11 +362,12 @@
               </div>
             </div>
           </div>
+
           <div class="flip-card-back">
             <div id="gameContent">
               <div id="header">
                 <div class="scoreTimeBox">
-                  <h3  id="score"></h3>
+                  <h3 id="score"></h3>
                 </div>
                 <div class="scoreTimeBox">
                   <h3 id="categorySelectedTxt"></h3>
@@ -230,7 +381,9 @@
                   <p id="message"></p>
                 </div>
                 <div class="messageBox">
-                  <p id="message2"></p>
+                  <div id="hint-tabs"></div>
+                  <!-- Create the hint container -->
+                  <div id="hint-container"></div>
                 </div>
               </div>
               <div id="correctWordsWrapper">
@@ -253,9 +406,10 @@
                 <button id="continueGame" onclick="continueGame()">
                   Conitinue
                 </button>
-                <button id="getHint" onclick="getHTHHint()">
-                  Get Hint
+                <button id="getSPHint" onclick="handleHint()">
+                  Get sp Hint
                 </button>
+                <button id="leaveSpGame" onclick="leaveSpGame()">Leave</button>
               </div>
               <div id="guessHistory">
                 <div class="guessHistoryContentBox">
@@ -270,7 +424,8 @@
             </div>
           </div>
         </div>
-        <!-- <div id="lobbyPlayerDisplayWrapper2">
+      </div>
+      <!-- <div id="lobbyPlayerDisplayWrapper2">
           <h2>Players</h2>
           <div id="lobbyPlayerDisplayBody2">
             <div class="lobbyPlayerBox">
@@ -291,151 +446,224 @@
             </div>
           </div>
         </div> -->
-      </div>
-      <div id="howToPlayContentWrapper">
-        <div class="htpContent">
-          <h1 id="HTPTitle">How to play</h1>
-          <div id="howToPlayContentBody">
-            <h3>Game Data</h3>
-            <p>Click the "Get Game Data" button in the menu</p>
-            <p>You will have 2 options, creating a username and load a user by username</p>
-            <p>If creating, username's must be 3-10 characters long and can include letters, numbers, and @, !, _, $</p>
-            <p>Head to Head requires a username, Single player does not</p>
-            <h3>Single Player</h3>
-            <p>Select a categories you would like to play</p>
-            <p>Select your difficulty, higher difficulties provide extra points</p>
-            <p> After clicking "Play Frenzy", time will start counting down, in which you will have unlimited guesses</p>
-            <p>Each round is weighted to start with an easier word and gradually increase in difficulty </p>
-            <p>You need to guess each word(s) correctly, if the timer reaches 00, you will fail</p>
-            <p>Hints are given as time progresses depending on the amount of time you're given</p>
-            <h3>Head To Head</h3>
-            <p>Click the "Head To Head" button in the menu</p>
-            <p>You will have 2 options, creating a lobby and viewing invites</p>
-            <p>If you have invites availble, you will be able to join or deny an invite</p>
-            <p>Rather be a lobby leader? Create your own and invite a friend</p>
-            <p>Lobby leaders can invite players and change lobby settings</p>
-            <p>Once the lobby is full, the leader can start the game</p>
-            <p>Head To Head works similarly to Single player, other than a few differences</p>
-            <p>All players are given the same time and hints</p>
-            <p>Hints are maximum 2 per word and can be used whenever needed</p>
-            <p>Refreshing the browser will auto kick you from the game after it has started</p>
-            <p>Once the Head To Head match is complete, all players are put back into the lobby</p>
-          </div>
+    </div>
+    <div id="howToPlayContentWrapper">
+      <div class="htpContent">
+        <h1 id="HTPTitle">How to play</h1>
+        <div id="howToPlayContentBody">
+          <h3>Modes</h3>
+          <p>Each mode offers a unique challenge</p>
+          <p>Currently, there is one avalable mode (two more on the way!)</p>
+          <h4>Frenzy</h4>
+          <p>Word are random and ordered shortest to longest</p>
+          <p>You can complete a maximum of 5 words per Frenzy</p>
+          <p>Words are individually timed</p>
+          <p>Time counts down</p>
+          <p>If time reaches zero, you fail the challenge</p>
+          <h3>Head To Head</h3>
+          <p>Click the "Head To Head" button in the menu</p>
+          <p>You will have 2 options, creating a lobby and viewing invites</p>
+          <p>
+            If you have invites availble, you will be able to join or deny an
+            invite
+          </p>
+          <p>Rather be a lobby leader? Create your own and invite friends</p>
+          <p>Lobby leaders can invite players and change lobby settings</p>
+          <p>Once the lobby is full, the leader can start the game</p>
+          <p>
+            Head To Head works similarly to Single player, other than a few
+            differences
+          </p>
+          <p>All players are given the same time per word and hints</p>
+          <p>Hints are maximum 2 per word and can be used whenever needed</p>
+          <p>
+            Refreshing the browser will auto kick you from the game after it has
+            started
+          </p>
+          <p>
+            Once the Head To Head match is complete, all players are put back
+            into the lobby
+          </p>
+          <h3>Stats</h3>
+          <h4>Total Points</h4>
+          <p>
+            Points are accumulated by completing words, challenges, and other
+            sources
+          </p>
+          <p>Word points are valued based on scores (shown below)</p>
+          <ul class="letter-score-display">
+            <li>
+              <span class="letter-score-prefix">1 Point:</span> A, E, I, O, U,
+              L, N, S, T, R
+            </li>
+            <li><span class="letter-score-prefix">2 Points:</span> D, G</li>
+            <li>
+              <span class="letter-score-prefix">3 Points:</span> B, C, M, P
+            </li>
+            <li>
+              <span class="letter-score-prefix">4 Points:</span> F, H, V, W, Y
+            </li>
+            <li><span class="letter-score-prefix">5 Points:</span> K</li>
+            <li><span class="letter-score-prefix">8 Points:</span> J, X</li>
+            <li><span class="letter-score-prefix">10 Points:</span> Q, Z</li>
+          </ul>
+          <p>
+            The cap for total points is currently unlimited but may be capped in
+            the future
+          </p>
+          <h4>Total Rank</h4>
+          <p>Ranks are numerical achievements from 0-100</p>
+          <p>Each rank is 100 points</p>
+          <p>More ranks and achievements will be added in the future</p>
+          <h4>Total Time</h4>
+          <p>Total time is the amount of time you spend in activites</p>
+          <h4>Total Words</h4>
+          <p>Total words is the total amount words you have completed</p>
+          <h4>Total Challenges</h4>
+          <p>
+            Total challenges is the total amount challenges you have completed
+          </p>
+          <h4>Current Speed</h4>
+          <p>Current speed represents how fast you guess words</p>
+          <p>
+            The time given during single player activites is based on this value
+          </p>
         </div>
-
-
-        <button onclick="hideHtp()" id="htpBtnClose">Close</button>
       </div>
 
-      <div id="rightSidePanelWrapper"></div>
-        <div id="rightSidePanel">
-          <div class="panelCloseBtnWrapper">
-            <button id="rightSidePanelBtn" onclick="closeRightPanel()" class="panelCloseBtn">X</button>
-          </div>
-          <button onclick="showHtp()" id="htpBtn">How to Play</button>
-          <button id="openGDBtn" onclick="openGameData()">
-            Get Game Data
+      <button onclick="hideHtp()" id="htpBtnClose">Close</button>
+    </div>
+
+    <div id="viewLobbyPlayerWrapper">
+      <div class="htpContent">
+        <div id="viewLobbyPlayerStats"></div>
+        <div id="vlpTog"></div>
+      </div>
+
+      <button onclick="hideVLP()" id="vlpBtnClose">Close</button>
+    </div>
+
+    <div id="rightSidePanelWrapper"></div>
+    <div id="rightSidePanel">
+      <div class="panelCloseBtnWrapper">
+        <button
+          id="rightSidePanelBtn"
+          onclick="closeRightPanel()"
+          class="panelCloseBtn"
+        >
+          X
+        </button>
+      </div>
+      <button onclick="showHtp()" id="htpBtn">How to Play</button>
+      <button id="openGDBtn" onclick="openGameData()">Update Username</button>
+      <button id="openHTHBtn" onclick="openHeadToHead()">Head To Head</button>
+      <div id="musicBtnDiv"></div>
+      <button id="logout" onclick="logout()">Logout</button>
+    </div>
+
+    <div id="getMyDataWrapper">
+      <div class="htpContent">
+        <h1 id="HTPTitle">Update Username</h1>
+        <div id="updateUsernameWrapper">
+          <h4 style="margin: 3">Enter New Username</h4>
+          <p style="font-size: 12px; margin: 3">
+            (3-10 char, letters, numbers, and @, !, _, $)
+          </p>
+
+          <input
+            type="text"
+            id="username"
+            maxlength="10"
+            minlength="3"
+            onkeyup="checkUpdatedUsername(this)"
+            autocomplete="off"
+          />
+          <button id="clickHere" onclick="updateUsername()" disabled>
+            Update
           </button>
-          <button id="openHTHBtn" onclick="openHeadToHead()">
-            Head To Head
+        </div>
+        <p id="updateUsernameMsg"></p>
+      </div>
+      <button onclick="closeGameData()" id="htpBtnClose">Close</button>
+    </div>
+    <div id="mobileStatsWrapper">
+      <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
+        <button
+          id="leftSidePanelBtn"
+          onclick="closeLeftPanel()"
+          class="panelCloseBtn"
+        >
+          X
+        </button>
+      </div>
+      <div id="stats">
+        <div class="statsBoxTitle">
+          <h2 id="statsTitle">My stats</h2>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Points</h4>
+          <p id="totalPoints">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Rank</h4>
+          <p id="totalRank">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Time</h4>
+          <p id="totalTime">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Words</h4>
+          <p id="totalWords">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Total Fenzy's</h4>
+          <p id="totalChallenges">0</p>
+        </div>
+        <div class="statsBox">
+          <h4 style="text-decoration: underline">Current Sp/d</h4>
+          <p id="currentCPS">0</p>
+        </div>
+      </div>
+    </div>
+    <div id="headToHeadWrapper">
+      <div class="htpContent">
+        <h1 id="HTPTitle">Head To Head</h1>
+        <div id="myDataDiv">
+          <button id="headToHeadBtn" onclick="viewInvites()">
+            View Invites
           </button>
-          <div id="musicBtnDiv"></div>
+          <h2 style="font-weight: bolder" id="">OR</h2>
+          <button id="createLobby" onclick="createNewLobby()">
+            Creat Lobby
+          </button>
         </div>
+        <div id="invitesDisplayWrapper">
+          <button
+            id="invitesDisplayCloseBtn"
+            onclick="closeInvitesDisplay()"
+            class="panelCloseBtn"
+          >
+            X
+          </button>
+          <div id="invitesDisplayHeader">
+            <h1>Invites</h1>
+            <div id="invitesDisplaySubHeader">
+              <p id="inviteCount"></p>
+            </div>
+          </div>
 
-      <div id="getMyDataWrapper">
-        <div class="htpContent">
-          <h1 id="HTPTitle">Get My Data</h1>
-          <div id="">
-            <h4 id="">Enter Username or code</h4>
-            <div class="input-row">
-              <input type="text" id="gameCode" />
-              <button id="getGameDataBtn" onclick="getGameData()">Load</button>
-            </div>
-            <h2 style="font-weight: bolder;"id="">Need to create one?</h2>
-          </div>
-          <div id="signupWrapper">
-            <h4 style="margin: 3">Enter a username</h4>
-            <p style="font-size: 12px; margin: 3">(3-10 char, letters, numbers, and @, !, _, $)</p>
-            <div class="input-row">
-              <input type="text" id="username" maxlength="10" minlength="3"/>
-              <button id="clickHere" onclick="getNewGameCode()">Create</button>
-            </div>
-          </div>
-          <h2 id="newCode"></h2>
-          <div id="newCodeMessage">
-            <p class="newCodeMessageFont">
-              Please keep this information securely stored
-            </p>
-            <p class="newCodeMessageFont">
-              You will lose your data if you don't have it!
-            </p>
-          </div>
-        </div>
-        <button onclick="closeGameData()" id="htpBtnClose">Close</button>
-      </div>
-      <div id="mobileStatsWrapper">
-        <div id="leftPanelCloseBtnWrapper" class="panelCloseBtnWrapper">
-          <button id="leftSidePanelBtn" onclick="closeLeftPanel()" class="panelCloseBtn">X</button>
-        </div>
-        <div id="stats"> 
-          <div class="statsBoxTitle">
-            <h2 id="statsTitle">My stats</h2>
-          </div>
-          <div class="statsBox">
-            <h4 style="text-decoration: underline">Total Points</h4>
-            <p id="totalPoints">0</p>
-          </div>
-          <div class="statsBox">
-            <h4 style="text-decoration: underline">Total Rank</h4>
-            <p id="totalRank">0</p>
-          </div>
-          <div class="statsBox">
-            <h4 style="text-decoration: underline">Total Time</h4>
-            <p id="totalTime">0</p>
-          </div>
-          <div class="statsBox">
-            <h4 style="text-decoration: underline">Total Words</h4>
-            <p id="totalWords">0</p>
-          </div>
-          <div class="statsBox">
-            <h4 style="text-decoration: underline">Total Fenzy's</h4>
-            <p id="totalChallenges">0</p>
-          </div>
-          <div class="statsBox">
-            <h4 style="text-decoration: underline">Current Sp/d</h4>
-            <p id="currentCPS">0</p>
-          </div>
+          <ul id="invitesDisplayBody"></ul>
         </div>
       </div>
-      <div id="headToHeadWrapper">
-        <div class="htpContent">
-          <h1 id="HTPTitle">Head To Head</h1>
-          <div id="myDataDiv">
-              <button id="headToHeadBtn" onclick="viewInvites()">View Invites</button>
-            <H2 style="font-weight: bolder;" id="">OR</H2>
-            <button id="createLobby" onclick="createNewLobby()">Creat Lobby</button>
-          </div>
-          <div id="invitesDisplayWrapper">
-            <button id="invitesDisplayCloseBtn" onclick="closeInvitesDisplay()" class="panelCloseBtn">X</button>
-            <div id="invitesDisplayHeader">
-              <h1>Invites</h1>
-              <div id="invitesDisplaySubHeader">
-                <p id="inviteCount"></p>
-              </div>
-            </div>
-
-            <ul id="invitesDisplayBody">
-              
-            </ul>
-          </div>
-        </div>
-        <button onclick="closeHeadToHead()" id="HTHBtnClose">Close</button>
+      <button onclick="closeHeadToHead()" id="HTHBtnClose">Close</button>
     </div>
   </body>
 
   <script src="./scripts/globals.js"></script>
   <script src="./scripts/storage.js"></script>
+  <script src="./scripts/audioHandler.js"></script>
   <script src="./scripts/socketHandler.js"></script>
+  <script src="./scripts/spSocketHandler.js"></script>
   <script src="./scripts/main.js"></script>
-  <script src="./scripts/modeHandler.js"></script>
 </html>

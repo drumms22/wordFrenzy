@@ -1,83 +1,4 @@
 
-let musicOn = true;
-let lastIndex = -1;
-const sounds = [
-  new Howl({ src: ['assets/audio/bkg1.mp3'], volume: .02, }),
-  new Howl({ src: ['assets/audio/bkg2.mp3'], volume: .02, }),
-  new Howl({ src: ['assets/audio/bkg3.mp3'], volume: .02, })
-];
-const playBKMusic = () => {
-
-  if (!musicOn || soundPlaying) return;
-
-  let randomIndex;
-  do {
-    randomIndex = Math.floor(Math.random() * sounds.length);
-  } while (randomIndex === lastIndex);
-  lastIndex = randomIndex;
-  sounds[randomIndex].fade(0, 0.01, 5000);
-  sounds[randomIndex].play();
-  soundPlaying = true;
-
-}
-
-const stopBKMusic = () => {
-
-  Howler.stop();
-  soundPlaying = false;
-  musicOn = false;
-
-}
-
-
-const checkMusic = () => {
-  let approved = getCookie("bkgMusic");
-
-  if (approved) {
-    let num = parseInt(approved);
-    if (num === 0) {
-      musicOn = false;
-      document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOnMusic()">Turn On Music</button>';
-    } else {
-      musicOn = true;
-      document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic()">Turn Off Music</button>';
-    }
-  } else {
-    setCookie("bkgMusic", 1);
-    musicOn = true;
-    document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic()">Turn Off Music</button>';
-  }
-
-}
-
-const turnOnMusic = () => {
-  musicOn = true;
-  document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic()">Turn Off Music</button>';
-  playBKMusic();
-  setCookie("bkgMusic", 1);
-}
-
-const turnOffMusic = () => {
-  musicOn = false;
-  document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOnMusic()">Turn On Music</button>';
-  stopBKMusic();
-  setCookie("bkgMusic", 0);
-}
-
-
-checkMusic()
-
-window.addEventListener('click', () => {
-  playBKMusic();
-})
-sounds.forEach(function (sound) {
-  sound.on('end', function () {
-    soundPlaying = false;
-    playBKMusic();
-  });
-});
-
-
 const loadData = (spc) => {
   let username = getCookie("username");
 
@@ -87,6 +8,10 @@ const loadData = (spc) => {
     document.getElementById("statsTitle").innerHTML = "Player"
   }
 
+  console.log(spc);
+
+  if (!spc || spc < 1 || spc === Infinity) spc = 99;
+
   const hours = Math.floor(player.totalTimeSpent / 3600);  // 1 hour
   const minutes = Math.floor((player.totalTimeSpent % 3600) / 60);  // 50 minutes
   const seconds = player.totalTimeSpent % 60;
@@ -95,7 +20,7 @@ const loadData = (spc) => {
   document.getElementById("totalPoints").innerHTML = player.totalPoints;
   document.getElementById("totalTime").innerHTML = `${hours}h ${minutes}m ${seconds}s`;
   document.getElementById("totalWords").innerHTML = player.totalWordsCompleted;
-  document.getElementById("totalChallenges").innerHTML = player.totalChallenegesCompleted;
+  document.getElementById("totalChallenges").innerHTML = "" + player.totalChallengesCompleted;
   document.getElementById("totalRank").innerHTML = rank;
   let spcMess = 100 - spc;
   document.getElementById("currentCPS").innerHTML = spcMess + "" + maxSpd;
@@ -142,7 +67,6 @@ const startTimer = () => timer = setInterval(() => {
       let preMess = player.currentChallenge.hints.triggers.findIndex((trigger) => player.currentTime === (trigger + 2));
       let hintsTrigger = player.currentChallenge.hints.triggers.findIndex((trigger) => player.currentTime === trigger);
       if (preMess > -1 && hintsTrigger === -1) {
-        document.getElementById("message2").innerHTML = "Hint incoming!!!"
       } else if (hintsTrigger > -1 && preMess === -1) {
         let regex = /Lobby/;
         handleHint(hintsTrigger, selectedCategory.replace(regex, ""));
@@ -160,7 +84,7 @@ const startTimer = () => timer = setInterval(() => {
 
 }, 1000);
 
-const handleHint = async (index, cat) => {
+const handleHints = async (index, cat) => {
   let payload = {
     type: "normal",
     hintsUsed: player.currentChallenge.hints.used,
@@ -216,11 +140,9 @@ const handleHint = async (index, cat) => {
     } else {
       size = "11px";
     }
-    document.getElementById("message2").style.fontSize = size;
-    document.getElementById("message2").innerHTML = res[0].hint;
+
   } else {
-    player.currentChallenge.hints.completed = true;
-    document.getElementById("message2").innerHTML = "Hint cannot be found, good luck!";
+
   }
 }
 
@@ -277,26 +199,25 @@ const calcSpeed = (time, char) => {
 
 }
 
-const timesUp = () => {
+const timesUp = (w) => {
 
-  clearInterval(timer);
+  // // clearInterval(timer);
 
-  let w = usw(player.currentWord);
+  // let w = usw(player.currentWord);
 
-  calcSpeed(player.currentChallenge.ogTime, 0);
+  // calcSpeed(player.currentChallenge.ogTime, 0);
 
-  player.totalTimeSpent += player.currentChallenge.ogTime;
+  // player.totalTimeSpent += player.currentChallenge.ogTime;
 
-  updatePlayer();
+  // updatePlayer();
 
-  updateGameData();
+  // updateGameData();
 
-  timer = null;
-  document.getElementById("message2").innerHTML = "The word was: " + w + "";
+  // timer = null;
   gameOver("Times up! You have failed!!!");
 }
 
-const updateTimerDsiplay = (sec, min = 0) => {
+const updateTimerDsiplay = (sec) => {
   document.getElementById("time").innerHTML = "" + sec + "s";
 }
 
@@ -683,8 +604,12 @@ function createInputs(sentence) {
       inputValuesForWord.push('_');
 
       charCount++;
+      spaceInd.push("*");
     }
-    charCount++;
+    if (i < words.length - 1) {
+      spaceInd.push(" ");
+      charCount++;
+    }
     inputValues.push(inputValuesForWord);
     document.getElementById('words').appendChild(wordContainer);
   }
@@ -821,160 +746,161 @@ const validateGuess = async (guess, word) => {
 }
 
 const handlePlayerAttempt = async () => {
-  let word = usw(player.currentWord).toLowerCase();
+
   const inputs = document.querySelectorAll('.letterBox');
   const guess = Array.from(inputs).map(input => input.value).join('').toLowerCase();
 
   let guessWSpace = "";
-  let count = 0;
-  for (let i = 0; i < word.length; i++) {
+  let charCount = 0;
 
-    if (word.charAt(i) === " ") {
+  for (let i = 0; i < spaceInd.length; i++) {
+
+    if (spaceInd[i] === " ") {
       guessWSpace += " ";
     } else {
-      guessWSpace += "" + guess.charAt(count);
-      count++;
+      guessWSpace += "" + guess.charAt(charCount);
+      charCount++;
     }
 
   }
 
   if (player.currentChallenge.prevGuesses.includes(guessWSpace)) {
     displayMessage("Please enter a different guess!");
-    clearIncorrectInputs(inputs);
+    clearIncorrectInputs();
     focusNextOpenInput();
     return;
   }
-
-  if (guessWSpace.length < word.length) {
-    displayMessage("Please fill out all letter blocks!");
-    focusNextOpenInput();
-    return;
-  }
-
-
-  let validate = await validateGuess(guessWSpace, word);
-
-  if (guessWSpace !== word && !validate) {
-    displayMessage("That is not correct, keep trying!");
-    clearIncorrectInputs(inputs);
-    focusNextOpenInput();
-    return;
-  }
-
-  let check = await checkNewGuess(word, guessWSpace);
-
-
-  const notMatchedIndexes = check.notMatchedIndexes.concat(check.outOfPlaceIndexes).sort((a, b) => a - b);
-  const wordLetters = word.split('');
-  const spaces = [...wordLetters.join('').matchAll(new RegExp(" ", 'gi'))].map(a => a.index);
-  player.currentChallenge.prevGuesses.unshift(guessWSpace);
-
-  // Highlight correct letters
-  check.matchedIndexes.forEach(index => {
-
-    if (spaces.findIndex((i) => index === i) === -1) {
-      document.getElementById("letter" + (index + 1)).classList.add('correct');
-      document.getElementById("letter" + (index + 1)).style.backgroundColor = "#4cd74c";
-      document.getElementById("letter" + (index + 1)).disabled = true;
-    }
-
-  });
-
-  player.currentChallenge.correctLetters = check.correctLetters;
-  notMatchedIndexes.forEach(index => {
-    if (spaces.findIndex((i) => index === i) === -1) {
-
-      document.getElementById("letter" + (index + 1)).value = "";
-    }
-  });
-  updatePrevGuesses();
-  if (check.correctLetters.length === wordLetters.length) {
-    document.getElementById("correctWords").style.display = "block";
-    player.totalWordsCompleted++;
-    player.totalTimeSpent += (player.currentChallenge.ogTime - player.currentTime);
-    player.totalCharCount += joinWord(word).length;
-    addCorrectWord(word);
-    displayMessage("Success! You guessed the word");
-    handlePoints();
-    player.wordsCompleted.push(word);
-    calcSpeed((player.currentChallenge.ogTime - player.currentTime), word.length);
-    updatePlayer();
-    if (inLobby) {
-      updateGameData();
-      let p = player.lobbyData.player;
-      p.wordsGuessed.push(word);
-      handleHTHGuess(p);
-    } else {
-
-      clearInterval(timer);
-      player.currentChallenge.wordCompleted = true;
-      player.wordsCompleted.push(word);
-
-      if (player.currentChallenge.challengeI === 2) {
-        player.currentChallenge.challengeCompleted = true;
-        player.totalChallenegesCompleted++;
-        player.totalPoints += 15;
-        // document.getElementById("score").innerHTML = "" + player.totalPoints;
-        updateGameData();
-        gameOver("You have completed the Frenzy!!!")
-      } else {
-        updateGameData();
-        document.getElementById("message2").innerHTML = "";
-        document.getElementById("guess").style.display = "none";
-        timerFunc(() => {
-          displayMessage("Next word incomming!");
-          document.getElementById("words").innerHTML = "";
-          timerFunc(() => {
-            intermission();
-          }, 1000)
-        }, 2000)
-      }
-    }
+  player.currentChallenge.prevGuess = guessWSpace;
+  console.log(guessWSpace);
+  if (inLobby) {
+    handleHTHGuess(guessWSpace);
   } else {
-    // Highlight out of place letters
-
-    let newTempInc = player.currentChallenge.incorrectLetters;
-
-    for (let i = 0; i < check.incorrectLetters.length; i++) {
-      let incCount = newTempInc.filter((l) => l === check.incorrectLetters[i]).length;
-
-      if (incCount === 0) {
-        newTempInc.push(check.incorrectLetters[i]);
-      }
-    }
-
-    player.currentChallenge.incorrectLetters = newTempInc;
-
-    let newTempOOP = player.currentChallenge.outOfPlaceLetters;
-
-    for (let i = 0; i < check.outOfPlaceLetters.length; i++) {
-      let oopCount = player.currentChallenge.outOfPlaceLetters.filter((l) => l === check.outOfPlaceLetters[i]).length;
-      let wCount = word.split("").filter((l) => l === check.outOfPlaceLetters[i]).length;
-      if (oopCount < wCount) {
-        newTempOOP.push(check.outOfPlaceLetters[i]);
-      }
-    }
-
-    let newOOP = updateOutOfPlaceLetters(joinWord(word), check.correctLetters, newTempOOP)
-
-    player.currentChallenge.outOfPlaceLetters = newOOP;
-
-    let mainMess = "";
-    if (player.currentChallenge.incorrectLetters.length > 0) {
-      document.getElementById("guessIncorrect").style.display = "block"
-      document.getElementById("guessIncorrect").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
-      mainMess += "You got some incorrect";
-    }
-    if (player.currentChallenge.outOfPlaceLetters.length > 0) {
-      document.getElementById("guessOutOfPlace").style.display = "block"
-      document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.outOfPlaceLetters.join(' | ');
-      if (mainMess.length > 0) mainMess += " and "
-      mainMess += "You got some out of place";
-    }
-    document.getElementById("message").innerHTML = mainMess;
-    //"You got " + (check.incorrectLetters.length > 0 ? check.incorrectLetters.join(', ') : "none ") + " incorrect | You got " + (check.outOfPlaceLetters.length > 0 ? check.outOfPlaceLetters.join(', ') : "none") + " out of place";
-    focusNextOpenInput();
+    handlePlayerGuess(guessWSpace);
   }
+
+  // let validate = await validateGuess(guessWSpace, word);
+
+  // if (guessWSpace !== word && !validate) {
+  //   displayMessage("That is not correct, keep trying!");
+  //   clearIncorrectInputs(inputs);
+  //   focusNextOpenInput();
+  //   return;
+  // }
+
+  // let check = await checkNewGuess(word, guessWSpace);
+
+
+  // const notMatchedIndexes = check.notMatchedIndexes.concat(check.outOfPlaceIndexes).sort((a, b) => a - b);
+  // const wordLetters = word.split('');
+  // const spaces = [...wordLetters.join('').matchAll(new RegExp(" ", 'gi'))].map(a => a.index);
+  // player.currentChallenge.prevGuesses.unshift(guessWSpace);
+
+  // // Highlight correct letters
+  // check.matchedIndexes.forEach(index => {
+
+  //   if (spaces.findIndex((i) => index === i) === -1) {
+  //     document.getElementById("letter" + (index + 1)).classList.add('correct');
+  //     document.getElementById("letter" + (index + 1)).style.backgroundColor = "#4cd74c";
+  //     document.getElementById("letter" + (index + 1)).disabled = true;
+  //   }
+
+  // });
+
+  // player.currentChallenge.correctLetters = check.correctLetters;
+  // notMatchedIndexes.forEach(index => {
+  //   if (spaces.findIndex((i) => index === i) === -1) {
+
+  //     document.getElementById("letter" + (index + 1)).value = "";
+  //   }
+  // });
+  // updatePrevGuesses();
+  // if (check.correctLetters.length === wordLetters.length) {
+  //   document.getElementById("correctWords").style.display = "block";
+  //   player.totalWordsCompleted++;
+  //   player.totalTimeSpent += (player.currentChallenge.ogTime - player.currentTime);
+  //   player.totalCharCount += joinWord(word).length;
+  //   addCorrectWord(word);
+  //   displayMessage("Success! You guessed the word");
+  //   handlePoints();
+  //   player.wordsCompleted.push(word);
+  //   calcSpeed((player.currentChallenge.ogTime - player.currentTime), word.length);
+  //   updatePlayer();
+  //   if (inLobby) {
+  //     updateGameData();
+  //     let p = player.lobbyData.player;
+  //     p.wordsGuessed.push(word);
+  //     handleHTHGuess(p);
+  //   } else {
+
+  //     clearInterval(timer);
+  //     player.currentChallenge.wordCompleted = true;
+  //     player.wordsCompleted.push(word);
+
+  //     if (player.currentChallenge.challengeI === 2) {
+  //       player.currentChallenge.challengeCompleted = true;
+  //       player.totalChallengesCompleted++;
+  //       player.totalPoints += 15;
+  //       // document.getElementById("score").innerHTML = "" + player.totalPoints;
+  //       updateGameData();
+  //       gameOver("You have completed the Frenzy!!!")
+  //     } else {
+  //       updateGameData();
+
+  //       document.getElementById("guess").style.display = "none";
+  //       timerFunc(() => {
+  //         displayMessage("Next word incomming!");
+  //         document.getElementById("words").innerHTML = "";
+  //         timerFunc(() => {
+  //           intermission();
+  //         }, 1000)
+  //       }, 2000)
+  //     }
+  //   }
+  // } else {
+  //   // Highlight out of place letters
+
+  //   let newTempInc = player.currentChallenge.incorrectLetters;
+
+  //   for (let i = 0; i < check.incorrectLetters.length; i++) {
+  //     let incCount = newTempInc.filter((l) => l === check.incorrectLetters[i]).length;
+
+  //     if (incCount === 0) {
+  //       newTempInc.push(check.incorrectLetters[i]);
+  //     }
+  //   }
+
+  //   player.currentChallenge.incorrectLetters = newTempInc;
+
+  //   let newTempOOP = player.currentChallenge.outOfPlaceLetters;
+
+  //   for (let i = 0; i < check.outOfPlaceLetters.length; i++) {
+  //     let oopCount = player.currentChallenge.outOfPlaceLetters.filter((l) => l === check.outOfPlaceLetters[i]).length;
+  //     let wCount = word.split("").filter((l) => l === check.outOfPlaceLetters[i]).length;
+  //     if (oopCount < wCount) {
+  //       newTempOOP.push(check.outOfPlaceLetters[i]);
+  //     }
+  //   }
+
+  //   let newOOP = updateOutOfPlaceLetters(joinWord(word), check.correctLetters, newTempOOP)
+
+  //   player.currentChallenge.outOfPlaceLetters = newOOP;
+
+  //   let mainMess = "";
+  //   if (player.currentChallenge.incorrectLetters.length > 0) {
+  //     document.getElementById("guessIncorrect").style.display = "block"
+  //     document.getElementById("guessIncorrect").innerHTML = "" + player.currentChallenge.incorrectLetters.join(' | ');
+  //     mainMess += "You got some incorrect";
+  //   }
+  //   if (player.currentChallenge.outOfPlaceLetters.length > 0) {
+  //     document.getElementById("guessOutOfPlace").style.display = "block"
+  //     document.getElementById("guessOutOfPlace").innerHTML = "" + player.currentChallenge.outOfPlaceLetters.join(' | ');
+  //     if (mainMess.length > 0) mainMess += " and "
+  //     mainMess += "You got some out of place";
+  //   }
+  //   document.getElementById("message").innerHTML = mainMess;
+  //   //"You got " + (check.incorrectLetters.length > 0 ? check.incorrectLetters.join(', ') : "none ") + " incorrect | You got " + (check.outOfPlaceLetters.length > 0 ? check.outOfPlaceLetters.join(', ') : "none") + " out of place";
+  //   focusNextOpenInput();
+  // }
 
 };
 
@@ -1010,7 +936,8 @@ const updateOutOfPlaceLetters = (word, correctGuessArr, outOfPlace) => {
   return outOfPlaceCopy;
 };
 
-const clearIncorrectInputs = (inputs) => {
+const clearIncorrectInputs = () => {
+  const inputs = document.querySelectorAll('input');
   for (let i = 0; i < inputs.length; i++) {
     const input = inputs[i];
     if (!input.disabled && !input.classList.contains('correct')) {
@@ -1023,7 +950,7 @@ const focusNextOpenInput = () => {
   const inputs = document.querySelectorAll('input');
 
   for (let i = 0; i < inputs.length; i++) {
-    if (!inputs[i].value) {
+    if (inputs[i].value === "") {
       inputs[i].focus();
       //handleInputStyle(inputs[i]);
       break;
@@ -1122,11 +1049,10 @@ const resetPlayer = () => {
 
 
 const gameOver = (message) => {
-  resetPlayer();
-  document.getElementById("words").innerHTML = "<p>Please Refresh the browser to go back to the home page</p>";
+  document.getElementById("words").innerHTML = "";
   displayMessage(message)
   document.getElementById("guess").style.display = "none";
-  document.getElementById("continueGame").style.display = "block";
+  // document.getElementById("continueGame").style.display = "block";
 }
 
 const nextLevel = () => {
@@ -1147,7 +1073,6 @@ const intermission = () => {
   document.getElementById("guessIncorrect").innerHTML = "";
   document.getElementById("guessIncorrect").style.display = "none";
   document.getElementById("prevWords").style.overflowY = "hidden";
-  document.getElementById("message2").innerHTML = "";
   timer = setInterval(() => {
 
     if (count > 0) {
@@ -1170,12 +1095,12 @@ const setNewPlayer = () => {
   let obj = {
     totalPoints: 0,
     totalTimeSpent: 0,
-    totalChallenegesCompleted: 0,
+    totalChallengesCompleted: 0,
     totalWordsCompleted: 0,
     totalCharCount: 0,
     speedData: {
-      totalChar: 5,
-      totalTime: 100
+      totalChar: 15,
+      totalTime: 300
     }
   };
 
@@ -1190,7 +1115,7 @@ const updatePlayer = () => {
     let obj = {
       totalPoints: player.totalPoints,
       totalTimeSpent: player.totalTimeSpent,
-      totalChallenegesCompleted: player.totalChallenegesCompleted,
+      totalChallengesCompleted: player.totalChallengesCompleted,
       totalWordsCompleted: player.totalWordsCompleted,
       totalCharCount: player.totalCharCount,
       speedData: {
@@ -1205,51 +1130,46 @@ const updatePlayer = () => {
 
 }
 
-const checkPlayer = () => {
-  let data = getCookie("player");
+const checkPlayer = (user) => {
 
-  if (data != "") {
-    let user = JSON.parse(data);
+  console.log(user);
+  let spc = 0;
+  // if (!user.speedData) {
+  //   spc = Math.floor(parseInt(player.speedData.totalChar) / parseInt(player.speedData.totalTime)) + 1;
+  // } else {
+  spc = Math.floor(user.speedData.totalTime / user.speedData.totalChar) + 1;
 
-    let spc = 0;
-    // if (!user.speedData) {
-    //   spc = Math.floor(parseInt(player.speedData.totalChar) / parseInt(player.speedData.totalTime)) + 1;
-    // } else {
-    spc = Math.floor(parseInt(user.speedData.totalTime) / parseInt(user.speedData.totalChar)) + 1;
-    // }
-    player.totalPoints = parseInt(user.totalPoints);
-    player.totalTimeSpent = parseInt(user.totalTimeSpent);
-    player.totalChallenegesCompleted = parseInt(user.totalChallenegesCompleted);
-    player.totalWordsCompleted = parseInt(user.totalWordsCompleted);
-    player.totalCharCount = parseInt(user.totalCharCount);
-    player.speedData.totalChar = parseInt(user.speedData.totalChar)
-    player.speedData.totalTime = parseInt(user.speedData.totalTime)
-    player.currentCPS = spc;
+  if (!spc) spc = 20;
+  // }
 
-    loadData(spc);
+  player.totalPoints = user.totalPoints;
+  player.totalTimeSpent = user.totalTimeSpent;
+  player.totalChallengesCompleted = user.totalChallengesCompleted;
+  player.totalWordsCompleted = user.totalWordsCompleted;
+  player.totalCharCount = user.totalCharCount;
+  player.speedData.totalChar = user.speedData.totalChar;
+  player.speedData.totalTime = user.speedData.totalTime;
+  player.currentCPS = spc;
 
-  } else {
-    setNewPlayer();
-    loadData(20);
-  }
+  loadData(spc);
 
 }
 
-const calcTime = (w) => {
-  let time = w.length * 20;
+const calcTime = (len) => {
+  let time = len * 20;
 
   switch (selectedDiff) {
     case 0:
-      time = (w.length * player.currentCPS) + (Math.floor((w.length * player.currentCPS) * .3) + 1);
+      time = (len * player.currentCPS) + (Math.floor((len * player.currentCPS) * .3) + 1);
       break;
     case 1:
-      time = w.length * player.currentCPS;
+      time = len * player.currentCPS;
       break;
     case 2:
-      time = (w.length * player.currentCPS) - (Math.floor((w.length * player.currentCPS) * .25));
+      time = (len * player.currentCPS) - (Math.floor((len * player.currentCPS) * .25));
       break;
     case 3:
-      time = (w.length * player.currentCPS) - (Math.floor((w.length * player.currentCPS) * .5));
+      time = (len * player.currentCPS) - (Math.floor((len * player.currentCPS) * .5));
       break;
 
   }
@@ -1287,22 +1207,11 @@ const playRound = async () => {
   //clearInterval(timer);
   // document.getElementById("continueGame").style.display = "none";
   // let newWord = getWord(num, num);
-  let res = await handleModes();
-
-  let h = res[0];
+  document.getElementById("loading-screen").style.display = "flex";
   const start = () => {
-    let w = usw(h);
 
-    let startTime = calcTime(joinWord(w));
-    setSession(w, h, startTime);
-    document.getElementById("message2").innerHTML = "";
-    createInputs(w);
-    timerFunc(() => {
-      startTimer();
-      focusNextOpenInput();
-      displayMessage("Time has started!");
-      document.getElementById("guess").style.display = "block";
-    }, 100);
+    startSPTime();
+
   }
 
   await start();
@@ -1314,7 +1223,7 @@ async function playHeadToHead(h, t) {
     let w = usw(h);
 
     setSession(w, h, t);
-    document.getElementById("message2").innerHTML = "";
+
     timerFunc(() => {
       createInputs(w);
       startTimer();
@@ -1330,32 +1239,9 @@ async function playHeadToHead(h, t) {
 
 }
 
-const continueGame = () => {
-  player.currentChallenge.challengeI = 0;
-  document.getElementById("continueGame").style.display = "none";
-  player.currentChallenge.challengeCompleted = false;
-  document.getElementById("correctWords").innerHTML = "";
-  document.getElementById("correctWords").style.display = "none";
-  document.getElementById("words").innerHTML = "";
-  document.getElementById("message2").innerHTML = "";
-  document.getElementById("time").innerHTML = "";
-  document.getElementById("prevWords").innerHTML = "";
-  document.getElementById("prevWords").style.display = "none";
-  document.getElementById("guessOutOfPlace").innerHTML = "";
-  document.getElementById("guessOutOfPlace").style.display = "none";
-  document.getElementById("guessIncorrect").innerHTML = "";
-  document.getElementById("guessIncorrect").style.display = "none";
-  displayMessage("Get ready!!!")
-  setTimeout(() => {
-    playRound();
-  }, 3000);
 
-}
+const setSession = (h, t) => {
 
-
-const setSession = (w, h, t) => {
-
-  player.wordLen = joinWord(w).length;
   player.currentWord = h;
   player.currentChallenge.prevGuess = "";
   player.currentChallenge.prevGuesses = [];
@@ -1366,10 +1252,10 @@ const setSession = (w, h, t) => {
   player.currentChallenge.hints.used = [];
   player.currentTime = t;
   player.currentChallenge.ogTime = t;
-  let hintData = calculateHintTriggers(t, joinWord(w).length);
-  //if (startTime < 30) player.currentChallenge.hints.completed = true;
-  player.currentChallenge.hints.triggers = hintData.triggers
-  player.currentChallenge.hints.maxHints = hintData.hints;
+  // let hintData = calculateHintTriggers(t, joinWord(w).length);
+  // //if (startTime < 30) player.currentChallenge.hints.completed = true;
+  // player.currentChallenge.hints.triggers = hintData.triggers
+  // player.currentChallenge.hints.maxHints = hintData.hints;
   player.challengeStarted = true;
   player.currentChallenge.wordCompleted = false;
   player.currentChallenge.correctLetters = [];
@@ -1506,6 +1392,16 @@ const getHint = async (payload) => {
 
 
 const handleCategorySel = (id) => {
+  if (inLobby) {
+    displayLobbyToRomm(id);
+  } else {
+    handleCategoryDisplay(id);
+  }
+
+}
+
+const handleCategoryDisplay = (id) => {
+
   setCookie("selCat", id, 100);
   let catArr = document.getElementsByClassName("categoriesItem");
 
@@ -1527,8 +1423,12 @@ const joinWord = (word) => word.includes(" ") ? word.split(" ").join("") : word
 
 
 const handleDiff = (num) => {
+
   selectedDiff = num;
   setCookie("selDiff", num, 100);
+  if (inLobby) {
+    handleLobDiff(num);
+  }
 }
 
 const getCatId = (cat) => {
@@ -1544,7 +1444,7 @@ const getCatId = (cat) => {
   return str;
 }
 
-
+// document.getElementById("flipGameInner").classList.add("flip-game");
 const createCategories = () => {
 
   const categories = ["Words", "Animals", "Cars", "Cities", "Sports", "Movies"];
@@ -1597,10 +1497,6 @@ if (selectedDiff === 1 && !inLobby) {
 
 }
 
-if (!dataLoaded) {
-  checkPlayer();
-  dataLoaded = true;
-}
 
 
 //6430f475530103d3127f0d16
@@ -1627,7 +1523,7 @@ const getGameData = async () => {
 
     await setCookie("player", dataStr);
 
-    await checkPlayer();
+    // await checkPlayer();
 
   }
 
@@ -1651,7 +1547,9 @@ const getNewGameCode = async () => {
   let match = /^[a-zA-Z0-9@!_$]+$/.test(username.value);
 
   if (username.value.length < 3 || username.value.length > 10 || !match) {
-    alert("Username: min 3, max 10, can include letters, numbers, @, !, _, $");
+    if (e.id === "newUsername") {
+      document.getElementById("initScreenCreateMsg").innerHTML = "Invalid Username!";
+    }
     return;
   }
 
@@ -1667,7 +1565,7 @@ const getNewGameCode = async () => {
         // }
         totalPoints: 0,
         totalTimeSpent: 0,
-        totalChallenegesCompleted: 0,
+        totalChallengesCompleted: 0,
         totalWordsCompleted: 0,
         totalCharCount: 0,
         speedData: {
@@ -1709,7 +1607,7 @@ const updateGameData = async () => {
   if (code && player) {
     let playerData = await JSON.parse(player);
     let res = await fetchGameData('/update', {
-      method: 'POST', body: JSON.stringify({ id: code, data: [playerData] }), headers: {
+      method: 'POST', body: JSON.stringify({ id: code, data: playerData }), headers: {
         'Content-Type': 'application/json'
       }
     });
@@ -1876,7 +1774,7 @@ if (!inLobby) {
     document.getElementById("loading-screen").style.display = "flex";
     reJoinLobby();
   } else {
-    getInvites()
+    getNewInvites()
   }
 }
 
@@ -2000,37 +1898,15 @@ const openInvitePlayer = async () => {
     return;
   }
   document.getElementById("inviteToLobbyWrapper").style.display = "flex";
-  await fetchNotIn();
-  await displayPlayersNotIn();
+  getInviteList()
+  // await fetchNotIn();
+  // await displayPlayersNotIn();
 }
 
 const closeInvitePlayer = () => {
   document.getElementById("inviteToLobbyWrapper").style.display = "none";
 }
 
-const sendInvite = async (playerTo) => {
-
-  if (playerTo.length < 3 || playerTo.length > 10) {
-    alert("Please enter a valid Username!");
-    return;
-  }
-
-  let send = await fetchInviteData("save", {
-    method: 'POST', body: JSON.stringify({ lobbyCode: player.lobbyData.lobby.code, playerFrom: player.lobbyData.player.id, playerTo }), headers: {
-      'Content-Type': 'application/json'
-    }
-  });
-
-  if (send[0]) {
-    alert("Invite sent!")
-
-    await displayPlayersNotIn();
-
-  } else {
-    alert("Invite not sent!")
-
-  }
-}
 
 const searchUsers = (e) => {
   console.log(e.value);
@@ -2061,7 +1937,7 @@ const displayPlayersNotIn = async () => {
       <h3>${player.playersNotIn[i].username}</h3>
     </div>
     <div class="button-wrapper">
-      <button onclick="sendInvite('${player.playersNotIn[i].username}')" class="invite-display-btns">Invite</button>
+      <button onclick="sendInvite('${player.playersNotIn[i]._id.toString()}')" class="invite-display-btns">Invite</button>
     </div>
     </li>`
   }
@@ -2095,7 +1971,7 @@ const ptpTut = () => {
 }
 
 ptpTut()
-function showOverlay() {
+function showWinnerOverlay() {
   const canvas = document.getElementById('sparks-canvas');
   const ctx = canvas.getContext('2d');
   canvas.width = window.innerWidth;
@@ -2109,7 +1985,7 @@ function showOverlay() {
     const vx = Math.random() * 6 - 3;
     const vy = Math.random() * 6 - 3;
     const size = Math.random() * 3;
-    const color = '#fff';
+    const color = `rgb(${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)}, ${Math.floor(Math.random() * 256)})`;
     sparks.push({ x, y, vx, vy, size, color });
   }
 
@@ -2136,7 +2012,7 @@ function showOverlay() {
   animateSparks();
 
   // show overlay
-  const overlay = document.querySelector('.overlay');
+  const overlay = document.querySelector('#winnerOverlay');
   overlay.style.display = 'block';
 }
 
@@ -2149,6 +2025,134 @@ function showOverlay() {
 //   }
 // }, 1000);
 
+// setInterval(() => {
+//   showOverlay();
+// }, 1000)
 
 
-// showOverlay();
+const displayHints = () => {
+  const hintTabs = document.querySelector('#hint-tabs');
+  const hintContainer = document.querySelector('#hint-container');
+  hintContainer.innerHTML = "";
+  hintTabs.innerHTML = "";
+  const hintMessages = player.currentChallenge.hints.hintMessages;
+
+  hintMessages.forEach((hint, i) => {
+    // Calculate font size based on hint length
+    const hintLength = hint.length;
+    let size;
+    if (hintLength < 30) {
+      size = '12px';
+    } else if (hintLength < 60) {
+      size = '10px';
+    } else if (hintLength < 120) {
+      size = '11px';
+    } else {
+      size = '9px';
+    }
+
+    const tab = document.createElement('div');
+    tab.className = 'tab';
+    tab.innerHTML = `Hint ${i + 1}`;
+    tab.onclick = () => showHint(i + 1);
+    hintTabs.appendChild(tab);
+
+    const message = document.createElement('p');
+    message.id = `hint-${i + 1}`;
+    message.className = 'hint';
+    message.style.setProperty('--font-size', size);
+    message.innerHTML = hint;
+    hintContainer.appendChild(message);
+
+    if (i === hintMessages.length - 1) {
+      // Set the active class on the last tab
+      tab.classList.add('active');
+      // Show the corresponding hint
+      showHint(i + 1);
+    }
+  });
+}
+
+const showHint = (hintNumber) => {
+  const hints = document.querySelectorAll('#hint-container p');
+  hints.forEach((hint, i) => {
+    hint.style.display = 'none';
+    document.querySelectorAll('.tab')[i].classList.remove('active');
+  });
+  document.querySelector(`#hint-${hintNumber}`).style.display = 'block';
+  document.querySelectorAll('.tab')[hintNumber - 1].classList.add('active');
+};
+
+const slider = document.getElementById("myRange");
+const sliderOutput = document.querySelector(".slider-value");
+sliderOutput.innerHTML = slider.value;
+const handleWordCount = (e) => {
+  sliderOutput.innerHTML = e.value;
+  player.wordCount = e.value;
+  if (inLobby) {
+    changeWordCount(e.value)
+  }
+}
+
+const play = () => {
+
+  if (inLobby) {
+    startHTH()
+  } else {
+    playRound();
+  }
+
+}
+
+const handleHint = () => {
+  if (inLobby && hthStarted) {
+    getHTHHint()
+  } else {
+    getSPHint();
+  }
+}
+
+const formatDate = (isoDateString) => {
+  const date = new Date(isoDateString);
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+};
+
+const countPlayerWins = (games, playerId) => games.reduce((count, { players }) => {
+  const player = players.find(p => p.id === playerId);
+  if (player && player.isWinner) {
+    count++;
+  }
+  return count;
+}, 0);
+
+
+const hideVLP = () => {
+  document.getElementById("viewLobbyPlayerWrapper").style.display = "none";
+}
+
+const logout = () => {
+
+  deleteCookie("lobbyCode");
+  deleteCookie("player");
+  deleteCookie("username");
+  deleteCookie("gameCode");
+  deleteCookie("inLobby");
+  deleteCookie("selDiff");
+  deleteCookie("selCat");
+  location.reload();
+}
+
+window.addEventListener("keydown", (e) => {
+
+  if (player.challengeStarted) {
+    switch (e.key) {
+      case "Enter":
+        handlePlayerAttempt();
+        break;
+    }
+  }
+
+})

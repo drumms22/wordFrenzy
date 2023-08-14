@@ -1,48 +1,5 @@
 
 
-const startChallenge = () => {
-
-  displayMessage("Get Ready!!!");
-
-  timerFunc(() => {
-    playRound();
-  }, 3000)
-}
-
-async function play() {
-
-  document.getElementById("flipGameInner").classList.add("flip-game");
-  document.getElementById("score").innerHTML = selectedDiff === 0 ? "Easy" : selectedDiff === 2 ? "Hard" : selectedDiff === 3 ? "Frenzy" : "Normal";
-  let selSplit = selectedCategory.split("Item");
-
-  document.getElementById("categorySelectedTxt").innerHTML = titleCase(selSplit[0]);
-  // if (player.challengesCompleted.length === 100) {
-  //   constructChallenge("word");
-  // } else {
-  //   constructChallenge("challenge");
-  // }
-  // await timerFunc(() => {
-  //   displayMessage("Get Ready!!!");
-  // }, 2000)
-  await timerFunc(() => {
-    startChallenge();
-  }, 3000)
-
-
-}
-
-window.addEventListener("keydown", (e) => {
-
-  if (player.challengeStarted) {
-    switch (e.key) {
-      case "Enter":
-        handlePlayerAttempt();
-        break;
-    }
-  }
-
-})
-
 // const calculateHintTriggers = (totalTime, wordLength) => {
 //   const maxHints = Math.min(3, Math.floor(totalTime / 10) + (wordLength > 8 ? 1 : 0));
 //   const hintTriggers = [];
