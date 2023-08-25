@@ -10,7 +10,7 @@ const getUser = () => {
 
 socket.on('getUser', (user) => {
   document.getElementById("loading-screen").style.display = "none";
-  console.log(user);
+
   setCookie('gameCode', user._id.toString(), 100);
   setCookie('player', JSON.stringify(user.gameData), 100)
   setCookie('username', user.username, 100);
@@ -41,7 +41,7 @@ const checkUpdatedUsername = (e) => {
 }
 
 socket.on('checkUpdatedUsername', (check) => {
-  console.log(check);
+
   if (check) {
     document.getElementById("updateUsernameMsg").innerHTML = "Username is already taken!";
     document.getElementById("clickHere").disabled = true;
@@ -107,7 +107,7 @@ const createUser = () => {
 }
 
 socket.on('createUser', (data) => {
-  console.log(data);
+
   document.getElementById("loading-screen").style.display = "none";
   setCookie('gameCode', data.id.toString(), 100);
   setCookie('player', JSON.stringify(data.gameData), 100)
@@ -212,7 +212,7 @@ const getSPHint = () => {
   if (player.currentChallenge.hints.hintsRemaining === 1) {
     type = "reveal";
   }
-  console.log("coool");
+
   spSocket.emit("getHint", { type, prevHints: player.currentChallenge.hints.used })
 
 }
@@ -249,7 +249,6 @@ spSocket.on('startGame', (data) => {
 })
 spSocket.on("startTime", (data) => {
   player.challengeStarted = true;
-  console.log(data.wordData[0].word);
   document.getElementById("words").innerHTML = "";
   createInputs(data.wordData[0].word);
   displayMessage("Time has started!");
@@ -313,7 +312,7 @@ spSocket.on('nextWord', (words) => {
 })
 
 spSocket.on("getHint", (hintData) => {
-  console.log(hintData);
+
   player.currentChallenge.hints.hintsRemaining--;
 
   player.currentChallenge.hints.hintMessages.push(hintData[0].hint);
@@ -382,7 +381,7 @@ spSocket.on('returnHome', () => {
 })
 
 spSocket.on('updateStats', (stats) => {
-  console.log(stats);
+
   setCookie("player", JSON.stringify(stats), 100)
   checkPlayer(stats);
 })

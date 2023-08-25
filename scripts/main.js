@@ -771,7 +771,7 @@ const handlePlayerAttempt = async () => {
     return;
   }
   player.currentChallenge.prevGuess = guessWSpace;
-  console.log(guessWSpace);
+
   if (inLobby) {
     handleHTHGuess(guessWSpace);
   } else {
@@ -950,12 +950,11 @@ const focusNextOpenInput = () => {
   setTimeout(() => {
     //const inputs = document.querySelectorAll('input');
     let inputCount = document.querySelectorAll(".letterbox");
-    console.log("focus...");
+
     for (let i = 1; i <= inputCount.length; i++) {
       let elem = document.getElementById("letter" + i);
-      console.log(elem.value);
+
       if (elem.value === "") {
-        console.log(elem);
         elem.focus();
         //handleInputStyle(inputs[i]);
         break;
@@ -1138,8 +1137,6 @@ const updatePlayer = () => {
 }
 
 const checkPlayer = (user) => {
-
-  console.log(user);
   let spc = 0;
   // if (!user.speedData) {
   //   spc = Math.floor(parseInt(player.speedData.totalChar) / parseInt(player.speedData.totalTime)) + 1;
@@ -1917,9 +1914,8 @@ const closeInvitePlayer = () => {
 
 
 const searchUsers = (e) => {
-  console.log(e.value);
+
   let filered = player.playersNotInOrig.filter((p) => p.username.includes(e.value));
-  console.log(filered);
   player.playersNotIn = filered;
   displayPlayersNotIn();
 }

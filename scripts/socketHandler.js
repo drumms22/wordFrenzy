@@ -55,13 +55,12 @@ const handleLobDis = () => {
 
 function displayLobbyToRomm(id) {
   if (!player.lobbyData.player.isCreator) return;
-  console.log(player.lobbyData.lobby.code);
+
   pvpSocket.emit('changeCatSel', { lobbyId: player.lobbyData.lobby.code, selId: id });
 }
 
 function joinLobby(lobbyId, inviteId) {
-  console.log(lobbyId);
-  console.log(inviteId);
+
   let playerId = getCookie("gameCode");
   let username = getCookie("username");
   if (!playerId || !username) {
@@ -155,14 +154,14 @@ const handleTimesUp = () => {
 }
 
 const kickPlayer = (kickedId) => {
-  console.log(kickedId);
+
   let lobbyCode = getCookie("lobbyCode");
   let playerId = getCookie("gameCode");
   pvpSocket.emit('kickPlayer', { playerId, lobbyCode, kickedId });
 }
 
 const viewPlayer = (player2Id) => {
-  console.log(player2Id);
+
   let playerId = getCookie("gameCode");
   let lobbyCode = getCookie("lobbyCode");
   pvpSocket.emit('getPlayedTogether', { lobbyCode, playerId, player2Id })
@@ -219,12 +218,11 @@ pvpSocket.on('getInviteList', (list) => {
 })
 
 pvpSocket.on('connect', () => {
-  console.log('Connected to the server!');
+  console.log('Connected to the server! Have fun!');
 });
 
 //Reponse when lobby is initiated
 pvpSocket.on('lobbyCreated', (data) => {
-  console.log(data);
   playSound(lobbyJoinSound);
   inLobby = true;
   setCookie("inLobby", true);
@@ -244,7 +242,7 @@ pvpSocket.on('lobbyCreated', (data) => {
 
 //Response for joining a lobby, handles the UI and Player data
 pvpSocket.on('joined', (data) => {
-  console.log(data);
+
   inLobby = true;
   player.lobbyData.player = data.player;
   player.lobbyData.lobby = data.lobby;
@@ -302,7 +300,7 @@ pvpSocket.on("alert", (msg) => {
 })
 
 pvpSocket.on("getHint", (hintData) => {
-  console.log(hintData);
+
   player.currentChallenge.hints.hintsRemaining--;
 
   player.currentChallenge.hints.hintMessages.push(hintData.hint);
@@ -329,7 +327,7 @@ pvpSocket.on('hintsComplete', (hint) => {
 })
 
 pvpSocket.on('getPlayedTogether', (data) => {
-  console.log(data);
+
   document.getElementById("viewLobbyPlayerWrapper").style.display = "flex";
   document.getElementById("viewLobbyPlayerStats").innerHTML = "";
   document.getElementById("vlpTog").innerHTML = "";
@@ -450,7 +448,7 @@ pvpSocket.on('refreshUi', (data) => {
 });
 
 pvpSocket.on('refreshLobby', (data) => {
-  console.log(data);
+
   data.lobby.game.words = [];
   player.lobbyData.lobby = data.lobby;
   playerProg = data.playerProg;
@@ -499,7 +497,7 @@ pvpSocket.on('refreshLobby', (data) => {
 //   displayMessage("Next Word!");
 // });
 pvpSocket.on("startGame", ({ time, word }) => {
-  console.log(word);
+
   displayMessage("Time has started!")
   player.challengeStarted = true;
   createInputs(word);
@@ -559,7 +557,7 @@ pvpSocket.on('endScreenTimer', (time) => {
 })
 
 pvpSocket.on('updateStats', (stats) => {
-  console.log(stats);
+
   setCookie("player", JSON.stringify(stats), 100)
   checkPlayer(stats);
 })
@@ -573,8 +571,6 @@ pvpSocket.on('timesUp', () => {
 })
 
 pvpSocket.on('gameOver', (data) => {
-  console.log(data);
-  console.log(playerProg[player.lobbyData.player.id]);
   document.getElementById("words").innerHTML = "";
   //let notComplete = data.words.slice(playerProg[player.lobbyData.player.id]).map((x) => x.word);
   displayMessage(`The remaing word${data.notComplete.length === 1 ? " was" : "s were"} ${data.notComplete.join(', ')}`);
@@ -659,7 +655,7 @@ pvpSocket.on("updatePlayerProgress", (data) => {
 })
 
 pvpSocket.on('kickPlayer', () => {
-  console.log("kicked");
+
   handleLobbyLeave();
   alert("You have been kicked!")
 })
