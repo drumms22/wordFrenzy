@@ -1,4 +1,6 @@
 
+
+
 const loadData = (spc) => {
   let username = getCookie("username");
 
@@ -7,8 +9,6 @@ const loadData = (spc) => {
   } else {
     document.getElementById("statsTitle").innerHTML = "Player"
   }
-
-  console.log(spc);
 
   if (!spc || spc < 1 || spc === Infinity) spc = 99;
 
@@ -947,15 +947,22 @@ const clearIncorrectInputs = () => {
 };
 
 const focusNextOpenInput = () => {
-  const inputs = document.querySelectorAll('input');
-
-  for (let i = 0; i < inputs.length; i++) {
-    if (inputs[i].value === "") {
-      inputs[i].focus();
-      //handleInputStyle(inputs[i]);
-      break;
+  setTimeout(() => {
+    //const inputs = document.querySelectorAll('input');
+    let inputCount = document.querySelectorAll(".letterbox");
+    console.log("focus...");
+    for (let i = 1; i <= inputCount.length; i++) {
+      let elem = document.getElementById("letter" + i);
+      console.log(elem.value);
+      if (elem.value === "") {
+        console.log(elem);
+        elem.focus();
+        //handleInputStyle(inputs[i]);
+        break;
+      }
     }
-  }
+  }, 100);
+
 }
 // function handleInputStyle(event) {
 //   const selectedInput = event;
@@ -1235,7 +1242,7 @@ async function playHeadToHead(h, t) {
     }, 3000);
   }
 
-  await start();
+  start();
 
 }
 
@@ -1893,7 +1900,8 @@ const openInvitePlayer = async () => {
     alert("Only the leader can invite!")
     return;
   }
-  if (player.lobbyData.lobby.players.length >= 2) {
+
+  if (player.lobbyData.lobby.players.length >= lobbySettings.maxPlayers) {
     alert("Your lobby is at max!");
     return;
   }
@@ -2156,3 +2164,9 @@ window.addEventListener("keydown", (e) => {
   }
 
 })
+
+if (!getCookie("gamecode") && !getCookie("bkMusic")) {
+  turnOffMusic("musicBtnDiv2");
+} else {
+  turnOnMusic("musicBtnDiv2");
+}

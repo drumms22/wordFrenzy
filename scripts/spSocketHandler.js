@@ -10,12 +10,13 @@ const getUser = () => {
 
 socket.on('getUser', (user) => {
   document.getElementById("loading-screen").style.display = "none";
+  console.log(user);
   setCookie('gameCode', user._id.toString(), 100);
   setCookie('player', JSON.stringify(user.gameData), 100)
   setCookie('username', user.username, 100);
 
   checkPlayer(user.gameData);
-  connectUser()
+  connectSP()
   document.getElementById('initScreen').style.display = "none";
 })
 
@@ -66,7 +67,7 @@ const checkUsername = (e) => {
 
   let match = /^[a-zA-Z0-9@!_$]+$/.test(e.value);
 
-  if (e.value.length < 3 || e.value.length > 10 || !match) {
+  if (e.value.length < 3 || e.value.length > 11 || !match) {
     if (e.id === "newUsername") {
       document.getElementById("initScreenCreateMsg").innerHTML = "Invalid Username!";
       document.getElementById("createUsernameBtn").disabled = true;
@@ -111,7 +112,14 @@ socket.on('createUser', (data) => {
   setCookie('gameCode', data.id.toString(), 100);
   setCookie('player', JSON.stringify(data.gameData), 100)
   setCookie('username', data.username, 100);
-
+  let music = getCookie("bkMusic");
+  if (music) {
+    if (music == "0") {
+      turnOnMusic("musicBtnDiv");
+    } else if (music == "1") {
+      turnOffMusic("musicBtnDiv");
+    }
+  }
   checkPlayer(data.gameData);
   connectUser()
   document.getElementById('initScreen').style.display = "none";
@@ -167,6 +175,7 @@ const startSPTime = () => {
 }
 
 const handlePlayerGuess = (guess) => {
+  player.challengeStarted = false;
   spSocket.emit('checkGuess', { guess, correctLetters: player.currentChallenge.correctLetters, wordsGuessed: player.wordsCompleted, outOfPlaceLetters: player.currentChallenge.outOfPlaceLetters });
 }
 
@@ -239,14 +248,16 @@ spSocket.on('startGame', (data) => {
   }, 3000);
 })
 spSocket.on("startTime", (data) => {
+  player.challengeStarted = true;
+  console.log(data.wordData[0].word);
   document.getElementById("words").innerHTML = "";
   createInputs(data.wordData[0].word);
-  focusNextOpenInput();
   displayMessage("Time has started!");
   document.getElementById("guess").style.display = "block";
   displaySPHintBtn();
   let extraZero = data.time < 10 ? "0" : "";
   updateTimerDsiplay("" + extraZero + data.time);
+  document.getElementById("letter1").focus();
 })
 spSocket.on("updateTime", (time) => {
 
@@ -270,11 +281,15 @@ spSocket.on("updateTime", (time) => {
 })
 
 spSocket.on('invalidGuess', (check) => {
+  // clearIncorrectInputs();
+  player.challengeStarted = true;
   playSound(incorrectSound);
   displayMessage("None were correct!");
 })
 
 spSocket.on('checkGuess', (check, word) => {
+  // clearIncorrectInputs();
+  player.challengeStarted = true;
   playSound(incorrectSound);
   player.currentChallenge.prevGuesses.unshift(player.currentChallenge.prevGuess);
   updateAfterGuess(check, word);
@@ -294,6 +309,7 @@ spSocket.on('nextWord', (words) => {
   displayMessage("Success! Heres the next word");
   createInputs(words.nextWord);
   focusNextOpenInput();
+  player.challengeStarted = true;
 })
 
 spSocket.on("getHint", (hintData) => {
@@ -317,6 +333,10 @@ spSocket.on("getHint", (hintData) => {
 })
 
 spSocket.on('completed', (data) => {
+  player.challengeStarted = false;
+  document.getElementById("guess").style.display = "none";
+  document.getElementById("getSPHint").style.display = "none";
+  document.getElementById("words").innerHTML = "";
   addCorrectWord(data.word);
   clearAfter();
   playWinnerMusic();
@@ -324,13 +344,13 @@ spSocket.on('completed', (data) => {
     showWinnerOverlay()
   }, 1000);
   gameOver("You have completed the Frenzy!!!");
-  document.getElementById("continueGame").style.display = "block";
+  document.getElementById("continueGame").style.display = "none";
   document.getElementById("leaveSpGame").style.display = "block";
 })
 
 spSocket.on('gameOver', (data) => {
-  console.log(data);
-  displayMessage(`The remaing word${data.notComplete.length === 1 ? " is" : "s are"} ${data.notComplete.join(', ')}`);
+  document.getElementById("words").innerHTML = "";
+  displayMessage(`The remaing word${data.notComplete.length === 1 ? " was" : "s were"} ${data.notComplete.join(', ')}`);
   document.getElementById("guess").style.display = "none";
   document.getElementById("getSPHint").style.display = "none";
   updateTimerDsiplay("00");
@@ -338,7 +358,7 @@ spSocket.on('gameOver', (data) => {
   overlay.style.display = 'block';
   document.getElementById("winnerIsMess").innerHTML = `You ran out of time!`;
   playLoserMusic();
-  document.getElementById("continueGame").style.display = "block";
+  document.getElementById("continueGame").style.display = "none";
   document.getElementById("leaveSpGame").style.display = "block";
 })
 
@@ -373,6 +393,7 @@ spSocket.on('endHints', () => {
 })
 
 const leaveSpGame = () => {
+  spSocket.emit("leaveSp");
   spStarted = false;
   if (musicOn) {
     playMenuBKMusic();

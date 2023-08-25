@@ -134,29 +134,32 @@ const checkMusic = () => {
     let num = parseInt(approved);
     if (num === 0) {
       musicOn = false;
-      document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOnMusic()">Turn On Music</button>';
+      document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOnMusic(\'musicBtnDiv\')">Turn On Music</button>';
     } else {
       musicOn = true;
-      document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic()">Turn Off Music</button>';
+      document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic(\'musicBtnDiv\')">Turn Off Music</button>';
     }
   } else {
     setCookie("bkgMusic", 1);
     musicOn = true;
-    document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic()">Turn Off Music</button>';
+    document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic(\'musicBtnDiv\')">Turn Off Music</button>';
   }
 
 }
-
-const turnOnMusic = () => {
+//"musicBtnDiv"
+const turnOnMusic = (id) => {
+  console.log("On: ", id);
+  // id = id === typeof 
   musicOn = true;
-  document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOffMusic()">Turn Off Music</button>';
+  document.getElementById(id).innerHTML = '<button id="musicBtn" onclick="turnOffMusic(\'' + id + '\')">Turn Off Music</button>';
   playMenuBKMusic();
   setCookie("bkgMusic", 1);
 }
 
-const turnOffMusic = () => {
+const turnOffMusic = (id) => {
+  console.log("OFF: ", id);
   musicOn = false;
-  document.getElementById("musicBtnDiv").innerHTML = '<button id="musicBtn" onclick="turnOnMusic()">Turn On Music</button>';
+  document.getElementById(id).innerHTML = '<button id="musicBtn" onclick="turnOnMusic(\'' + id + '\')">Turn On Music</button>';
   stopBKMusic();
   setCookie("bkgMusic", 0);
 }

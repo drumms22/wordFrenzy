@@ -60,6 +60,8 @@ function displayLobbyToRomm(id) {
 }
 
 function joinLobby(lobbyId, inviteId) {
+  console.log(lobbyId);
+  console.log(inviteId);
   let playerId = getCookie("gameCode");
   let username = getCookie("username");
   if (!playerId || !username) {
@@ -135,7 +137,7 @@ const leaveLobby = () => {
 }
 
 const handleLobbyLeave = () => {
-  pvpSocket.disconnect();
+  // pvpSocket.disconnect();
   spSocket.connect();
   deleteCookie("lobbyCode");
   deleteCookie("inLobby");
@@ -242,7 +244,7 @@ pvpSocket.on('lobbyCreated', (data) => {
 
 //Response for joining a lobby, handles the UI and Player data
 pvpSocket.on('joined', (data) => {
-
+  console.log(data);
   inLobby = true;
   player.lobbyData.player = data.player;
   player.lobbyData.lobby = data.lobby;
@@ -416,7 +418,8 @@ pvpSocket.on('start', (data) => {
   let regex = /Item/;
   // handleHint(hintsRemaining, lobbySettings.catSel.replace(regex, "Item"));
   // let selSplit = lobbySettings.catSel.split("LobbyItem");
-
+  if (document.getElementById("inviteToLobby").style.display === "block") document.getElementById("inviteToLobby").style.display = "none";
+  if (!document.getElementById("maxPlayers").disabled) document.getElementById("maxPlayers").disabled = true;
   document.getElementById("categorySelectedTxt").innerHTML = titleCase(lobbySettings.catSel.replace(regex, ""));
   document.getElementById("correctWords").innerHTML = "";
   document.getElementById("words").innerHTML = "";
@@ -573,8 +576,8 @@ pvpSocket.on('gameOver', (data) => {
   console.log(data);
   console.log(playerProg[player.lobbyData.player.id]);
   document.getElementById("words").innerHTML = "";
-  let notComplete = data.words.slice(playerProg[player.lobbyData.player.id]).map((x) => x.word);
-  displayMessage(`The remaing word${notComplete.length === 1 ? " is" : "s are"} ${notComplete.join(', ')}`);
+  //let notComplete = data.words.slice(playerProg[player.lobbyData.player.id]).map((x) => x.word);
+  displayMessage(`The remaing word${data.notComplete.length === 1 ? " was" : "s were"} ${data.notComplete.join(', ')}`);
   document.getElementById("guess").style.display = "none";
   document.getElementById("getSPHint").style.display = "none";
   const overlay = document.querySelector('#loserOverlay');
@@ -597,8 +600,8 @@ pvpSocket.on('winner', (data) => {
 pvpSocket.on('loser', (data) => {
 
   document.getElementById("words").innerHTML = "";
-  let notComplete = data.words.slice(playerProg[player.lobbyData.player.id]).map((x) => x.word);;
-  displayMessage(`The remaing word${notComplete.length === 1 ? " is" : "s are"} ${notComplete.join(', ')}`);
+  // let notComplete = data.words.slice(playerProg[player.lobbyData.player.id]).map((x) => x.word);;
+  displayMessage(`The remaing word${data.notComplete.length === 1 ? " was" : "s were"} ${data.notComplete.join(', ')}`);
   document.getElementById("guess").style.display = "none";
   document.getElementById("getSPHint").style.display = "none";
   const overlay = document.querySelector('#loserOverlay');
@@ -623,12 +626,17 @@ pvpSocket.on("newLobby", (data) => {
   player.challengeStarted = false;
   document.getElementById("flipGameInner").classList.remove("flip-game");
   document.getElementById("leaveLobby").style.display = "block";
+  document.getElementById("time").innerHTML = "";
+  document.getElementById("categorySelectedTxt").innerHTML = "";
+  document.getElementById("score").innerHTML = "";
   let creatorMess = "";
   if (p[0].isCreator) {
     creatorMess = "My Lobby";
     document.getElementById("maxPLayersWrapper").style.display = "flex";
-    document.getElementById("maxPLayersWrapper").innerHTML = lobbySettings.maxPlayers;
+    document.getElementById("maxPlayers").value = lobbySettings.maxPlayers;
     document.getElementById("inviteToLobby").style.display = "block";
+    if (!document.getElementById("maxPlayers").disabled) document.getElementById("maxPlayers").disabled = true;
+    if (document.getElementById("maxPlayers").disabled) document.getElementById("maxPlayers").disabled = false;
   } else {
     let creator = data.lobby.players.filter((p) => p.isCreator);
     creatorMess = `${creator[0].username}'s Lobby`;
@@ -903,7 +911,7 @@ const vlpStats = (points, time, words, chall, speed) =>
   </div>
   <div class="vlpStatsBox">
     <h3 class="vlpStatsBoxTitle">Speed</h3>
-    <p class="vlpStatsBoxBody">${speed}</p>
+    <p class="vlpStatsBoxBody">${100 - speed.toFixed(0)}</p>
   </div>
 </div>`
 
